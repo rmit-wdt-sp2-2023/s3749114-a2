@@ -1,0 +1,22 @@
+﻿@model BankLibrary.Models.Account
+@{
+    ViewData["Title"] = "Deposit";
+}
+<h1>Deposit</h1>
+<h2>@Model.AccountType Account (@Model.AccountNumber)</h2>
+
+<form asp-action="Deposit">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="mb-3">
+        <label for="Amount" class="control-label 12345678">Amount</label>
+        <input id="Amount" name="Amount" class="form-control" value="@ViewBag.Amount?.ToString("0.00")">
+        @Html.ValidationMessage("Amount", new { @class = "text-danger mt-2" })
+    </div>
+    <div class="mb-3">
+        <input type="submit" value="Deposit" class="btn btn-primary">
+    </div>
+</form>
+
+<a asp-action="Index">Back to Accounts</a>
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

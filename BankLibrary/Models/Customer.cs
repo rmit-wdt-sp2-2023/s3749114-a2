@@ -24,7 +24,7 @@ public class Customer
     public string City { get; set; }
 
     [StringLength(3, MinimumLength = 2)]
-    [RegularExpression(@"^(? i) (NT|QLD|NSW|ACT|VIC|TAS|SA|WA)$")]
+    [RegularExpression(@"^(NT|QLD|NSW|ACT|VIC|TAS|SA|WA)$")]
     public string State { get; set; }
 
     [StringLength(4, MinimumLength = 4)]

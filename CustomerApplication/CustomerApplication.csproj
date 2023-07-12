@@ -14,6 +14,11 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.9" />
+    <PackageReference Include="SimpleHashing.Net" Version="2.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="Views\Login\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -24,5 +29,8 @@
     <ProjectReference Include="..\BankLibrary\BankLibrary.csproj">
       <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Views\Login\" />
   </ItemGroup>
 </Project>

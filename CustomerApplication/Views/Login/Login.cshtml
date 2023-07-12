@@ -1,0 +1,28 @@
+﻿@model BankLibrary.Models.Login
+@{
+    ViewData["Title"] = "Login";
+}
+
+<h1>Login</h1>
+
+<form asp-action="Login">
+
+    <div class="mb-3">
+        <label asp-for="LoginID" class="control-label mb-2"></label>
+        <input asp-for="LoginID" class="form-control mb-2" />
+    </div>
+
+    <div class="mb-3">
+        <label for="Password" class="control-label mb-2">Password</label>
+        <input id="Password" name="Password" type="password" class="form-control mb-2">
+    </div>
+
+    <div class="mb-3">
+        <input type="submit" value="Login" class="btn btn-primary">
+    </div>
+
+    @Html.ValidationMessage("LoginFailed", new { @class = "text-danger" })
+</form>
+
+
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }
