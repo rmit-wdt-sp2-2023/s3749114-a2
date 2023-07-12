@@ -22,8 +22,7 @@ public class Payee
 
     [Required]
     [StringLength(3, MinimumLength = 2)]
-    [Column(TypeName = "nvarchar")]
-    public State State { get; set; }
+    public string State { get; set; }
 
     [Required]
     [StringLength(4, MinimumLength = 4)]

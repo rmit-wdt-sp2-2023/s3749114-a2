@@ -2,6 +2,6 @@
 
 public enum Period
 {
-    OneOff = 'O',
-    Monthly = 'M'
+    OneOff = 1,
+    Monthly = 2
 }

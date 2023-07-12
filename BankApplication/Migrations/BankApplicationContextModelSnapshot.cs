@@ -101,7 +101,7 @@ namespace BankApplication.Migrations
 
                     b.Property<string>("State")
                         .HasMaxLength(3)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("TFN")
                         .HasMaxLength(11)
@@ -169,7 +169,7 @@ namespace BankApplication.Migrations
                     b.Property<string>("State")
                         .IsRequired()
                         .HasMaxLength(3)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(3)");
 
                     b.HasKey("PayeeID");
 

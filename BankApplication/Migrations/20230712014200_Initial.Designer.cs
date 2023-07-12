@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankApplication.Migrations
 {
     [DbContext(typeof(BankApplicationContext))]
-    [Migration("20230712011319_Initial")]
+    [Migration("20230712014200_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -104,7 +104,7 @@ namespace BankApplication.Migrations
 
                     b.Property<string>("State")
                         .HasMaxLength(3)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(3)");
 
                     b.Property<string>("TFN")
                         .HasMaxLength(11)
@@ -172,7 +172,7 @@ namespace BankApplication.Migrations
                     b.Property<string>("State")
                         .IsRequired()
                         .HasMaxLength(3)
-                        .HasColumnType("nvarchar");
+                        .HasColumnType("nvarchar(3)");
 
                     b.HasKey("PayeeID");
 

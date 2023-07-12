@@ -2,6 +2,6 @@
 
 public enum AccountType
 {
-    Checking = 'C',
-    Saving = 'S'
+    Checking = 1,
+    Saving = 2
 }

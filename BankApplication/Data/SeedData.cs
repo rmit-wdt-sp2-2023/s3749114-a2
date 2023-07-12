@@ -1,9 +1,7 @@
 ﻿using BankApplication.Models;
 using BankApplication.Dtos;
 using Newtonsoft.Json;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 using BankApplication.Mappers;
-//using System.Transactions;
 
 namespace BankApplication.Data;
 

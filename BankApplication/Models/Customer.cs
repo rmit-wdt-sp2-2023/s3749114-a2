@@ -24,8 +24,8 @@ public class Customer
     public string City { get; set; }
 
     [StringLength(3, MinimumLength = 2)]
-    [Column(TypeName = "nvarchar")]
-    public State? State { get; set; }
+    [RegularExpression(@"^(? i) (NT|QLD|NSW|ACT|VIC|TAS|SA|WA)$")]
+    public string State { get; set; }
 
     [StringLength(4, MinimumLength = 4)]
     public string PostCode { get; set; }
