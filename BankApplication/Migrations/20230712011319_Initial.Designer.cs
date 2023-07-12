@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankApplication.Migrations
 {
     [DbContext(typeof(BankApplicationContext))]
-    [Migration("20230711160621_Initial")]
+    [Migration("20230712011319_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -259,7 +259,7 @@ namespace BankApplication.Migrations
             modelBuilder.Entity("BankApplication.Models.Transaction", b =>
                 {
                     b.HasOne("BankApplication.Models.Account", "Account")
-                        .WithMany()
+                        .WithMany("Transactions")
                         .HasForeignKey("AccountNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -271,6 +271,11 @@ namespace BankApplication.Migrations
                     b.Navigation("Account");
 
                     b.Navigation("DestinationAccount");
+                });
+
+            modelBuilder.Entity("BankApplication.Models.Account", b =>
+                {
+                    b.Navigation("Transactions");
                 });
 
             modelBuilder.Entity("BankApplication.Models.Customer", b =>

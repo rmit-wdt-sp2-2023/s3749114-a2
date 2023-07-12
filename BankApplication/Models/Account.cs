@@ -20,6 +20,6 @@ public class Account
     public int CustomerID { get; set; }
     public virtual Customer Customer { get; set; }
 
-    [NotMapped]
+    [InverseProperty("Account")]
     public virtual List<Transaction> Transactions { get; set; }
 }
