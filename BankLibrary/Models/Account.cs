@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BankLibrary.Models;
@@ -13,7 +12,7 @@ public class Account
     public int AccountNumber { get; set; }
 
     [Required]
-    [Display(Name = "Type")]
+    [Display(Name = "Account type")]
     public AccountType AccountType { get; set; }
 
     [ForeignKey("Customer")]
