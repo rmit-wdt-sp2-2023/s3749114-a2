@@ -3,19 +3,17 @@ using CustomerApplication.Data;
 using BankLibrary.Models;
 using CustomerApplication.Models;
 using CustomerApplication.Filters;
-using BankLibrary.Utilities;
-using Castle.Core.Resource;
 
 namespace CustomerApplication.Controllers;
 
 [AuthorizeCustomer]
-public class MyAccountsController : Controller
+public class AccountsController : Controller
 {
     private readonly BankContext _context;
 
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
-    public MyAccountsController(BankContext context) => _context = context;
+    public AccountsController(BankContext context) => _context = context;
 
     public IActionResult Index()
     {
@@ -40,23 +38,27 @@ public class MyAccountsController : Controller
         {
             AccountNumber = account.AccountNumber,
             AccountType = account.AccountType,
-            Balance = account.CalculateBalance()
+            Balance = account.CalculateBalance(),
+            TransactionType = TransactionType.Deposit
         });
     }
 
     [HttpPost]
-    public IActionResult Deposit(Transaction depositViewModel)
+    public IActionResult Deposit(TransactionViewModel transactionViewModel)
     {
-        Account account = _context.Accounts.Find(depositViewModel.AccountNumber);
+        Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
         if (!ModelState.IsValid)
         {
             return View(new TransactionViewModel
             {
                 AccountNumber = account.AccountNumber,
                 AccountType = account.AccountType,
-                Balance = account.CalculateBalance()
+                Balance = account.CalculateBalance(),
+                TransactionType = TransactionType.Deposit
             });
         }
+
+        return RedirectToAction("Confirm", transactionViewModel);
 
         //Transaction transaction = account.Deposit(depositViewModel.Amount, depositViewModel.Comment);
 
@@ -71,15 +73,13 @@ public class MyAccountsController : Controller
 
         //_context.Transactions.Add(transaction);
         //_context.SaveChanges();
-        return RedirectToAction(nameof(Index));
+        //return RedirectToAction(nameof(Index));
     }
 
-    //public IActionResult Confirm(Transaction transaction)
-    //{
-
-    //    return View(transaction);
-
-    //}
+    public IActionResult Confirm(TransactionViewModel transactionViewModel)
+    {
+        return View(transactionViewModel);
+    }
 
     //public IActionResult Confirm(Transaction transaction)
     //{
