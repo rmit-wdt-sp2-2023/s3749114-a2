@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CustomerApplication.Data;
 using BankLibrary.Models;
+using CustomerApplication.Models;
 using SimpleHashing.Net;
 
 namespace CustomerApplication.Controllers;
@@ -17,22 +18,23 @@ public class LoginController : Controller
     public IActionResult Login() => View();
 
     [HttpPost]
-    public IActionResult Login(string loginID, string password)
+    public IActionResult Login(LoginViewModel loginViewModel)
     {
-        Login login = _context.Logins.Find(loginID);
-
-        if (login == null || string.IsNullOrEmpty(password) || !s_simpleHash.Verify(password, login.PasswordHash))
-        { 
-            ModelState.AddModelError("LoginFailed", "Login failed, please try again.");
-            return View(new Login
+        if (ModelState.IsValid)
+        {
+            Login login = _context.Logins.Find(loginViewModel.LoginID);
+            if (login is not null)
             {
-                LoginID = loginID
-            });
+                if (s_simpleHash.Verify(loginViewModel.Password, login.PasswordHash))
+                {
+                    HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
+                    HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
+                    return RedirectToAction("Index", "MyAccounts");
+                }
+            }
         }
-        HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
-        HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
-
-        return RedirectToAction("Index", "MyAccounts");
+        ModelState.AddModelError("LoginFailed", "Login failed, please try again.");
+        return View(new LoginViewModel());
     }
 
     [Route("Logout")]
