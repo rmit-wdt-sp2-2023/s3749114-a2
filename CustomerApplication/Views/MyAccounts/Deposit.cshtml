@@ -1,19 +1,40 @@
-﻿@model BankLibrary.Models.Account
-@{
-    ViewData["Title"] = "Deposit";
-}
+﻿@model CustomerApplication.Models.TransactionViewModel
+@{ ViewData["Title"] = "Deposit"; }
+
 <h1>Deposit</h1>
-<h2>@Model.AccountType Account (@Model.AccountNumber)</h2>
 
 <form asp-action="Deposit">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
     <div class="mb-3">
-        <label for="Amount" class="control-label 12345678">Amount</label>
-        <input id="Amount" name="Amount" class="form-control" value="@ViewBag.Amount?.ToString("0.00")">
-        @Html.ValidationMessage("Amount", new { @class = "text-danger mt-2" })
+        <label class="control-label mb-2">From</label>
+
+        <input type="text" readonly class="form-control-plaintext" asp-for="AccountType">
+        <input type="text" readonly class="form-control-plaintext" asp-for="AccountNumber">
+
+        @*<div class="form-control-plaintext p-0">
+            <div class="row">
+                <div class="col">
+                    @Model.AccountType<br>
+                    @Model.AccountNumber
+                </div>
+                <div class="col text-end">
+                    Balance<br>
+                    @Html.DisplayFor(x => Model.Balance)
+                </div>
+            </div>
+        </div>*@
     </div>
     <div class="mb-3">
-        <input type="submit" value="Deposit" class="btn btn-primary">
+        <label asp-for="Amount" class="control-label mb-2"></label><span> ($ AUD)</span>
+        <input asp-for="Amount" class="form-control">
+        <span asp-validation-for="Amount" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Comment" class="control-label mb-2"></label><span> (optional)</span>
+        <input asp-for="Comment" class="form-control">
+        <span asp-validation-for="Comment" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <input type="submit" value="Continue" class="btn btn-primary">
     </div>
 </form>
-<a asp-action="Index">< Back to accounts</a>
+<a asp-action="Index">Go back to Accounts</a>

@@ -2,8 +2,10 @@
 using CustomerApplication.Data;
 using BankLibrary.Models;
 using CustomerApplication.Models;
-using CustomerApplication.Utilities;
 using CustomerApplication.Filters;
+using BankLibrary.Utilities;
+using Castle.Core.Resource;
+
 namespace CustomerApplication.Controllers;
 
 [AuthorizeCustomer]
@@ -24,41 +26,65 @@ public class MyAccountsController : Controller
             accountsViewModel.Add(new AccountViewModel
             {
                 AccountNumber = account.AccountNumber,
-                AccountType = account.AccountType
+                AccountType = account.AccountType,
+                Balance = account.CalculateBalance()
             });
         }
         return View(accountsViewModel);
     }
 
-    public IActionResult Deposit(int id) => View(_context.Accounts.Find(id));
+    public IActionResult Deposit(int id)
+    {
+        Account account = _context.Accounts.Find(id);
+        return View(new TransactionViewModel
+        {
+            AccountNumber = account.AccountNumber,
+            AccountType = account.AccountType,
+            Balance = account.CalculateBalance()
+        });
+    }
 
     [HttpPost]
-    public IActionResult Deposit(int id, decimal amount)
+    public IActionResult Deposit(Transaction depositViewModel)
     {
-        var account = _context.Accounts.Find(id);
-
-        if (amount <= 0)
-            ModelState.AddModelError(nameof(amount), "Amount must be positive.");
-        if (amount.HasMoreThanTwoDecimalPlaces())
-            ModelState.AddModelError(nameof(amount), "Amount cannot have more than 2 decimal places.");
+        Account account = _context.Accounts.Find(depositViewModel.AccountNumber);
         if (!ModelState.IsValid)
         {
-            ViewBag.Amount = amount;
-            return View(account);
+            return View(new TransactionViewModel
+            {
+                AccountNumber = account.AccountNumber,
+                AccountType = account.AccountType,
+                Balance = account.CalculateBalance()
+            });
         }
 
-        // Note this code could be moved out of the controller, e.g., into the Model.
-        // account.Balance += amount;
-        account.Transactions.Add(
-            new Transaction
-            {
-                TransactionType = TransactionType.Deposit,
-                Amount = amount,
-                TransactionTimeUtc = DateTime.UtcNow
-            });
+        //Transaction transaction = account.Deposit(depositViewModel.Amount, depositViewModel.Comment);
 
-        _context.SaveChanges();
+        //if (transaction is not null)
+        //{
 
+        //}
+
+
+        //return Confirm(transaction);
+
+
+        //_context.Transactions.Add(transaction);
+        //_context.SaveChanges();
         return RedirectToAction(nameof(Index));
     }
+
+    //public IActionResult Confirm(Transaction transaction)
+    //{
+
+    //    return View(transaction);
+
+    //}
+
+    //public IActionResult Confirm(Transaction transaction)
+    //{
+
+    //    return View(transaction);
+
+    //}
 }

@@ -8,8 +8,9 @@
         <table class="table">
             <thead>
                 <tr>
-                    <th scope="col">@Html.DisplayNameFor(x => x[0].AccountNumber)</th>
-                    <th scope="col">@Html.DisplayNameFor(x => x[0].AccountType)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountNumber)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountType)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].Balance)</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -19,6 +20,7 @@
                     <tr>
                         <td>@account.AccountNumber</td>
                         <td>@account.AccountType</td>
+                        <td>@Html.DisplayFor(x => account.Balance)</td>
                         <td><a class="btn btn-primary" asp-action="Deposit" asp-route-id="@account.AccountNumber">Deposit</a></td>
                     </tr>
                 }
