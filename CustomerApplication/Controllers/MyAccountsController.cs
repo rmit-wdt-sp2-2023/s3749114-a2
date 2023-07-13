@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CustomerApplication.Data;
 using BankLibrary.Models;
+using CustomerApplication.Models;
 using CustomerApplication.Utilities;
 using CustomerApplication.Filters;
-
 namespace CustomerApplication.Controllers;
 
 [AuthorizeCustomer]
@@ -18,7 +18,16 @@ public class MyAccountsController : Controller
     public IActionResult Index()
     {
         Customer customer = _context.Customers.Find(CustomerID);
-        return View(customer);
+        List<AccountViewModel> accountsViewModel = new();
+        foreach (Account account in customer.Accounts)
+        {
+            accountsViewModel.Add(new AccountViewModel
+            {
+                AccountNumber = account.AccountNumber,
+                AccountType = account.AccountType
+            });
+        }
+        return View(accountsViewModel);
     }
 
     public IActionResult Deposit(int id) => View(_context.Accounts.Find(id));
