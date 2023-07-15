@@ -17,13 +17,17 @@ public class TransactionViewModel
 
     public List<AccountViewModel> AccountsViewModel { get; set; }
 
+    [Display(Name = "Account Number")]
+    [Range(1000, 9999, ErrorMessage = "You must enter a valid Account Number.")]
+    public int? DestinationNumber { get; set; } = null;
+
     [Required]
     [CustomValidation(typeof(ValidationMethods), "MoreThanTwoDecimalPlaces")]
     [CustomValidation(typeof(ValidationMethods), "GreaterThanZero")]
     public decimal Amount { get; set; }
 
     [StringLength(30, ErrorMessage = "Comment cannot be more than 30 characters.")]
-    public string Comment { get; set; }
+    public string Comment { get; set; } = null;
 
     [Required]
     [Display(Name = "Transaction Type")]

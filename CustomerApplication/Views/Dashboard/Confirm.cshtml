@@ -13,6 +13,13 @@
         <label asp-for="AccountType" class="control-label2"></label>
         <input asp-for="AccountType" class="form-control-plaintext" readonly>
     </div>
+    @if (Model.TransactionType == TransactionType.Transfer)
+    {
+        <div class="mb-3">
+            <label asp-for="DestinationNumber" class="control-label2"></label>
+            <input asp-for="DestinationNumber" class="form-control-plaintext" readonly>
+        </div>
+    }
     <div class="mb-3">
         <label asp-for="Amount" class="control-label mb-2"></label>
         <input asp-for="Amount" class="form-control-plaintext" readonly>
