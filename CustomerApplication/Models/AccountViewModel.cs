@@ -1,21 +1,25 @@
 ﻿using BankLibrary.Models;
-using BankLibrary.Validation;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace CustomerApplication.Models;
 
 public class AccountViewModel
 {
     [Required]
-    [Display(Name = "Account number")]
+    [Range(1000, 9999)]
+    [Display(Name = "Account Number")]
     public int AccountNumber { get; set; }
 
     [Required]
-    [Display(Name = "Account type")]
+    [Display(Name = "Account Type")]
     public AccountType AccountType { get; set; }
 
+    [Required]
     [DataType(DataType.Currency)]
     public required decimal Balance { get; init; }
+
+    [Required]
+    [Display(Name = "Available Balance")]
+    [DataType(DataType.Currency)]
+    public required decimal AvailableBalance { get; init; }
 }

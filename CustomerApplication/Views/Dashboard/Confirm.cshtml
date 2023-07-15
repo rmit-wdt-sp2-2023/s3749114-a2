@@ -1,11 +1,10 @@
 ﻿@model CustomerApplication.Models.TransactionViewModel
 @{ ViewData["Title"] = "Confirm"; }
 
-<h1>Confirm</h1>
+<h1>Confirm @Model.TransactionType</h1>
 
-<p>Please confirm to proceed with this transaction.</p>
-
-<form asp-action="Confirmed">
+<form asp-action="Result">
+    <input type="hidden" asp-for="TransactionType">
     <div class="mb-3">
         <label asp-for="AccountNumber" class="control-label"></label>
         <input asp-for="AccountNumber" class="form-control-plaintext" readonly>
@@ -13,10 +12,6 @@
     <div class="mb-3">
         <label asp-for="AccountType" class="control-label2"></label>
         <input asp-for="AccountType" class="form-control-plaintext" readonly>
-    </div>
-    <div class="mb-3">
-        <label asp-for="TransactionType" class="control-label2"></label>
-        <input asp-for="TransactionType" class="form-control-plaintext" readonly>
     </div>
     <div class="mb-3">
         <label asp-for="Amount" class="control-label mb-2"></label>
@@ -29,8 +24,8 @@
             <input asp-for="Comment" class="form-control-plaintext" readonly>
         </div>
     }
-<div class="mb-3">
-    <button asp-action="Index" class="btn btn-secondary">Cancel</button>
-    <button type="submit" class="btn btn-primary">Confirm</button>
-</div>
+    <div class="mb-3">
+        <button asp-action="Index" class="btn btn-secondary">Cancel</button>
+        <button type="submit" class="btn btn-primary">Confirm</button>
+    </div>
 </form>

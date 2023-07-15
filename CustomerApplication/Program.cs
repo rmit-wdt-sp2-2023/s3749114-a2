@@ -1,5 +1,11 @@
+using System.Globalization;
 using CustomerApplication.Data;
 using Microsoft.EntityFrameworkCore;
+
+var cultureInfo = new CultureInfo("en-AU");
+cultureInfo.NumberFormat.CurrencySymbol = "$";
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 var builder = WebApplication.CreateBuilder(args);
 
