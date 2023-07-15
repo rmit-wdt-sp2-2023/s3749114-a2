@@ -1,46 +1,31 @@
 ﻿@model CustomerApplication.Models.TransactionViewModel
 @{ ViewData["Title"] = "Result"; }
 
-<h1>Receipt</h1>
-
 @if (@Model.TransactionResult)
 {
     <h1>@Model.TransactionType successful</h1>
 
+    <h2>Your receipt</h2>
+    <dl>
+        <dt>@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+        <dd>@Model.AccountNumber</dd>
+
+        <dt>@Html.DisplayNameFor(x => Model.AccountType)</dt>
+        <dd>@Model.AccountType</dd>
+
+        <dt>@Html.DisplayNameFor(x => Model.Amount)</dt>
+        <dd>@Html.DisplayFor(x => Model.Amount)</dd>
+
+        @if (Model.Comment is not null)
+        {
+            <dt>@Html.DisplayNameFor(x => Model.Comment)</dt>
+            <dd>@Model.Comment</dd>
+        }
+    </dl>
 }
 else
 {
     <h1>@Model.TransactionType failed</h1>
     <span asp-validation-for="TransactionResult" class="text-danger"></span>
 }
-
-
-
-@*<div class="mb-3">
-        <label asp-for="AccountNumber" class="control-label"></label>
-        <input asp-for="AccountNumber" class="form-control-plaintext" readonly>
-    </div>
-    <div class="mb-3">
-        <label asp-for="AccountType" class="control-label2"></label>
-        <input asp-for="AccountType" class="form-control-plaintext" readonly>
-    </div>
-    <div class="mb-3">
-        <label asp-for="TransactionType" class="control-label2"></label>
-        <input asp-for="TransactionType" class="form-control-plaintext" readonly>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Amount" class="control-label mb-2"></label>
-        <input asp-for="Amount" class="form-control-plaintext" readonly>
-    </div>
-        @if (Model.Comment is not null)
-        {
-            <div class="mb-3">
-                <label asp-for="Comment" class="control-label mb-2"></label>
-                <input asp-for="Comment" class="form-control-plaintext" readonly>
-            </div>
-        }
-        <div class="mb-3">
-            <button asp-action="Index" class="btn btn-secondary">Cancel</button>
-            <button type="submit" class="btn btn-primary">Confirm</button>
-        </div>
-    </form>*@
+<a asp-action="Index">Go back to Accounts</a>

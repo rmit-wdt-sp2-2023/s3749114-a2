@@ -3,7 +3,6 @@ using CustomerApplication.Data;
 using BankLibrary.Models;
 using CustomerApplication.Models;
 using CustomerApplication.Filters;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
 //using System.Transactions;
 
 namespace CustomerApplication.Controllers;
@@ -76,38 +75,15 @@ public class DashboardController : Controller
                 transactionViewModel.TransactionResult = true;
                 foreach (Transaction transaction in transactions)
                     _context.Transactions.Add(transaction);
-                _context.SaveChanges();
             }
         }
+        _context.SaveChanges();
         return View(transactionViewModel);
     }
 
     // CONFIRM
 
     public IActionResult Confirm(TransactionViewModel transactionViewModel) => View(transactionViewModel);
-
-    //[HttpPost]
-    //public IActionResult Confirmed(TransactionViewModel transactionViewModel)
-    //{
-    //    Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
-
-    //    if (transactionViewModel.TransactionType == TransactionType.Deposit)
-    //    {
-    //        Transaction transaction = account.Deposit(transactionViewModel.Amount, transactionViewModel.Comment);
-    //        _context.Transactions.Add(transaction);
-    //    }
-    //    else if (transactionViewModel.TransactionType == TransactionType.Withdraw)
-    //    {
-    //        (List<Transaction> transactions, string message) =
-    //            account.Withdraw(transactionViewModel.Amount, transactionViewModel.Comment);
-
-    //        foreach (Transaction transaction in transactions)
-    //            _context.Transactions.Add(transaction);
-    //    }
-    //    _context.SaveChanges();
-    //    return RedirectToAction(nameof(Receipt));
-    //}
-
 
     // VIEW MODEL CREATION
 

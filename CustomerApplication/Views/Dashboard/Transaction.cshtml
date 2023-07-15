@@ -41,9 +41,12 @@
         <input asp-for="Comment" class="form-control">
         <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
+    @if (Model.TransactionType == TransactionType.Withdraw || Model.TransactionType == TransactionType.Transfer)
+    {
+        <span>@Model.TransactionType transactions incur a $@Model.TransactionType.ServiceCharge() service charge.</span>
+    }
     <div class="mb-3">
         <button type="submit" class="btn btn-primary">Continue</button>
     </div>
-
 </form>
 <a asp-action="Index">Go back to Accounts</a>
