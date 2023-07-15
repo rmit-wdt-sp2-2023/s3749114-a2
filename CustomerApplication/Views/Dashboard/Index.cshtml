@@ -2,7 +2,7 @@
 @{ ViewData["Title"] = "Accounts"; }
 
 <div>
-    <h1>My Accounts</h1>
+    <h1>Accounts</h1>
     @if (Model.Any())
     {
         <table class="table">
@@ -11,6 +11,7 @@
                     <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountNumber)</th>
                     <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountType)</th>
                     <th scope="col">@Html.DisplayNameFor(x => Model[0].Balance)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].AvailableBalance)</th>
                     <th scope="col"></th>
                 </tr>
             </thead>
@@ -21,6 +22,7 @@
                         <td>@account.AccountNumber</td>
                         <td>@account.AccountType</td>
                         <td>@Html.DisplayFor(x => account.Balance)</td>
+                        <td>@Html.DisplayFor(x => account.AvailableBalance)</td>
                     </tr>
                 }
             </tbody>

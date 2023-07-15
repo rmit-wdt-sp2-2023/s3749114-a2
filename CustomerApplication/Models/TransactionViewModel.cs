@@ -8,8 +8,10 @@ public class TransactionViewModel
 {
     [Required]
     [Display(Name = "Account Number")]
+    [Range(1000, 9999, ErrorMessage = "You must select an Account.")]
     public int AccountNumber { get; set; }
 
+    [Required]
     [Display(Name = "Account Type")]
     public AccountType AccountType { get; set; }
 
@@ -26,4 +28,6 @@ public class TransactionViewModel
     [Required]
     [Display(Name = "Transaction Type")]
     public required TransactionType TransactionType { get; init; }
+
+    public bool TransactionResult { get; set; } 
 }
