@@ -21,4 +21,39 @@ public class Account
 
     [InverseProperty("Account")]
     public virtual List<Transaction> Transactions { get; set; }
+
+    public decimal CalculateBalance()
+    {
+        decimal balance = 0;
+        foreach (Transaction transaction in Transactions)
+        {
+            balance = transaction.TransactionType switch
+            {
+                TransactionType.Deposit => balance + transaction.Amount,
+                TransactionType.Withdraw => balance - transaction.Amount,
+                TransactionType.ServiceCharge => balance - transaction.Amount,
+                TransactionType.Transfer when transaction.DestinationNumber is null => balance + transaction.Amount,
+                TransactionType.Transfer when transaction.DestinationNumber is not null => balance - transaction.Amount,
+                TransactionType.BillPay => balance - transaction.Amount,
+                _ => balance
+            };
+        }
+        return balance;
+    }
+
+    public Transaction Deposit(decimal amount, string comment) =>
+        Credit(TransactionType.Deposit, amount, comment);
+
+    private Transaction Credit(TransactionType transactionType, decimal amount, string comment)
+    {
+        Transaction transaction = new()
+        {
+            TransactionType = transactionType,
+            AccountNumber = AccountNumber,
+            Amount = amount,
+            Comment = comment,
+        };
+        Transactions.Add(transaction);
+        return transaction;
+    }
 }
