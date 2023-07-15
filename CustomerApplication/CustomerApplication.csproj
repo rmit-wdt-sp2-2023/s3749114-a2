@@ -19,6 +19,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Login\" />
+    <None Remove="Views\Transactions\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -32,5 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Login\" />
+    <Folder Include="Views\Transactions\" />
   </ItemGroup>
 </Project>

@@ -17,9 +17,56 @@ public class AccountsController : Controller
 
     public IActionResult Index()
     {
-        Customer customer = _context.Customers.Find(CustomerID);
+        return View(MakeAccountsViewModel());
+    }
+
+    public IActionResult Deposit()
+    {
+        return View(MakeTransactionViewModel(TransactionType.Deposit));
+    }
+
+    [HttpPost]
+    public IActionResult Deposit(TransactionViewModel transactionViewModel)
+    {
+        if (!ModelState.IsValid)
+        {
+            return View(MakeTransactionViewModel(TransactionType.Deposit));
+        }
+        Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
+        transactionViewModel.AccountType = account.AccountType;
+        return RedirectToAction(nameof(Confirm), transactionViewModel);
+    }
+
+    public IActionResult Confirm(TransactionViewModel transactionViewModel)
+    {
+        return View(transactionViewModel);
+    }
+
+    [HttpPost]
+    public IActionResult Confirmed(TransactionViewModel transactionViewModel)
+    {
+        Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
+        Transaction transaction = account.Deposit(transactionViewModel.Amount, transactionViewModel.Comment);
+        _context.Transactions.Add(transaction);
+        _context.SaveChanges();
+        return RedirectToAction(nameof(Index));
+    }
+
+    public TransactionViewModel MakeTransactionViewModel(TransactionType transactionType)
+    {
+        return new TransactionViewModel
+        {
+            TransactionType = transactionType,
+            AccountsViewModel = MakeAccountsViewModel()
+        };
+    }
+
+    public List<AccountViewModel> MakeAccountsViewModel()
+    {
+        List<Account> accounts =
+            _context.Accounts.Where(x => x.CustomerID == CustomerID).OrderBy(x => x.AccountNumber).ToList();
         List<AccountViewModel> accountsViewModel = new();
-        foreach (Account account in customer.Accounts)
+        foreach (Account account in accounts)
         {
             accountsViewModel.Add(new AccountViewModel
             {
@@ -28,63 +75,6 @@ public class AccountsController : Controller
                 Balance = account.CalculateBalance()
             });
         }
-        return View(accountsViewModel);
+        return accountsViewModel;
     }
-
-    public IActionResult Deposit(int id)
-    {
-        Account account = _context.Accounts.Find(id);
-        return View(new TransactionViewModel
-        {
-            AccountNumber = account.AccountNumber,
-            AccountType = account.AccountType,
-            Balance = account.CalculateBalance(),
-            TransactionType = TransactionType.Deposit
-        });
-    }
-
-    [HttpPost]
-    public IActionResult Deposit(TransactionViewModel transactionViewModel)
-    {
-        Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
-        if (!ModelState.IsValid)
-        {
-            return View(new TransactionViewModel
-            {
-                AccountNumber = account.AccountNumber,
-                AccountType = account.AccountType,
-                Balance = account.CalculateBalance(),
-                TransactionType = TransactionType.Deposit
-            });
-        }
-
-        return RedirectToAction("Confirm", transactionViewModel);
-
-        //Transaction transaction = account.Deposit(depositViewModel.Amount, depositViewModel.Comment);
-
-        //if (transaction is not null)
-        //{
-
-        //}
-
-
-        //return Confirm(transaction);
-
-
-        //_context.Transactions.Add(transaction);
-        //_context.SaveChanges();
-        //return RedirectToAction(nameof(Index));
-    }
-
-    public IActionResult Confirm(TransactionViewModel transactionViewModel)
-    {
-        return View(transactionViewModel);
-    }
-
-    //public IActionResult Confirm(Transaction transaction)
-    //{
-
-    //    return View(transaction);
-
-    //}
 }

@@ -1,21 +1,20 @@
 ﻿@model CustomerApplication.Models.TransactionViewModel
-@{ ViewData["Title"] = "Deposit"; }
+@{ ViewData["Title"] = Model.TransactionType; }
 
-<h1>Deposit</h1>
-<form asp-action="Deposit">
+<h1>@Model.TransactionType</h1>
+<form asp-action="@Model.TransactionType">
     <input type="hidden" asp-for="TransactionType">
-    <div class="mb-3">
-        <label asp-for="AccountNumber" class="control-label"></label>
-        <input asp-for="AccountNumber" class="form-control-plaintext" readonly>
-    </div>
-    <div class="mb-3">
-        <label asp-for="AccountType" class="control-label"></label>
-        <input asp-for="AccountType" class="form-control-plaintext" readonly>
-    </div>
-    <div class="mb-3">
-        <label asp-for="Balance" class="control-label"></label>
-        <input asp-for="Balance" class="form-control-plaintext" readonly>
-    </div>
+
+    @foreach (var account in Model.AccountsViewModel)
+    {
+        <input type="radio" asp-for="AccountNumber" value="@account.AccountNumber" id="@account.AccountNumber" class="btn-check" autocomplete="off">
+        <label class="btn btn-outline-primary" for="@account.AccountNumber">
+            @account.AccountType<br>
+            @account.AccountNumber<br>
+            Balance: @Html.DisplayFor(x => account.Balance)
+        </label>
+        <br />
+    }
     <div class="mb-3">
         <label asp-for="Amount" class="control-label"></label>
         <div class="input-group">
@@ -30,7 +29,7 @@
         <span asp-validation-for="Comment" class="text-danger"></span>
     </div>
     <div class="mb-3">
-        <input type="submit" value="Continue" class="btn btn-primary">
+        <button type="submit" class="btn btn-primary">Continue</button>
     </div>
 </form>
 <a asp-action="Index">Go back to Accounts</a>

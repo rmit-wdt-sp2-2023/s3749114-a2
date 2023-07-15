@@ -6,6 +6,7 @@ namespace CustomerApplication.Models;
 public class LoginViewModel
 {
     [Required]
+    [Display(Name = "Login ID")]
     public string LoginID { get; set; }
 
     [Required]
