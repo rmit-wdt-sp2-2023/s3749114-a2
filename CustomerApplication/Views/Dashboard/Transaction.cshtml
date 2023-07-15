@@ -28,6 +28,14 @@
         }
         <span asp-validation-for="AccountNumber" class="text-danger"></span>
     </div>
+    @if (Model.TransactionType == TransactionType.Transfer)
+    {
+        <div class="mb-3">
+            <label asp-for="DestinationNumber" class="control-label"></label>
+            <input asp-for="DestinationNumber" class="form-control">
+            <span asp-validation-for="DestinationNumber" class="text-danger"></span>
+        </div>
+    }
     <div class="mb-3">
         <label asp-for="Amount" class="control-label"></label>
         <div class="input-group">

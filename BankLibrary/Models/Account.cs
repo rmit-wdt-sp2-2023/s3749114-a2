@@ -22,8 +22,7 @@ public class Account
     [InverseProperty("Account")]
     public virtual List<Transaction> Transactions { get; set; }
 
-    // Goes through all transactions
-    // and caculates the balance.
+    // Goes through all transactions and caculates the balance.
 
     public decimal CalculateBalance()
     {
@@ -108,6 +107,39 @@ public class Account
                 Debit(TransactionType.ServiceCharge, TransactionType.Withdraw.ServiceCharge(), null, null));
 
         newTransactions.Add(Debit(TransactionType.Withdraw, amount, comment, null));
+
+        return (newTransactions, null);
+    }
+
+    // Commits a transfer to (incoming) the account.
+    // Returns the transaction associated with the transfer.
+
+    public Transaction TransferTo(decimal amount, string comment) =>
+        Credit(TransactionType.Transfer, amount, comment);
+
+    // Commits a transfer from (outgoing) the account.
+    // If successful, returns the transactions associated with the transfer.
+    // If unsuccessful, an error message will be returned. 
+
+    public (List<Transaction> transactions, string message) TransferFrom(
+        int? destinationNumber, decimal amount, string comment)
+    {
+        if (destinationNumber == null)
+            return (null, "You must enter an Account Number.");
+
+        if (AccountNumber == destinationNumber)
+            return (null, "To and From Account Numbers cannot be the same.");
+
+        if (!MeetsMinBalance(amount, TransactionType.Transfer))
+            return (null, $"You must have a minimum balance of {AccountType.MinBalance():C}.");
+
+        List<Transaction> newTransactions = new();
+
+        if (!IsNextTransactionFree())
+            newTransactions.Add(Debit(
+                TransactionType.ServiceCharge, TransactionType.Transfer.ServiceCharge(), null, null));
+
+        newTransactions.Add(Debit(TransactionType.Transfer, amount, comment, destinationNumber));
 
         return (newTransactions, null);
     }

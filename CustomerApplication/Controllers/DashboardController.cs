@@ -3,7 +3,6 @@ using CustomerApplication.Data;
 using BankLibrary.Models;
 using CustomerApplication.Models;
 using CustomerApplication.Filters;
-//using System.Transactions;
 
 namespace CustomerApplication.Controllers;
 
@@ -45,40 +44,98 @@ public class DashboardController : Controller
         {
             return View(nameof(Transaction), MakeTransactionViewModel(TransactionType.Deposit));
         }
-        Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
-        transactionViewModel.AccountType = account.AccountType;
+        transactionViewModel.AccountType = _context.Accounts.Find(transactionViewModel.AccountNumber).AccountType;
         return RedirectToAction(nameof(Confirm), transactionViewModel);
+    }
+
+    // TRANSFER
+
+    public IActionResult Transfer() => View(nameof(Transaction), MakeTransactionViewModel(TransactionType.Transfer));
+
+    [HttpPost]
+    public IActionResult Transfer(TransactionViewModel viewModel)
+    {
+        if (viewModel.DestinationNumber == null)
+            ModelState.AddModelError(nameof(viewModel.DestinationNumber), "You must enter an Account Number.");
+
+        if (viewModel.DestinationNumber == viewModel.AccountNumber)
+            ModelState.AddModelError(
+                nameof(viewModel.DestinationNumber), "To and From Account Numbers cannot be the same.");
+
+        if (!ModelState.IsValid)
+            return View(nameof(Transaction), MakeTransactionViewModel(TransactionType.Transfer));
+
+        viewModel.AccountType = _context.Accounts.Find(viewModel.AccountNumber).AccountType;
+        return RedirectToAction(nameof(Confirm), viewModel);
     }
 
     // RESULT
 
-    [HttpPost]
-    public IActionResult Result(TransactionViewModel transactionViewModel)
+    public TransactionViewModel CommitDeposit(TransactionViewModel viewModel, Account account)
     {
-        Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
+        viewModel.TransactionResult = true;
+        Transaction transaction = account.Deposit(viewModel.Amount, viewModel.Comment);
+        _context.Transactions.Add(transaction);
+        return viewModel;
+    }
 
-        if (transactionViewModel.TransactionType == TransactionType.Deposit)
+    public TransactionViewModel CommitWithdraw(TransactionViewModel viewModel, Account account)
+    {
+        (List<Transaction> transactions, string message) = account.Withdraw(viewModel.Amount, viewModel.Comment);
+        if (transactions is null)
         {
-            transactionViewModel.TransactionResult = true;
-            Transaction transaction = account.Deposit(transactionViewModel.Amount, transactionViewModel.Comment);
+            ModelState.AddModelError(nameof(viewModel.TransactionResult), message);
+            return viewModel;
+        }
+        viewModel.TransactionResult = true;
+        foreach (Transaction transaction in transactions)
             _context.Transactions.Add(transaction);
-        }
-        else if (transactionViewModel.TransactionType == TransactionType.Withdraw)
-        {
-            (List<Transaction> transactions, string message) =
-                account.Withdraw(transactionViewModel.Amount, transactionViewModel.Comment);
+        return viewModel;
+    }
 
-            if (transactions is null)
-                ModelState.AddModelError(nameof(transactionViewModel.TransactionResult), message);
-            else
-            {
-                transactionViewModel.TransactionResult = true;
-                foreach (Transaction transaction in transactions)
-                    _context.Transactions.Add(transaction);
-            }
+    public TransactionViewModel CommitTransfer(TransactionViewModel viewModel, Account account)
+    {
+        Account destinationAccount = _context.Accounts.Find(viewModel.DestinationNumber);
+        if (destinationAccount is null)
+        {
+            ModelState.AddModelError(nameof(viewModel.TransactionResult), "Destination Number doesn't exist.");
+            return viewModel;
         }
+        (List<Transaction> transactionsFrom, string message) = account.TransferFrom(
+            viewModel.DestinationNumber, viewModel.Amount, viewModel.Comment);
+
+        if (transactionsFrom is null)
+        {
+            ModelState.AddModelError(nameof(viewModel.TransactionResult), message);
+            return viewModel;
+        }
+        viewModel.TransactionResult = true;
+
+        foreach (Transaction transaction in transactionsFrom)
+            _context.Transactions.Add(transaction);
+
+        Transaction transactionsTo = destinationAccount.TransferTo(viewModel.Amount, viewModel.Comment);
+        _context.Transactions.Add(transactionsTo);
+
+        return viewModel;
+    }
+
+    [HttpPost]
+    public IActionResult Result(TransactionViewModel viewModel)
+    {
+        Account account = _context.Accounts.Find(viewModel.AccountNumber);
+
+        if (viewModel.TransactionType == TransactionType.Deposit)
+            viewModel = CommitDeposit(viewModel, account);
+
+        else if (viewModel.TransactionType == TransactionType.Withdraw)
+            viewModel = CommitWithdraw(viewModel, account);
+
+        else if (viewModel.TransactionType == TransactionType.Transfer)
+            viewModel = CommitTransfer(viewModel, account);
+
         _context.SaveChanges();
-        return View(transactionViewModel);
+        return View(viewModel);
     }
 
     // CONFIRM
