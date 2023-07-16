@@ -18,14 +18,14 @@ public class LoginController : Controller
     public IActionResult Login() => View();
 
     [HttpPost]
-    public IActionResult Login(LoginViewModel loginViewModel)
+    public IActionResult Login(LoginViewModel viewModel)
     {
         if (ModelState.IsValid)
         {
-            Login login = _context.Logins.Find(loginViewModel.LoginID);
+            Login login = _context.Logins.Find(viewModel.LoginID);
             if (login is not null)
             {
-                if (s_simpleHash.Verify(loginViewModel.Password, login.PasswordHash))
+                if (s_simpleHash.Verify(viewModel.Password, login.PasswordHash))
                 {
                     HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
                     HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
