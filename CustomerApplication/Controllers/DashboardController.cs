@@ -161,7 +161,43 @@ public class DashboardController : Controller
         return View(nameof(Statements), viewModel);
     }
 
+    // PROFILE
+
+    public IActionResult Profile()
+    {
+        return View(MakeCustomerViewModel());
+    }
+
+    public IActionResult EditDetails()
+    {
+        return View(MakeCustomerViewModel());
+    }
+
+    [HttpPost]
+    public IActionResult SubmitEditDetails(Customer customer)
+    {
+        if (!ModelState.IsValid)
+        {
+            Console.WriteLine("Not valid");
+            return View(nameof(EditDetails), customer);
+
+        }
+            
+
+        _context.Customers.Update(customer);
+        _context.SaveChanges();
+
+        return RedirectToAction(nameof(Profile), MakeCustomerViewModel());
+    }
+
+
+
     // VIEW MODEL CREATION
+
+    public Customer MakeCustomerViewModel()
+    {
+        return _context.Customers.FirstOrDefault(x => x.CustomerID == CustomerID);
+    }
 
     public StatementsViewModel MakeStatementsViewModel()
     {
