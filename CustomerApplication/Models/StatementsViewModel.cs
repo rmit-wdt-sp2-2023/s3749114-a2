@@ -16,8 +16,11 @@ public class StatementsViewModel
 
     public int PageNumber { get; set; }
 
-    public int? TotalPages { get; set; }
+    public int TotalPages { get; set; }
 
-    public int? TransactionPages { get; set; }
+    public int TransactionPages { get; set; }
+
+    public int PageSize { get; } = 4;
+
+    public int FirstPage { get; } = 1;
 }
-

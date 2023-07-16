@@ -1,22 +1,20 @@
 ﻿using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
+using System.Xml.Linq;
 
 namespace BankLibrary.Models;
 
 public enum TransactionType
 {
-    [Description("Deposit")]
     Deposit = 1,
 
-    [Description("Withdraw")]
     Withdraw = 2,
 
-    [Description("Transfer")]
     Transfer = 3,
 
-    [Description("Service charge")]
+    [Display(Name = "Service Charge")]
     ServiceCharge = 4,
 
-    [Description("BillPay")]
     BillPay = 5
 }
 

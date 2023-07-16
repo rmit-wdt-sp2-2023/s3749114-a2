@@ -6,16 +6,20 @@ namespace BankLibrary.Models;
 
 public class Transaction
 {
+    [Display(Name = "ID")]
     public int TransactionID { get; init; }
 
     [Required]
+    [Display(Name = "Transaction Type")]
     public required TransactionType TransactionType { get; init; }
 
     [ForeignKey("Account")]
+    [Display(Name = "Account Number")]
     public required int AccountNumber { get; init; }
     public virtual Account Account { get; init; }
 
     [ForeignKey("DestinationAccount")]
+    [Display(Name = "Destination Number")]
     public int? DestinationNumber { get; init; } = null;
     public virtual Account DestinationAccount { get; set; }
 
@@ -28,6 +32,9 @@ public class Transaction
     public string Comment { get; init; } = null;
 
     [Required]
-    [DataType(DataType.Date)]
+    [Display(Name = "Time")]
     public DateTime TransactionTimeUtc { get; init; } = DateTime.UtcNow;
+
+    public string LocalTimeString() =>
+        TimeZoneInfo.ConvertTimeFromUtc(TransactionTimeUtc, TimeZoneInfo.Local).ToString("dd/MM/yyyy hh:mm tt").ToUpper();
 }

@@ -4,7 +4,6 @@ using BankLibrary.Models;
 using CustomerApplication.Models;
 using CustomerApplication.Filters;
 using BankLibrary.Utilities.Paging;
-using BankLibrary.Utilities.Miscellaneous;
 
 namespace CustomerApplication.Controllers;
 
@@ -147,32 +146,20 @@ public class DashboardController : Controller
     public IActionResult Statements() => View(MakeStatementsViewModel());
 
     [HttpPost]
-    public IActionResult MakeStatement(int id, StatementsViewModel viewModel)
+    public IActionResult TransactionHistory(int id, StatementsViewModel viewModel)
     {
         if (!ModelState.IsValid)
             return View(viewModel);
 
         Account account = _context.Accounts.Find(viewModel.AccountNumber);
-
         List<Transaction> transactions = account.Transactions.OrderByDescending(x => x.TransactionTimeUtc).ToList();
-
- 
         viewModel.PageNumber = id;
-
-        viewModel.TransactionPages ??= Paging.CalculateTotalPages(transactions.Count, 4);
-
-        viewModel.TotalPages ??= viewModel.TransactionPages == 0 ? 1 : viewModel.TransactionPages;
-
-        viewModel.Transactions = Paging.GetPage(transactions, viewModel.PageNumber, 4);
-
+        viewModel.TransactionPages = Paging.CalculateTotalPages(transactions.Count, viewModel.PageSize);
+        viewModel.TotalPages = viewModel.TransactionPages == 0 ? 1 : viewModel.TransactionPages;
+        viewModel.Transactions = Paging.GetPage(transactions, viewModel.PageNumber, viewModel.PageSize);
         viewModel.AccountsViewModel = MakeAccountsViewModel();
-
-        Console.WriteLine("PAGE NUM IS " + viewModel.PageNumber);
-        Console.WriteLine("ID NUM IS " + viewModel.PageNumber);
-
         return View(nameof(Statements), viewModel);
     }
-
 
     // VIEW MODEL CREATION
 
