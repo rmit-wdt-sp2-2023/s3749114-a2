@@ -3,6 +3,8 @@ using CustomerApplication.Data;
 using BankLibrary.Models;
 using CustomerApplication.Models;
 using CustomerApplication.Filters;
+using BankLibrary.Utilities.Paging;
+using BankLibrary.Utilities.Miscellaneous;
 
 namespace CustomerApplication.Controllers;
 
@@ -22,15 +24,15 @@ public class DashboardController : Controller
     public IActionResult Deposit() => View(nameof(Transaction), MakeTransactionViewModel(TransactionType.Deposit));
 
     [HttpPost]
-    public IActionResult Deposit(TransactionViewModel transactionViewModel)
+    public IActionResult Deposit(TransactionViewModel viewModel)
     {
         if (!ModelState.IsValid)
         {
             return View(nameof(Transaction), MakeTransactionViewModel(TransactionType.Deposit));
         }
-        Account account = _context.Accounts.Find(transactionViewModel.AccountNumber);
-        transactionViewModel.AccountType = account.AccountType;
-        return RedirectToAction(nameof(Confirm), transactionViewModel);
+        Account account = _context.Accounts.Find(viewModel.AccountNumber);
+        viewModel.AccountType = account.AccountType;
+        return RedirectToAction(nameof(Confirm), viewModel);
     }
 
     // WITHDRAW
@@ -38,14 +40,12 @@ public class DashboardController : Controller
     public IActionResult Withdraw() => View(nameof(Transaction), MakeTransactionViewModel(TransactionType.Withdraw));
 
     [HttpPost]
-    public IActionResult Withdraw(TransactionViewModel transactionViewModel)
+    public IActionResult Withdraw(TransactionViewModel viewModel)
     {
         if (!ModelState.IsValid)
-        {
             return View(nameof(Transaction), MakeTransactionViewModel(TransactionType.Deposit));
-        }
-        transactionViewModel.AccountType = _context.Accounts.Find(transactionViewModel.AccountNumber).AccountType;
-        return RedirectToAction(nameof(Confirm), transactionViewModel);
+        viewModel.AccountType = _context.Accounts.Find(viewModel.AccountNumber).AccountType;
+        return RedirectToAction(nameof(Confirm), viewModel);
     }
 
     // TRANSFER
@@ -140,9 +140,49 @@ public class DashboardController : Controller
 
     // CONFIRM
 
-    public IActionResult Confirm(TransactionViewModel transactionViewModel) => View(transactionViewModel);
+    public IActionResult Confirm(TransactionViewModel viewModel) => View(viewModel);
+
+    // STATEMENTS
+
+    public IActionResult Statements() => View(MakeStatementsViewModel());
+
+    [HttpPost]
+    public IActionResult MakeStatement(int id, StatementsViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+            return View(viewModel);
+
+        Account account = _context.Accounts.Find(viewModel.AccountNumber);
+
+        List<Transaction> transactions = account.Transactions.OrderByDescending(x => x.TransactionTimeUtc).ToList();
+
+ 
+        viewModel.PageNumber = id;
+
+        viewModel.TransactionPages ??= Paging.CalculateTotalPages(transactions.Count, 4);
+
+        viewModel.TotalPages ??= viewModel.TransactionPages == 0 ? 1 : viewModel.TransactionPages;
+
+        viewModel.Transactions = Paging.GetPage(transactions, viewModel.PageNumber, 4);
+
+        viewModel.AccountsViewModel = MakeAccountsViewModel();
+
+        Console.WriteLine("PAGE NUM IS " + viewModel.PageNumber);
+        Console.WriteLine("ID NUM IS " + viewModel.PageNumber);
+
+        return View(nameof(Statements), viewModel);
+    }
+
 
     // VIEW MODEL CREATION
+
+    public StatementsViewModel MakeStatementsViewModel()
+    {
+        return new StatementsViewModel
+        {
+            AccountsViewModel = MakeAccountsViewModel()
+        };
+    }
 
     public TransactionViewModel MakeTransactionViewModel(TransactionType transactionType)
     {
@@ -157,10 +197,10 @@ public class DashboardController : Controller
     {
         List<Account> accounts =
             _context.Accounts.Where(x => x.CustomerID == CustomerID).OrderBy(x => x.AccountNumber).ToList();
-        List<AccountViewModel> accountsViewModel = new();
+        List<AccountViewModel> viewModel = new();
         foreach (Account account in accounts)
         {
-            accountsViewModel.Add(new AccountViewModel
+            viewModel.Add(new AccountViewModel
             {
                 AccountNumber = account.AccountNumber,
                 AccountType = account.AccountType,
@@ -168,6 +208,6 @@ public class DashboardController : Controller
                 AvailableBalance = account.AvailableBalance()
             }); 
         }
-        return accountsViewModel;
+        return viewModel;
     }
 }
