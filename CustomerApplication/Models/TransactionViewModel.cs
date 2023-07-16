@@ -18,7 +18,7 @@ public class TransactionViewModel
     public List<AccountViewModel> AccountsViewModel { get; set; }
 
     [Display(Name = "Account Number")]
-    [Range(1000, 9999, ErrorMessage = "You must enter a valid Account Number.")]
+    [Range(1000, 9999, ErrorMessage = "You must enter a valid 4 digit Account Number.")]
     public int? DestinationNumber { get; set; } = null;
 
     [Required]

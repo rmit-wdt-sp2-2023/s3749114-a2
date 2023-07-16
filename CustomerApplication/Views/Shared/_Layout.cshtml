@@ -41,7 +41,7 @@
                     </ul>
                     @if (isLoggedIn)
                     {
-                        <span class="navbar-text">@Context.Session.GetString(nameof(Customer.Name))</span>
+                        <a class="navbar-text" asp-controller="Dashboard" asp-action="Profile">@Context.Session.GetString(nameof(Customer.Name))</a>
                         <a class="btn btn-primary" asp-controller="Login" asp-action="Logout">Logout</a>
                     }
                     else

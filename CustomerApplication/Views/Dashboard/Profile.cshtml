@@ -1,0 +1,30 @@
+﻿@model CustomerApplication.Models.CustomerViewModel
+@{ ViewData["Title"] = "Profile"; }
+
+<h1>Profile</h1>
+<h2>Details</h2>
+<dl>
+    <dt>@Html.DisplayNameFor(x => Model.Name)</dt>
+    <dd>@Model.Name</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.TFN)</dt>
+    <dd>@Model.TFN</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.Address)</dt>
+    <dd>@Model.Address</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.City)</dt>
+    <dd>@Model.City</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.State)</dt>
+    <dd>@Model.State</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.PostCode)</dt>
+    <dd>@Model.PostCode</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.Mobile)</dt>
+    <dd>@Model.Mobile</dd>
+</dl>
+<a asp-controller="Dashboard" asp-action="EditDetails">Edit Details</a>
+<h2>Password</h2>
+<a asp-controller="Dashboard" asp-action="ChangePassword">Change Password</a>

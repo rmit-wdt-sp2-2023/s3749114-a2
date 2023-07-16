@@ -28,11 +28,11 @@ public class Customer
     public string State { get; set; }
 
     [StringLength(4, MinimumLength = 4)]
+    [RegularExpression(@"^\d{4}$")]
     public string PostCode { get; set; }
 
     [StringLength(12, MinimumLength = 12)]
     [RegularExpression(@"^04\d{2} \d{3} \d{3}$")]
     public string Mobile { get; set; }
-
     public virtual List<Account> Accounts { get; set; }
 }
