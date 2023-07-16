@@ -4,6 +4,7 @@ using BankLibrary.Models;
 using CustomerApplication.Models;
 using CustomerApplication.Filters;
 using BankLibrary.Utilities.Paging;
+using SimpleHashing.Net;
 
 namespace CustomerApplication.Controllers;
 
@@ -11,6 +12,8 @@ namespace CustomerApplication.Controllers;
 public class DashboardController : Controller
 {
     private readonly BankContext _context;
+
+    private static readonly ISimpleHash s_simpleHash = new SimpleHash();
 
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
@@ -163,40 +166,87 @@ public class DashboardController : Controller
 
     // PROFILE
 
-    public IActionResult Profile()
-    {
-        return View(MakeCustomerViewModel());
-    }
+    public IActionResult Profile() => View(MakeCustomerViewModel());
 
-    public IActionResult EditDetails()
-    {
-        return View(MakeCustomerViewModel());
-    }
+    public IActionResult EditDetails() => View(MakeCustomerViewModel());
 
     [HttpPost]
-    public IActionResult SubmitEditDetails(Customer customer)
+    public IActionResult SubmitEditDetails(CustomerViewModel viewModel)
     {
         if (!ModelState.IsValid)
-        {
-            Console.WriteLine("Not valid");
-            return View(nameof(EditDetails), customer);
+            return View(nameof(EditDetails), viewModel);
 
-        }
-            
+        Customer customer = _context.Customers.FirstOrDefault(x => x.CustomerID == CustomerID);
+
+        customer.Name = viewModel.Name;
+        customer.TFN = viewModel.TFN;
+        customer.Address = viewModel.Address;
+        customer.City = viewModel.City;
+        customer.State = viewModel.State;
+        customer.PostCode = viewModel.PostCode;
+        customer.Mobile = viewModel.Mobile;
 
         _context.Customers.Update(customer);
         _context.SaveChanges();
+        viewModel.DetailsUpdated = true;
 
-        return RedirectToAction(nameof(Profile), MakeCustomerViewModel());
+        return View(nameof(EditDetails), viewModel); 
     }
 
+    // PASSWORD
 
+    public IActionResult ChangePassword() => View(new ChangePasswordViewModel());
+
+    [HttpPost]
+    public IActionResult SubmitChangePassword(ChangePasswordViewModel viewModel)
+    {
+        if (!ModelState.IsValid)
+            return View(nameof(ChangePassword), viewModel);
+
+        if (viewModel.NewPassword != viewModel.ConfirmPassword)
+        {
+            ModelState.AddModelError(nameof(viewModel.ConfirmPassword), "Passwords don't match.");
+            return View(nameof(ChangePassword), viewModel);
+        }
+
+        Login login = _context.Logins.FirstOrDefault(x => x.CustomerID == CustomerID);
+
+        if (login is null)
+        {
+            ModelState.AddModelError("PasswordFailed", "Password change failed, couldn't find user.");
+            return View(nameof(ChangePassword), viewModel);
+        }
+
+        if (!s_simpleHash.Verify(viewModel.OldPassword, login.PasswordHash))
+        {
+            ModelState.AddModelError(nameof(viewModel.OldPassword), "Incorrect password.");
+            return View(nameof(ChangePassword), viewModel);
+        }
+
+        login.PasswordHash = s_simpleHash.Compute(viewModel.NewPassword);
+        _context.Logins.Update(login);
+        _context.SaveChanges();
+        viewModel.PasswordUpdated = true;
+
+        return View(nameof(ChangePassword), viewModel);
+    }
 
     // VIEW MODEL CREATION
 
-    public Customer MakeCustomerViewModel()
+    public CustomerViewModel MakeCustomerViewModel()
     {
-        return _context.Customers.FirstOrDefault(x => x.CustomerID == CustomerID);
+        Customer customer = _context.Customers.FirstOrDefault(x => x.CustomerID == CustomerID);
+
+        return new CustomerViewModel
+        {
+            Name = customer.Name,
+            TFN = customer.TFN,
+            Address = customer.Address,
+            City = customer.City,
+            State = customer.State,
+            PostCode= customer.PostCode,
+            Mobile = customer.Mobile
+        };
     }
 
     public StatementsViewModel MakeStatementsViewModel()

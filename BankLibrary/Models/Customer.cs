@@ -10,29 +10,29 @@ public class Customer
     public int CustomerID { get; init; }
 
     [Required]
-    [StringLength(50, ErrorMessage = "Cannot be more than 50 characters.")]
+    [StringLength(50)]
     public string Name { get; set; }
 
-    [StringLength(11, MinimumLength = 11, ErrorMessage = "Must be exactly 11 characters.")]
-    [RegularExpression(@"^\d{3} \d{3} \d{3}$", ErrorMessage = "Must contain digits in the specified format.")]
+    [StringLength(11, MinimumLength = 11)]
+    [RegularExpression(@"^\d{3} \d{3} \d{3}$")]
     public string TFN { get; set; }
 
-    [StringLength(50, ErrorMessage = "Cannot be more than 50 characters.")]
+    [StringLength(50)]
     public string Address { get; set; }
 
-    [StringLength(40, ErrorMessage = "Cannot be more than 40 characters.")]
+    [StringLength(40)]
     public string City { get; set; }
 
-    [StringLength(3, MinimumLength = 2, ErrorMessage = "Must be exactly 2 or 3 characters.")]
-    [RegularExpression(@"^(NT|QLD|NSW|ACT|VIC|TAS|SA|WA)$", ErrorMessage = "Must be an Australian state.")]
+    [StringLength(3, MinimumLength = 2)]
+    [RegularExpression(@"^(NT|QLD|NSW|ACT|VIC|TAS|SA|WA)$")]
     public string State { get; set; }
 
-    [StringLength(4, MinimumLength = 4, ErrorMessage = "Must be exactly 4 digits.")]
-    [RegularExpression(@"^\d{4}$", ErrorMessage = "Must contain digits only.")]
+    [StringLength(4, MinimumLength = 4)]
+    [RegularExpression(@"^\d{4}$")]
     public string PostCode { get; set; }
 
-    [StringLength(12, MinimumLength = 12, ErrorMessage = "Must be exactly 12 characters.")]
-    [RegularExpression(@"^04\d{2} \d{3} \d{3}$", ErrorMessage = "Must contain digits in the specified format.")]
+    [StringLength(12, MinimumLength = 12)]
+    [RegularExpression(@"^04\d{2} \d{3} \d{3}$")]
     public string Mobile { get; set; }
     public virtual List<Account> Accounts { get; set; }
 }

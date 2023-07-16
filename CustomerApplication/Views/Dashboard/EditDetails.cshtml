@@ -1,4 +1,4 @@
-﻿@model BankLibrary.Models.Customer
+﻿@model CustomerApplication.Models.CustomerViewModel
 @{ ViewData["Title"] = "Edit Details"; }
 
 <h1>Edit Details</h1>
@@ -40,6 +40,10 @@
         <div class="form-text">Must be of the format: 04XX XXX XXX</div>
         <span asp-validation-for="Mobile" class="text-danger"></span>
     </div>
-    <input type="hidden" asp-for="CustomerID">
     <button type="submit" class="btn btn-primary">Update</button>
 </form>
+@if (Model.DetailsUpdated)
+{
+    <span class="text-success">Profile updated successfully.</span>
+}
+<a asp-controller="Dashboard" asp-action="Profile">Back to Profile</a>
