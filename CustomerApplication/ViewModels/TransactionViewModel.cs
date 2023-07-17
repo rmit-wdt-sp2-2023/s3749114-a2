@@ -1,24 +1,24 @@
-﻿using BankLibrary.Models;
+﻿using CustomerApplication.Models;
 using System.ComponentModel.DataAnnotations;
-using BankLibrary.Validation;
+using CustomerApplication.Validation;
 
-namespace CustomerApplication.Models;
+namespace CustomerApplication.ViewModels;
 
 public class TransactionViewModel
 {
     [Required]
-    [Display(Name = "Account Number")]
-    [Range(1000, 9999, ErrorMessage = "You must select an Account.")]
+    [Display(Name = "Account number")]
+    [Range(1000, 9999, ErrorMessage = "You must select an account.")]
     public int AccountNumber { get; set; }
 
     [Required]
-    [Display(Name = "Account Type")]
+    [Display(Name = "Account type")]
     public AccountType AccountType { get; set; }
 
     public List<AccountViewModel> AccountsViewModel { get; set; }
 
-    [Display(Name = "Account Number")]
-    [Range(1000, 9999, ErrorMessage = "You must enter a valid 4 digit Account Number.")]
+    [Display(Name = "Account number")]
+    [Range(1000, 9999, ErrorMessage = "You must enter a valid 4 digit account number.")]
     public int? DestinationNumber { get; set; } = null;
 
     [Required]
@@ -30,8 +30,8 @@ public class TransactionViewModel
     public string Comment { get; set; } = null;
 
     [Required]
-    [Display(Name = "Transaction Type")]
+    [Display(Name = "Transaction type")]
     public required TransactionType TransactionType { get; init; }
 
-    public bool TransactionResult { get; set; } 
+    public bool TransactionResult { get; set; } = false;
 }

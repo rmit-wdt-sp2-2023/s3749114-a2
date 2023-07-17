@@ -1,8 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using BankLibrary.Validation;
 
-namespace BankLibrary.Models;
+namespace CustomerApplication.Models;
 
 public class Transaction
 {

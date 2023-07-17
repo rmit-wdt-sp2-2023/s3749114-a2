@@ -1,4 +1,4 @@
-namespace BankLibrary.Dtos;
+namespace CustomerApplication.Dtos;
 
 // DTO class to represent account data in the JSON. 
 

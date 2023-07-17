@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BankLibrary.Models;
+namespace CustomerApplication.Models;
 
 public class Payee
 {

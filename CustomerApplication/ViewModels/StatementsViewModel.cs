@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using BankLibrary.Models;
+using CustomerApplication.Models;
 
-namespace CustomerApplication.Models;
+namespace CustomerApplication.ViewModels;
 
 public class StatementsViewModel
 {

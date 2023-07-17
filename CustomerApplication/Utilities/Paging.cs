@@ -1,4 +1,4 @@
-﻿namespace BankLibrary.Utilities.Paging;
+﻿namespace CustomerApplication.Utilities.Paging;
 
 public static class Paging
 {

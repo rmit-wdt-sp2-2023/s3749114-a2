@@ -1,4 +1,4 @@
-namespace BankLibrary.Dtos;
+namespace CustomerApplication.Dtos;
 
 // DTO class to represent login data in the JSON.
 

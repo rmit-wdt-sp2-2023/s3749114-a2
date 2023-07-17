@@ -1,18 +1,16 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace BankLibrary.Models;
+namespace CustomerApplication.Models;
 
 public class Account
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    [Display(Name = "Account Number")]
     [Range(1000, 9999)]
     public int AccountNumber { get; set; }
 
     [Required]
-    [Display(Name = "Account Type")]
     public AccountType AccountType { get; set; }
 
     [ForeignKey("Customer")]
@@ -24,7 +22,7 @@ public class Account
 
     // Goes through all transactions and caculates the balance.
 
-    public decimal CalculateBalance()
+    public decimal Balance()
     {
         decimal balance = 0;
         foreach (Transaction transaction in Transactions)
@@ -48,7 +46,7 @@ public class Account
 
     public decimal AvailableBalance()
     {
-        decimal balance = CalculateBalance();
+        decimal balance = Balance();
         decimal minBalance = AccountType.MinBalance();
         return balance >= minBalance ? balance - minBalance : 0;
     }
@@ -61,7 +59,7 @@ public class Account
         decimal total = amount;
         if (!IsNextTransactionFree())
             total += transactionType.ServiceCharge();
-        return CalculateBalance() - total >= AccountType.MinBalance();
+        return Balance() - total >= AccountType.MinBalance();
     }
 
     // Two free transactions are allowed per account.
@@ -85,11 +83,9 @@ public class Account
         return true;
     }
 
-    // Commits a deposit to the account.
-    // Returns the transaction associated with the deposit.
+    // Commits a deposit to the account. Returns the transaction associated with the deposit.
 
-    public Transaction Deposit(decimal amount, string comment) =>
-        Credit(TransactionType.Deposit, amount, comment);
+    public Transaction Deposit(decimal amount, string comment) => Credit(TransactionType.Deposit, amount, comment);
 
     // Commits a withdraw to the account.
     // Returns the transactions associated with the withdraw.
@@ -125,10 +121,10 @@ public class Account
         int? destinationNumber, decimal amount, string comment)
     {
         if (destinationNumber == null)
-            return (null, "You must enter an Account Number.");
+            return (null, "You must enter an account number.");
 
         if (AccountNumber == destinationNumber)
-            return (null, "To and From Account Numbers cannot be the same.");
+            return (null, "Origin and destination account numbers cannot be the same.");
 
         if (!MeetsMinBalance(amount, TransactionType.Transfer))
             return (null, $"You must have a minimum balance of {AccountType.MinBalance():C}.");
@@ -144,8 +140,7 @@ public class Account
         return (newTransactions, null);
     }
 
-    // Creates a credit transaction and adds it to the
-    // balance. The completed transaction is returned.
+    // Creates a credit transaction and the completed transaction is returned.
 
     private Transaction Credit(TransactionType transactionType, decimal amount, string comment)
     {
@@ -160,8 +155,7 @@ public class Account
         return transaction;
     }
 
-    // Creates a debit transaction and subtracts it from
-    // the balance. The completed transaction is returned. 
+    // Creates a debit transaction and the completed transaction is returned. 
 
     private Transaction Debit(TransactionType transactionType, decimal amount, string comment, int? destinationNumber)
     {

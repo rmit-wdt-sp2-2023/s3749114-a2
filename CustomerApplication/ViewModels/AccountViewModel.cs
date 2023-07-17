@@ -1,25 +1,25 @@
-﻿using BankLibrary.Models;
+﻿using CustomerApplication.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace CustomerApplication.Models;
+namespace CustomerApplication.ViewModels;
 
 public class AccountViewModel
 {
     [Required]
     [Range(1000, 9999)]
-    [Display(Name = "Account Number")]
+    [Display(Name = "Account number")]
     public int AccountNumber { get; set; }
 
     [Required]
-    [Display(Name = "Account Type")]
+    [Display(Name = "Account type")]
     public AccountType AccountType { get; set; }
 
     [Required]
     [DataType(DataType.Currency)]
-    public required decimal Balance { get; init; }
+    public decimal Balance { get; init; }
 
     [Required]
-    [Display(Name = "Available Balance")]
+    [Display(Name = "Available balance")]
     [DataType(DataType.Currency)]
-    public required decimal AvailableBalance { get; init; }
+    public decimal AvailableBalance { get; init; }
 }

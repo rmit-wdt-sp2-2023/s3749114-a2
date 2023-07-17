@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace BankLibrary.Validation;
+namespace CustomerApplication.Validation;
 
 public class ValidationMethods
 {
@@ -11,8 +11,7 @@ public class ValidationMethods
             return ValidationResult.Success;
         else
             return new ValidationResult(
-                $"{context.MemberName} cannot have more than 2 decimal places.",
-                new List<string>() { context.MemberName });
+                "Cannot have more than 2 decimal places.", new List<string>() { context.MemberName });
     }
 
     public static ValidationResult GreaterThanZero(decimal value, ValidationContext context)
@@ -20,8 +19,6 @@ public class ValidationMethods
         if (value > 0)
             return ValidationResult.Success;
         else
-            return new ValidationResult(
-                $"{context.MemberName} must be positive.",
-                new List<string>() { context.MemberName });
+            return new ValidationResult("Must be a positive number.", new List<string>() { context.MemberName });
     }
 }

@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
-using BankLibrary.Models;
-using BankLibrary.Dtos;
-using BankLibrary.Mappers;
+using CustomerApplication.Models;
+using CustomerApplication.Dtos;
+using CustomerApplication.Mappers;
 
 namespace CustomerApplication.Data;
 

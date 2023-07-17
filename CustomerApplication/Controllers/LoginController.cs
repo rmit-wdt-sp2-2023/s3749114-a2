@@ -1,43 +1,36 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CustomerApplication.Data;
-using BankLibrary.Models;
+using CustomerApplication.ViewModels;
 using CustomerApplication.Models;
-using SimpleHashing.Net;
+using CustomerApplication.Services;
 
 namespace CustomerApplication.Controllers;
 
-[Route("Login")]
 public class LoginController : Controller
 {
-    private static readonly ISimpleHash s_simpleHash = new SimpleHash();
+    private readonly BankService _bankService;
 
-    private readonly BankContext _context;
+    public LoginController(BankService bankService) => _bankService = bankService;
 
-    public LoginController(BankContext context) => _context = context;
-
-    public IActionResult Login() => View();
+    public IActionResult Login() => View(new LoginViewModel());
 
     [HttpPost]
-    public IActionResult Login(LoginViewModel viewModel)
+    public IActionResult SubmitLogin(LoginViewModel viewModel)
     {
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+            return View(nameof(Login), viewModel);
+
+        Login login = _bankService.Login(viewModel.LoginID, viewModel.Password);
+
+        if (login is null)
         {
-            Login login = _context.Logins.Find(viewModel.LoginID);
-            if (login is not null)
-            {
-                if (s_simpleHash.Verify(viewModel.Password, login.PasswordHash))
-                {
-                    HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
-                    HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
-                    return RedirectToAction("Index", "Dashboard");
-                }
-            }
+            ModelState.AddModelError("LoginFailed", "Login failed, please try again.");
+            return View(nameof(Login), viewModel);
         }
-        ModelState.AddModelError("LoginFailed", "Login failed, please try again.");
-        return View(new LoginViewModel());
+        HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
+        HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
+        return RedirectToAction("Index", "Dashboard");
     }
 
-    [Route("Logout")]
     public IActionResult Logout()
     {
         HttpContext.Session.Clear();

@@ -1,11 +1,8 @@
-﻿using System.ComponentModel;
-
-namespace BankLibrary.Models;
+﻿namespace CustomerApplication.Models;
 
 public enum AccountType
 {
     Checking = 1,
-
     Saving = 2
 }
 

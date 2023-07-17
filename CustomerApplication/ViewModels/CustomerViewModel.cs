@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CustomerApplication.Models;
+namespace CustomerApplication.ViewModels;
 
 public class CustomerViewModel
 {

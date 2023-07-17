@@ -1,4 +1,4 @@
-﻿namespace BankLibrary.Models;
+﻿namespace CustomerApplication.Models;
 
 public enum Period
 {

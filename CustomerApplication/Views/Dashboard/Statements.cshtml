@@ -1,10 +1,10 @@
-﻿@model CustomerApplication.Models.StatementsViewModel
+﻿@model StatementsViewModel
 @{
     ViewData["Title"] = "Statements";
 }
 
 <h1>Statements</h1>
-<form asp-action="TransactionHistory" asp-route-id="1">
+<form asp-action="Statements" asp-route-id="1">
     <div class="mb-3">
         @foreach (var account in Model.AccountsViewModel)
         {

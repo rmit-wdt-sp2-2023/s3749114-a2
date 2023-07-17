@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.9" />
     <PackageReference Include="SimpleHashing.Net" Version="2.1.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Login\" />
@@ -26,11 +27,9 @@
    </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\BankLibrary\BankLibrary.csproj">
-      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
-    </ProjectReference>
+    <Folder Include="Views\Login\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Views\Login\" />
+    <Content Remove="Views\Dashboard\BillyPay.cshtml" />
   </ItemGroup>
 </Project>

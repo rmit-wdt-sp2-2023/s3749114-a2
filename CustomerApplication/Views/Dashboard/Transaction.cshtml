@@ -1,8 +1,11 @@
-﻿@model CustomerApplication.Models.TransactionViewModel
-@{ ViewData["Title"] = Model.TransactionType; }
+﻿@model TransactionViewModel
+@{
+    ViewData["Title"] = Model.TransactionType;
+    string formAction = $"Submit{Model.TransactionType}";
+}
 
 <h1>@Model.TransactionType</h1>
-<form asp-action="@Model.TransactionType">
+<form asp-action=@formAction>
     <input type="hidden" asp-for="TransactionType">
     <div class="mb-3">
         @foreach (var account in Model.AccountsViewModel)

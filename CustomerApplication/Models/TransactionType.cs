@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.Xml.Linq;
 
-namespace BankLibrary.Models;
+namespace CustomerApplication.Models;
 
 public enum TransactionType
 {

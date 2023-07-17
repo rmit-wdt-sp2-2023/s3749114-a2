@@ -1,4 +1,4 @@
-﻿@model CustomerApplication.Models.TransactionViewModel
+﻿@model TransactionViewModel
 @{ ViewData["Title"] = "Result"; }
 
 @if (@Model.TransactionResult)
@@ -26,6 +26,7 @@
 else
 {
     <h1>@Model.TransactionType failed</h1>
-    <span asp-validation-for="TransactionResult" class="text-danger"></span>
+    @Html.ValidationMessage("TransactionResult", new { @class = "text-danger" })
+    @*<span asp-validation-for="TransactionResult" class="text-danger"></span>*@
 }
 <a asp-action="Index">Go back to Accounts</a>
