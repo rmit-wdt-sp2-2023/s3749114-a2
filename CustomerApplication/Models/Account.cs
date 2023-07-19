@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CustomerApplication.Validation;
 
 namespace CustomerApplication.Models;
 
@@ -8,41 +9,36 @@ public class Account
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Range(1000, 9999)]
-    public int AccountNumber { get; set; }
+    public required int AccountNumber { get; init; }
 
     [Required]
-    public AccountType AccountType { get; set; }
+    public required AccountType AccountType { get; init; }
 
     [ForeignKey("Customer")]
-    public int CustomerID { get; set; }
-    public virtual Customer Customer { get; set; }
+    [Range(1000, 9999)]
+    public required int CustomerID { get; init; }
+    public virtual Customer Customer { get; init; }
 
     [InverseProperty("Account")]
-    public virtual List<Transaction> Transactions { get; set; }
+    public virtual List<Transaction> Transactions { get; init; } = new();
 
-    // Goes through all transactions and caculates the balance.
+    // Iterates transactions and caculates the total balance of the account.
 
     public decimal Balance()
     {
         decimal balance = 0;
-        foreach (Transaction transaction in Transactions)
+        foreach (Transaction t in Transactions)
         {
-            balance = transaction.TransactionType switch
-            {
-                TransactionType.Deposit => balance + transaction.Amount,
-                TransactionType.Withdraw => balance - transaction.Amount,
-                TransactionType.ServiceCharge => balance - transaction.Amount,
-                TransactionType.Transfer when transaction.DestinationNumber is null => balance + transaction.Amount,
-                TransactionType.Transfer when transaction.DestinationNumber is not null => balance - transaction.Amount,
-                TransactionType.BillPay => balance - transaction.Amount,
-                _ => balance
-            };
+            if (t.TransactionType == TransactionType.Deposit ||
+                t.TransactionType == TransactionType.Transfer && t.DestinationNumber is null)
+                balance += t.Amount;
+            else
+                balance -= t.Amount;
         }
         return balance;
     }
 
-    // Caclulates the account's available balance
-    // according to the minimum balance requirements. 
+    // Caclulates the account's available balance according to the minimum balance requirements. 
 
     public decimal AvailableBalance()
     {
@@ -51,15 +47,109 @@ public class Account
         return balance >= minBalance ? balance - minBalance : 0;
     }
 
-    // Returns true if the balance - (service charge + amount) is more than 
-    // or equal to the minimum balance requirements. If not, returns false. 
+    // Commits a deposit to the account.
+
+    public (List<ValidationResult>, Transaction) Deposit(decimal amount, string comment) =>
+        Credit(TransactionType.Deposit, amount, comment);
+
+    // Commits a withdraw to the account.
+
+    public (List<ValidationResult>, List<Transaction>) Withdraw(decimal amount, string comment) =>
+        Debit(TransactionType.Withdraw, amount, comment);
+
+    // Commits an incoming transfer to the account.
+
+    public (List<ValidationResult>, Transaction) TransferTo(decimal amount, string comment) =>
+        Credit(TransactionType.Transfer, amount, comment);
+
+    // Commits an outgoing transfer from the account.
+
+    public (List<ValidationResult>, List<Transaction>) TransferFrom(
+        int? destinationNum, decimal amount, string comment) =>
+            Debit(TransactionType.Transfer, amount, comment, destinationNum);
+
+    // Creates a credit transaction and the completed transaction is returned.
+
+    private (List<ValidationResult>, Transaction) Credit(
+        TransactionType transactionType, decimal amount, string comment)
+    {
+        Transaction transaction = new()
+        {
+            TransactionType = transactionType,
+            AccountNumber = AccountNumber,
+            Amount = amount,
+            Comment = comment,
+        };
+
+        if (!ValidationMethods.Validate(transaction, out List<ValidationResult> errors))
+            return (errors, null);
+
+        Transactions.Add(transaction);
+        return (null, transaction);
+    }
+
+    // Creates a debit transaction and applies the appropriate service charge.
+    // Returns the associated transactions if successful or the errors if unsuccessful. 
+
+    private (List<ValidationResult>, List<Transaction>) Debit(
+        TransactionType transactionType, decimal amount, string comment = null, int? destinationNum = null)
+    {
+        List<Transaction> transactions = new()
+        {
+            new Transaction()
+            {
+                TransactionType = transactionType,
+                AccountNumber = AccountNumber,
+                Amount = amount,
+                Comment = comment,
+                DestinationNumber = destinationNum
+            }
+        };
+
+        ValidationMethods.Validate(transactions.First(), out List<ValidationResult> errors);
+
+        if (!MeetsMinBalance(amount, transactionType))
+            errors.Add(new ValidationResult(
+                $"Invalid amount. Your account must have a min balance of {AccountType.MinBalance():C}.",
+                new List<string>() { "Amount" }));
+
+        if (transactionType == TransactionType.Transfer && destinationNum is null)
+            errors.Add(new ValidationResult(
+                "Enter an account number.",
+                new List<string>() { "DestinationNumber" }));
+
+        if (transactionType == TransactionType.Transfer && AccountNumber == destinationNum)
+            errors.Add(new ValidationResult(
+                "Origin and destination account numbers must be different",
+                new List<string>() { "DestinationNumber" }));
+
+        if (errors.Count > 0)
+            return (errors, null);
+
+        if (!IsNextTransactionFree())
+        {
+            transactions.Add(new Transaction()
+            {
+                TransactionType = TransactionType.ServiceCharge,
+                AccountNumber = AccountNumber,
+                Amount = transactionType.ServiceCharge()
+            });
+        }
+
+        foreach (Transaction t in transactions)
+            Transactions.Add(t);
+
+        return (null, transactions);
+    }
+
+    // Returns true if the amount for a transaction doesn't 
+    // bring the account below the minimum balance requirements. 
 
     private bool MeetsMinBalance(decimal amount, TransactionType transactionType)
     {
-        decimal total = amount;
         if (!IsNextTransactionFree())
-            total += transactionType.ServiceCharge();
-        return Balance() - total >= AccountType.MinBalance();
+            amount += transactionType.ServiceCharge();
+        return Balance() - amount >= AccountType.MinBalance();
     }
 
     // Two free transactions are allowed per account.
@@ -69,11 +159,10 @@ public class Account
     private bool IsNextTransactionFree()
     {
         int count = 0;
-        foreach (Transaction transaction in Transactions)
+        foreach (Transaction t in Transactions)
         {
-            if (transaction.TransactionType == TransactionType.Withdraw ||
-                transaction.TransactionType == TransactionType.Transfer &&
-                transaction.DestinationNumber is not null)
+            if (t.TransactionType == TransactionType.Withdraw ||
+                t.TransactionType == TransactionType.Transfer && t.DestinationNumber is not null)
             {
                 count++;
                 if (count == 2)
@@ -81,93 +170,5 @@ public class Account
             }
         }
         return true;
-    }
-
-    // Commits a deposit to the account. Returns the transaction associated with the deposit.
-
-    public Transaction Deposit(decimal amount, string comment) => Credit(TransactionType.Deposit, amount, comment);
-
-    // Commits a withdraw to the account.
-    // Returns the transactions associated with the withdraw.
-    // If the withdraw failed, an error message will be returned.
-
-    public (List<Transaction> transactions, string message) Withdraw(decimal amount, string comment)
-    {
-        if (!MeetsMinBalance(amount, TransactionType.Withdraw))
-            return (null, $"You must have a min balance of {AccountType.MinBalance():C}.");
-
-        List<Transaction> newTransactions = new();
-
-        if (!IsNextTransactionFree())
-            newTransactions.Add(
-                Debit(TransactionType.ServiceCharge, TransactionType.Withdraw.ServiceCharge(), null, null));
-
-        newTransactions.Add(Debit(TransactionType.Withdraw, amount, comment, null));
-
-        return (newTransactions, null);
-    }
-
-    // Commits a transfer to (incoming) the account.
-    // Returns the transaction associated with the transfer.
-
-    public Transaction TransferTo(decimal amount, string comment) =>
-        Credit(TransactionType.Transfer, amount, comment);
-
-    // Commits a transfer from (outgoing) the account.
-    // If successful, returns the transactions associated with the transfer.
-    // If unsuccessful, an error message will be returned. 
-
-    public (List<Transaction> transactions, string message) TransferFrom(
-        int? destinationNumber, decimal amount, string comment)
-    {
-        if (destinationNumber == null)
-            return (null, "You must enter an account number.");
-
-        if (AccountNumber == destinationNumber)
-            return (null, "Origin and destination account numbers cannot be the same.");
-
-        if (!MeetsMinBalance(amount, TransactionType.Transfer))
-            return (null, $"You must have a minimum balance of {AccountType.MinBalance():C}.");
-
-        List<Transaction> newTransactions = new();
-
-        if (!IsNextTransactionFree())
-            newTransactions.Add(Debit(
-                TransactionType.ServiceCharge, TransactionType.Transfer.ServiceCharge(), null, null));
-
-        newTransactions.Add(Debit(TransactionType.Transfer, amount, comment, destinationNumber));
-
-        return (newTransactions, null);
-    }
-
-    // Creates a credit transaction and the completed transaction is returned.
-
-    private Transaction Credit(TransactionType transactionType, decimal amount, string comment)
-    {
-        Transaction transaction = new()
-        {
-            TransactionType = transactionType,
-            AccountNumber = AccountNumber,
-            Amount = amount,
-            Comment = comment,
-        };
-        Transactions.Add(transaction);
-        return transaction;
-    }
-
-    // Creates a debit transaction and the completed transaction is returned. 
-
-    private Transaction Debit(TransactionType transactionType, decimal amount, string comment, int? destinationNumber)
-    {
-        Transaction transaction = new()
-        {
-            TransactionType = transactionType,
-            AccountNumber = AccountNumber,
-            Amount = amount,
-            Comment = comment,
-            DestinationNumber = destinationNumber
-        };
-        Transactions.Add(transaction);
-        return transaction;
     }
 }

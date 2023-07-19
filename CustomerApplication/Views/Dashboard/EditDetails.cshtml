@@ -42,8 +42,9 @@
     </div>
     <button type="submit" class="btn btn-primary">Update</button>
 </form>
-@if (Model.DetailsUpdated)
+@if (@ViewBag.DisplaySuccess)
 {
     <span class="text-success">Profile updated successfully.</span>
 }
+@Html.ValidationMessage("Other", new { @class = "text-danger" })
 <a asp-controller="Dashboard" asp-action="Profile">Back to Profile</a>

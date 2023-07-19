@@ -6,14 +6,13 @@
 
 <h1>Confirm @Model.TransactionType</h1>
 <form asp-action=@formAction>
-    <input type="hidden" asp-for="TransactionType">
     <div class="mb-3">
         <label asp-for="AccountNumber" class="control-label"></label>
         <input asp-for="AccountNumber" class="form-control-plaintext" readonly>
     </div>
     <div class="mb-3">
         <label asp-for="AccountType" class="control-label"></label>
-        <input asp-for="AccountType" class="form-control-plaintext" readonly>
+        <input asp-for="AccountType" value="@Model.AccountType" class="form-control-plaintext" readonly>
     </div>
     @if (Model.TransactionType == TransactionType.Transfer)
     {
@@ -37,4 +36,5 @@
         <button asp-action="Index" class="btn btn-secondary">Cancel</button>
         <button type="submit" class="btn btn-primary">Confirm</button>
     </div>
+    <input type="hidden" asp-for="TransactionType">
 </form>

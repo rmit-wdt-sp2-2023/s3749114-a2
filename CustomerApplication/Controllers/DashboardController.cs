@@ -5,55 +5,61 @@ using CustomerApplication.Models;
 using CustomerApplication.Filters;
 using CustomerApplication.Services;
 using CustomerApplication.Utilities.Paging;
-using SimpleHashing.Net;
+using System.ComponentModel.DataAnnotations;
 
 namespace CustomerApplication.Controllers;
 
 [AuthorizeCustomer]
 public class DashboardController : Controller
 {
-    private readonly BankContext _context;
-
     private readonly BankService _bankService;
-
-    private static readonly ISimpleHash SimpleHash = new SimpleHash();
 
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
-    public DashboardController(BankContext context, BankService bankService)
-    {
-        _context = context;
-        _bankService = bankService;
-    }
+    public DashboardController(BankService bankService) => _bankService = bankService;
 
     public IActionResult Index() => View(AccountsViewModel());
 
-    public IActionResult Deposit() => View(nameof(Transaction), TransactionViewModel(TransactionType.Deposit));
+    // The following methods display transaction submission pages. 
 
     public IActionResult Withdraw() => View(nameof(Transaction), TransactionViewModel(TransactionType.Withdraw));
 
+    public IActionResult Deposit() => View(nameof(Transaction), TransactionViewModel(TransactionType.Deposit));
+
     public IActionResult Transfer() => View(nameof(Transaction), TransactionViewModel(TransactionType.Transfer));
 
-    [HttpPost]
-    public IActionResult SubmitDeposit(TransactionViewModel viewModel)
-    {
-        if (!ModelState.IsValid)
-            return View(nameof(Transaction), TransactionViewModel(TransactionType.Deposit));
+    // The following methods process form data for transaction submissions. 
+    // If data is valid, the user is taken to the confirmation page.
+    // If data is invalid, the user is taken back to the submission page. 
 
-        Account account = _bankService.GetAccount(viewModel.AccountNumber);
-        viewModel.AccountType = account.AccountType;
+    [HttpPost]
+    public IActionResult SubmitWithdraw(TransactionViewModel viewModel)
+    {
+        List<ValidationResult> errors = _bankService.ConfirmWithdraw(
+            viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
+
+        if (errors is not null)
+            foreach (ValidationResult e in errors)
+                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+
+        if (!ModelState.IsValid)
+            return View(nameof(Transaction), TransactionViewModel(TransactionType.Withdraw));
 
         return RedirectToAction(nameof(Confirm), viewModel);
     }
 
     [HttpPost]
-    public IActionResult SubmitWithdraw(TransactionViewModel viewModel)
+    public IActionResult SubmitDeposit(TransactionViewModel viewModel)
     {
-        if (!ModelState.IsValid)
-            return View(nameof(Transaction), TransactionViewModel(TransactionType.Withdraw));
+        List<ValidationResult> errors = _bankService.ConfirmDeposit(
+            viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
-        Account account = _bankService.GetAccount(viewModel.AccountNumber);
-        viewModel.AccountType = account.AccountType;
+        if (errors is not null)
+            foreach (ValidationResult e in errors)
+                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+
+        if (!ModelState.IsValid)
+            return View(nameof(Transaction), TransactionViewModel(TransactionType.Deposit));
 
         return RedirectToAction(nameof(Confirm), viewModel);
     }
@@ -61,65 +67,82 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult SubmitTransfer(TransactionViewModel viewModel)
     {
-        if (viewModel.DestinationNumber == null)
-            ModelState.AddModelError(nameof(viewModel.DestinationNumber), "You must enter an account number.");
+        List<ValidationResult> errors = _bankService.ConfirmTransfer(
+            viewModel.AccountNumber, viewModel.DestinationNumber, viewModel.Amount, viewModel.Comment);
 
-        if (viewModel.DestinationNumber == viewModel.AccountNumber)
-            ModelState.AddModelError(
-                nameof(viewModel.DestinationNumber), "To and From Account Numbers cannot be the same.");
+        if (errors is not null)
+            foreach (ValidationResult e in errors)
+                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
 
         if (!ModelState.IsValid)
             return View(nameof(Transaction), TransactionViewModel(TransactionType.Transfer));
 
-        Account account = _bankService.GetAccount(viewModel.AccountNumber);
-        viewModel.AccountType = account.AccountType;
-
         return RedirectToAction(nameof(Confirm), viewModel);
     }
 
-    public IActionResult Confirm(TransactionViewModel viewModel) => View(viewModel);
+    // Displays the transaction confirmation page.
+
+    public IActionResult Confirm(TransactionViewModel viewModel)
+    {
+        Account account = _bankService.GetAccount(viewModel.AccountNumber);
+        viewModel.AccountType = account.AccountType;
+        return View(viewModel);
+    }
+
+    // Methods for processing confirmed transactions.
+    // If data is valid, the database is updated and the user is taken to the success page.
+    // If data is invalid, the user is taken back to the submission page. 
 
     [HttpPost]
     public IActionResult ConfirmDeposit(TransactionViewModel viewModel)
     {
-        string errorMessage = _bankService.Deposit(viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
+        List<ValidationResult> errors = _bankService.ConfirmDeposit(
+            viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
-        if (errorMessage is null)
-            viewModel.TransactionResult = true;
-        else
-            ModelState.AddModelError(nameof(viewModel.TransactionResult), errorMessage);
+        if (errors is null)
+            return View(nameof(Success), viewModel);
 
-        return View(nameof(Result), viewModel);
+        foreach (ValidationResult e in errors )
+            ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+
+        return View(nameof(Transaction), TransactionViewModel(TransactionType.Deposit));                  
     }
 
     [HttpPost]
     public IActionResult ConfirmWithdraw(TransactionViewModel viewModel)
     {
-        string errorMessage = _bankService.Withdraw(viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
+        List<ValidationResult> errors = _bankService.SubmitWithdraw(
+            viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
-        if (errorMessage is null)
-            viewModel.TransactionResult = true;
-        else
-            ModelState.AddModelError(nameof(viewModel.TransactionResult), errorMessage);
+        if (errors is null)
+            return View(nameof(Success), viewModel);
 
-        return View(nameof(Result), viewModel);
+        foreach (ValidationResult e in errors)
+            ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+
+        return View(nameof(Transaction), TransactionViewModel(TransactionType.Withdraw));
     }
 
     [HttpPost]
     public IActionResult ConfirmTransfer(TransactionViewModel viewModel)
     {
-        string errorMessage = _bankService.Transfer(
-            viewModel.AccountNumber, viewModel.DestinationNumber, viewModel.Amount, viewModel.Comment);
+        List<ValidationResult> errors = _bankService.SubmitTransfer(
+                viewModel.AccountNumber, viewModel.DestinationNumber, viewModel.Amount, viewModel.Comment);
 
-        if (errorMessage is null)
-            viewModel.TransactionResult = true;
-        else
-            ModelState.AddModelError(nameof(viewModel.TransactionResult), errorMessage);
+        if (errors is null)
+            return View(nameof(Success), viewModel);
 
-        return View(nameof(Result), viewModel);
+        foreach (ValidationResult e in errors)
+            ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+  
+        return View(nameof(Transaction), TransactionViewModel(TransactionType.Transfer));
     }
 
-    public IActionResult Result(TransactionViewModel viewModel) => View(viewModel);
+    // Displays the transaction success page. 
+
+    public IActionResult Success(TransactionViewModel viewModel) => View(viewModel);
+
+    // Displays the statements page. 
 
     public IActionResult Statements() => View(StatementsViewModel());
 
@@ -140,64 +163,63 @@ public class DashboardController : Controller
         return View(nameof(Statements), viewModel);
     }
 
-    // PROFILE
+    // Displays the profile page.
 
     public IActionResult Profile() => View(CustomerViewModel());
 
-    public IActionResult EditDetails() => View(CustomerViewModel());
+    // Displays the edit profile page.
+
+    public IActionResult EditDetails()
+    {
+        ViewBag.DisplaySuccess = false;
+        return View(CustomerViewModel());
+    }
+
+    // Processes edits to the user profile and reloads the page with success or error messages. 
 
     [HttpPost]
     public IActionResult SubmitEditDetails(CustomerViewModel viewModel)
     {
+        List<ValidationResult> errors = _bankService.UpdateCustomer(CustomerID, viewModel.Name, viewModel.TFN,
+            viewModel.Address, viewModel.City, viewModel.State, viewModel.PostCode, viewModel.Mobile);
+
+        if (errors is not null)
+            foreach (ValidationResult e in errors)
+                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+
         if (!ModelState.IsValid)
+        {
+            ViewBag.DisplaySuccess = false;
             return View(nameof(EditDetails), viewModel);
-
-        Customer customer = _context.Customers.FirstOrDefault(x => x.CustomerID == CustomerID);
-
-        customer.Name = viewModel.Name;
-        customer.TFN = viewModel.TFN;
-        customer.Address = viewModel.Address;
-        customer.City = viewModel.City;
-        customer.State = viewModel.State;
-        customer.PostCode = viewModel.PostCode;
-        customer.Mobile = viewModel.Mobile;
-
-        _context.Customers.Update(customer);
-        _context.SaveChanges();
-        viewModel.DetailsUpdated = true;
-
-        return View(nameof(EditDetails), viewModel); 
+        }
+        ViewBag.DisplaySuccess = true;
+        return View(nameof(EditDetails), viewModel);
     }
 
-    // PASSWORD
+    // Displays the change password page.
 
-    public IActionResult ChangePassword() => View(new ChangePasswordViewModel());
+    public IActionResult ChangePassword()
+    {
+        ViewBag.DisplaySuccess = false;
+        return View(new ChangePasswordViewModel());
+    }
 
     [HttpPost]
     public IActionResult SubmitChangePassword(ChangePasswordViewModel viewModel)
     {
+        List<ValidationResult> errors = _bankService.ChangePassword(
+            CustomerID, viewModel.OldPassword, viewModel.NewPassword);
+
+        if (errors is not null)
+            foreach (ValidationResult e in errors)
+                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+  
         if (!ModelState.IsValid)
-            return View(nameof(ChangePassword), viewModel);
-
-        Login login = _context.Logins.FirstOrDefault(x => x.CustomerID == CustomerID);
-
-        if (login is null)
         {
-            ModelState.AddModelError("PasswordFailed", "Password change failed, couldn't find user.");
+            ViewBag.DisplaySuccess = false;
             return View(nameof(ChangePassword), viewModel);
         }
-
-        if (!SimpleHash.Verify(viewModel.OldPassword, login.PasswordHash))
-        {
-            ModelState.AddModelError(nameof(viewModel.OldPassword), "Incorrect password.");
-            return View(nameof(ChangePassword), viewModel);
-        }
-
-        login.PasswordHash = SimpleHash.Compute(viewModel.NewPassword);
-        _context.Logins.Update(login);
-        _context.SaveChanges();
-        viewModel.PasswordUpdated = true;
-
+        ViewBag.DisplaySuccess = true;
         return View(nameof(ChangePassword), viewModel);
     }
 
@@ -205,8 +227,7 @@ public class DashboardController : Controller
 
     public CustomerViewModel CustomerViewModel()
     {
-        Customer customer = _context.Customers.FirstOrDefault(x => x.CustomerID == CustomerID);
-
+        Customer customer = _bankService.GetCustomer(CustomerID);
         return new CustomerViewModel
         {
             Name = customer.Name,

@@ -8,12 +8,6 @@ public enum AccountType
 
 public static class AccountTypeExtensions
 {
-    // Defines the minimum balance allowed in each account type.
-
-    public static decimal MinBalance(this AccountType accountType) => accountType switch
-    {
-        AccountType.Checking => 300M,
-        AccountType.Saving => 0M,
-        _ => 0M
-    };
+    public static decimal MinBalance(this AccountType accountType) =>
+        accountType == AccountType.Checking ? 300M : 0M;
 }

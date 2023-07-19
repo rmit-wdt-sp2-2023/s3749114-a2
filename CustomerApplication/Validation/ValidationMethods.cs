@@ -2,7 +2,7 @@
 
 namespace CustomerApplication.Validation;
 
-public class ValidationMethods
+public static class ValidationMethods
 {
     public static ValidationResult MoreThanTwoDecimalPlaces(decimal value, ValidationContext context) 
     {
@@ -10,8 +10,7 @@ public class ValidationMethods
         if (!result)
             return ValidationResult.Success;
         else
-            return new ValidationResult(
-                "Cannot have more than 2 decimal places.", new List<string>() { context.MemberName });
+            return new ValidationResult("Can't have more than 2 decimals.", new List<string>() { context.MemberName });
     }
 
     public static ValidationResult GreaterThanZero(decimal value, ValidationContext context)
@@ -20,5 +19,11 @@ public class ValidationMethods
             return ValidationResult.Success;
         else
             return new ValidationResult("Must be a positive number.", new List<string>() { context.MemberName });
+    }
+
+    public static bool Validate<T>(T model, out List<ValidationResult> results)
+    {
+        results = new List<ValidationResult>();
+        return Validator.TryValidateObject(model, new ValidationContext(model), results, true);
     }
 }

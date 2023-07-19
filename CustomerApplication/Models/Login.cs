@@ -7,15 +7,17 @@ namespace CustomerApplication.Models;
 public class Login
 {
     [StringLength(8)]
+    [RegularExpression(@"^\d{8}$")]
     [Column(TypeName = "char")]
-    public string LoginID { get; set; }
+    public required string LoginID { get; init; }
 
     [ForeignKey("Customer")]
-    public int CustomerID { get; set; }
-    public virtual Customer Customer { get; set; }
+    [Range(1000, 9999)]
+    public required int CustomerID { get; init; }
+    public virtual Customer Customer { get; init; }
 
     [Required]
     [StringLength(94)]
     [Column(TypeName = "char")]
-    public string PasswordHash { get; set; }
+    public required string PasswordHash { get; set; }
 }

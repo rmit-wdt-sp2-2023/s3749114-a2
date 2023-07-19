@@ -1,37 +1,36 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using CustomerApplication.Validation;
 
 namespace CustomerApplication.Models;
 
 public class Transaction
 {
-    [Display(Name = "ID")]
     public int TransactionID { get; init; }
 
     [Required]
-    [Display(Name = "Transaction Type")]
     public required TransactionType TransactionType { get; init; }
 
     [ForeignKey("Account")]
-    [Display(Name = "Account Number")]
+    [Range(1000, 9999)]
     public required int AccountNumber { get; init; }
     public virtual Account Account { get; init; }
 
     [ForeignKey("DestinationAccount")]
-    [Display(Name = "Destination Number")]
+    [Range(1000, 9999)]
     public int? DestinationNumber { get; init; } = null;
-    public virtual Account DestinationAccount { get; set; }
+    public virtual Account DestinationAccount { get; init; }
 
     [Required]
     [Column(TypeName = "money")]
-    [DataType(DataType.Currency)]
+    [CustomValidation(typeof(ValidationMethods), "MoreThanTwoDecimalPlaces")]
+    [CustomValidation(typeof(ValidationMethods), "GreaterThanZero")]
     public required decimal Amount { get; init; }
 
     [StringLength(30)]
-    public string Comment { get; init; } = null;
+    public string Comment { get; init; }
 
     [Required]
-    [Display(Name = "Time")]
     public DateTime TransactionTimeUtc { get; init; } = DateTime.UtcNow;
 
     public string LocalTimeString() =>

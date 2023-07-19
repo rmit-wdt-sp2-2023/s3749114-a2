@@ -1,0 +1,23 @@
+﻿@model TransactionViewModel
+@{ ViewData["Title"] = $"{Model.TransactionType} successful"; }
+
+<h1>@Model.TransactionType successful</h1>
+
+<h2>Your receipt</h2>
+<dl>
+    <dt>@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+    <dd>@Model.AccountNumber</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.AccountType)</dt>
+    <dd>@Html.DisplayFor(x => Model.AccountType)</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.Amount)</dt>
+    <dd>@Html.DisplayFor(x => Model.Amount)</dd>
+
+    @if (Model.Comment is not null)
+    {
+        <dt>@Html.DisplayNameFor(x => Model.Comment)</dt>
+        <dd>@Model.Comment</dd>
+    }
+</dl>
+<a asp-action="Index">Go back to Accounts</a>

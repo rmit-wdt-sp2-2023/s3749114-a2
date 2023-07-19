@@ -7,13 +7,13 @@ public class Customer
 {
     [DatabaseGenerated(DatabaseGeneratedOption.None)]
     [Range(1000, 9999)]
-    public int CustomerID { get; init; }
+    public required int CustomerID { get; init; }
 
     [Required]
     [StringLength(50)]
-    public string Name { get; set; }
+    public required string Name { get; set; }
 
-    [StringLength(11, MinimumLength = 11)]
+    [StringLength(11)]
     [RegularExpression(@"^\d{3} \d{3} \d{3}$")]
     public string TFN { get; set; }
 
@@ -23,16 +23,17 @@ public class Customer
     [StringLength(40)]
     public string City { get; set; }
 
-    [StringLength(3, MinimumLength = 2)]
-    [RegularExpression(@"^(NT|QLD|NSW|ACT|VIC|TAS|SA|WA)$")]
+    [StringLength(3)]
+    [RegularExpression(@"^(?i)(NSW|ACT|QLD|VIC|TAS|SA|WA|NT)$")]
     public string State { get; set; }
 
-    [StringLength(4, MinimumLength = 4)]
+    [StringLength(4)]
     [RegularExpression(@"^\d{4}$")]
     public string PostCode { get; set; }
 
-    [StringLength(12, MinimumLength = 12)]
+    [StringLength(12)]
     [RegularExpression(@"^04\d{2} \d{3} \d{3}$")]
     public string Mobile { get; set; }
-    public virtual List<Account> Accounts { get; set; }
+
+    public virtual List<Account> Accounts { get; init; } = new();
 }
