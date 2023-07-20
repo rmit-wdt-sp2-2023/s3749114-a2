@@ -20,6 +20,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Login\" />
+    <None Remove="Views\BillPay\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -28,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Login\" />
+    <Folder Include="Views\BillPay\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\Dashboard\BillyPay.cshtml" />

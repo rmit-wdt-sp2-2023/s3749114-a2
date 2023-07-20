@@ -163,6 +163,14 @@ public class DashboardController : Controller
         return View(nameof(Statements), viewModel);
     }
 
+    // Displays the BillPay page.
+
+    public IActionResult BillPay() => View();
+
+    public IActionResult ScheduleBillPay() => View();
+
+    public IActionResult SubmitBillPay() => View();
+
     // Displays the profile page.
 
     public IActionResult Profile() => View(CustomerViewModel());
@@ -273,4 +281,6 @@ public class DashboardController : Controller
         }
         return viewModel;
     }
+
+
 }

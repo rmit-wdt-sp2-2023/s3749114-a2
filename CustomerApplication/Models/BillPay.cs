@@ -28,4 +28,6 @@ public class BillPay
     [Required]
     [Column(TypeName = "char")]
     public Period Period { get; set; }
+
+    public BillPayStatus BillPayStatus { get; set; }
 }

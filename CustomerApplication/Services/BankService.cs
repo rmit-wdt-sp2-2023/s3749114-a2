@@ -234,4 +234,18 @@ public class BankService
         _context.SaveChanges();
         return null;
     }
+
+    public List<BillPay> GetBillPays(int customerID)
+    {
+        List<BillPay> billPays = new();
+
+        foreach (Account a in GetAccounts(customerID))
+            billPays.AddRange(_context.BillPays.Where(x => x.AccountNumber == a.AccountNumber).ToList());
+
+        return billPays;
+    }
+        
+
+
+
 }
