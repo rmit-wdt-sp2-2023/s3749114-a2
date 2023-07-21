@@ -37,7 +37,7 @@ public class DashboardController : Controller
     {
         List<ValidationResult> errors = _bankService.ConfirmWithdraw(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
-
+  
         if (errors is not null)
             foreach (ValidationResult e in errors)
                 ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);

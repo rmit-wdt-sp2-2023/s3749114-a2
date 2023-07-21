@@ -3,12 +3,11 @@
 
 <h1>Schedule BillPay</h1>
 <form asp-action="Confirm">
-
     <fieldset>
         <legend>From</legend>
         <div class="mb-3">
             @foreach (AccountViewModel a in Model.AccountViewModels)
-            {
+                {
                 <input type="radio" asp-for="AccountNumber" value="@a.AccountNumber" id="@a.AccountNumber" class="btn-check">
                 <label class="btn btn-outline-primary w-100 text-start" for="@a.AccountNumber">
                     <span class="row">
@@ -27,24 +26,20 @@
                     </span>
                 </label>
                 <br>
-            }
+                }
             <span asp-validation-for="AccountNumber" class="text-danger"></span>
         </div>
     </fieldset>
-
     <fieldset>
         <legend>To</legend>
+        <div class="mb-3">
+            <label asp-for="PayeeID" class="control-label"></label>
+            <input asp-for="PayeeID" class="form-control">
+            <span asp-validation-for="PayeeID" class="text-danger"></span>
+        </div>
     </fieldset>
-
     <fieldset>
         <legend>Details</legend>
-
-        <div class="mb-3">
-            <label asp-for="Period" class="control-label"></label>
-            <select asp-for="Period" asp-items="Html.GetEnumSelectList<Period>()" class="form-select"></select>
-            <span asp-validation-for="Period" class="text-danger"></span>
-        </div>
-
         <div class="mb-3">
             <label asp-for="Amount" class="control-label"></label>
             <div class="input-group">
@@ -53,14 +48,18 @@
             </div>
             <span asp-validation-for="Amount" class="text-danger"></span>
         </div>
-
         <div class="mb-3">
             <label asp-for="ScheduledTimeUtc" class="control-label"></label>
             <input asp-for="ScheduledTimeUtc" class="form-control">
             <span asp-validation-for="ScheduledTimeUtc" class="text-danger"></span>
         </div>
+        <div class="mb-3">
+            <label asp-for="Period" class="control-label"></label>
+            <select asp-for="Period" asp-items="Html.GetEnumSelectList<Period>()" class="form-select">
+            </select>
+            <span asp-validation-for="Period" class="text-danger"></span>
+        </div>
     </fieldset>
-
     <div class="mb-3">
         <button type="submit" class="btn btn-primary">Continue</button>
     </div>

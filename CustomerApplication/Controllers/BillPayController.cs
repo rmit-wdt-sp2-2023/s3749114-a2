@@ -34,7 +34,7 @@ public class BillPayController : Controller
         return View(viewModels);
     }
 
-    public IActionResult Schedule()
+    public BillPayViewModel BillPayViewModel()
     {
         List<AccountViewModel> viewModels = new();
 
@@ -54,12 +54,23 @@ public class BillPayController : Controller
             AccountViewModels = viewModels
         };
 
-        return View(viewModel);
+        return viewModel;
     }
 
-    public IActionResult Confirm()
+    public IActionResult Schedule()
     {
-        return View();
+        return View(BillPayViewModel());
+    }
+
+    [HttpPost]
+    public IActionResult Confirm(BillPayViewModel viewModel)
+    {
+
+        // if valid
+        return View(viewModel);
+
+        // if invalid
+        //return View(nameof(Schedule), BillPayViewModel());
     }
 
     public IActionResult Cancel()
@@ -68,34 +79,5 @@ public class BillPayController : Controller
     }
 
 
-    public int BillPayID { get; set; }
 
-    public int AccountNumber { get; set; }
-
-    public int PayeeID { get; set; }
-
-    public decimal Amount { get; set; }
-
-    public DateTime ScheduledTimeUtc { get; set; }
-
-    public Period Period { get; set; }
-
-    public BillPayStatus BillPayStatus { get; set; }
-
-    public List<AccountViewModel> AccountsViewModel()
-    {
-        List<Account> accounts = _bankService.GetAccounts(CustomerID);
-        List<AccountViewModel> viewModel = new();
-        foreach (Account account in accounts)
-        {
-            viewModel.Add(new AccountViewModel
-            {
-                AccountNumber = account.AccountNumber,
-                AccountType = account.AccountType,
-                Balance = account.Balance(),
-                AvailableBalance = account.AvailableBalance()
-            });
-        }
-        return viewModel;
-    }
 }
