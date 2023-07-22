@@ -21,6 +21,15 @@ public static class ValidationMethods
             return new ValidationResult("Must be a positive number.", new List<string>() { context.MemberName });
     }
 
+    public static ValidationResult DateIsTenMinsFromNow(DateTime value, ValidationContext context)
+    {
+        if (value > DateTime.Now.AddMinutes(10))
+            return ValidationResult.Success;
+        else
+            return new ValidationResult(
+                "Must be at least 10 minutes into the future.", new List<string>() { context.MemberName });
+    }
+
     public static bool Validate<T>(T model, out List<ValidationResult> results)
     {
         results = new List<ValidationResult>();

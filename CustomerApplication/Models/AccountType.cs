@@ -1,8 +1,13 @@
-﻿namespace CustomerApplication.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace CustomerApplication.Models;
 
 public enum AccountType
 {
+    [Display(Name = "Checking")]
     Checking = 1,
+
+    [Display(Name = "Saving")]
     Saving = 2
 }
 

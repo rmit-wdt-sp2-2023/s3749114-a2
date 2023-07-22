@@ -30,6 +30,8 @@ public class BankService
 
     public Account GetAccount(int accountNum) => _context.Accounts.Find(accountNum);
 
+
+
     public List<Transaction> GetTransactions(int accountNum)
     {
         Account account = _context.Accounts.Find(accountNum);
@@ -52,6 +54,14 @@ public class BankService
         return (null, account);
     }
 
+    private (ValidationResult, Payee) GetPayee(int payeeId, string propertyName)
+    {
+        Payee payee = _context.Payees.Find(payeeId);
+        if (payee is null)
+            return (new ValidationResult("Payee doesn't exist.", new List<string>() { propertyName }), null);
+        return (null, payee);
+    }
+
     // Methods validate transactions but don't update database.
 
     public List<ValidationResult> ConfirmDeposit(int accountNum, decimal amount, string comment)
@@ -72,7 +82,43 @@ public class BankService
         return errors;
     }
 
-    // Methods validate transactions and update the database if valid. 
+    public List<ValidationResult> ConfirmBillPay(
+        int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+    {
+        (List<ValidationResult> errors, _) = BillPay(accountNum, payeeID, amount, ScheduledTimeUtc, period);
+        return errors;
+    }
+
+    private (List<ValidationResult>, BillPay) BillPay(int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+    {
+        List<ValidationResult> errors = new();
+
+        (ValidationResult accountError, Account account) = GetAccount(accountNum, "AccountNumber");
+
+        if (accountError is not null)
+            errors.Add(accountError);
+
+        (ValidationResult payeeError, _) = GetPayee(payeeID, "PayeeID");
+
+        if (payeeError is not null)
+            errors.Add(payeeError);
+
+        return errors.Count > 0 ? (errors, null) : account.BillPaySchedule(payeeID, amount, ScheduledTimeUtc, period);
+    }
+
+    // Methods validate transactions and update the database if valid.
+
+    public List<ValidationResult> SubmitBillPay(int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+    {
+        (List<ValidationResult> errors, BillPay billPay) = BillPay(accountNum, payeeID, amount, ScheduledTimeUtc, period);
+        if (errors is null)
+        {
+            billPay.ScheduledTimeUtc = billPay.ScheduledTimeUtc.ToUniversalTime();
+            _context.BillPays.Add(billPay);
+            _context.SaveChanges();
+        }
+        return errors;
+    }
 
     public List<ValidationResult> SubmitDeposit(int accountNum, decimal amount, string comment)
     {
@@ -233,5 +279,31 @@ public class BankService
         _context.Logins.Update(login);
         _context.SaveChanges();
         return null;
+    }
+
+    public List<BillPay> GetBillPays(int customerID)
+    {
+        List<BillPay> billPays = new();
+
+        foreach (Account a in GetAccounts(customerID))
+            billPays.AddRange(_context.BillPays.Where(x => x.AccountNumber == a.AccountNumber).ToList());
+
+        return billPays.OrderBy(x => x.ScheduledTimeUtc).ToList();
+    }
+
+    public BillPay GetBillPay(int billPayID) => _context.BillPays.FirstOrDefault(x => x.BillPayID == billPayID);
+
+    public ValidationResult CancelBillPay(int billPayID)
+    {
+
+        BillPay billPay = _context.BillPays.FirstOrDefault(x => x.BillPayID == billPayID);
+
+        if (billPay is not null)
+        {
+            _context.BillPays.Remove(billPay);
+            _context.SaveChanges();
+            return null;
+        }
+        return new ValidationResult("Could not find BillPay.", new List<string>() { "BillPayID" });
     }
 }

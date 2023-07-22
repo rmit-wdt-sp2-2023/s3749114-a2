@@ -37,7 +37,7 @@ public class DashboardController : Controller
     {
         List<ValidationResult> errors = _bankService.ConfirmWithdraw(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
-
+  
         if (errors is not null)
             foreach (ValidationResult e in errors)
                 ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
@@ -96,7 +96,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult ConfirmDeposit(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.ConfirmDeposit(
+        List<ValidationResult> errors = _bankService.SubmitDeposit(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
         if (errors is null)
@@ -162,6 +162,14 @@ public class DashboardController : Controller
 
         return View(nameof(Statements), viewModel);
     }
+
+    // Displays the BillPay page.
+
+    public IActionResult BillPay() => View();
+
+    public IActionResult ScheduleBillPay() => View();
+
+    public IActionResult SubmitBillPay() => View();
 
     // Displays the profile page.
 
@@ -273,4 +281,6 @@ public class DashboardController : Controller
         }
         return viewModel;
     }
+
+
 }

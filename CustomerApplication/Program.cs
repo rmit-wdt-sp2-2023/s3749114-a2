@@ -1,6 +1,7 @@
 using System.Globalization;
 using CustomerApplication.Data;
 using CustomerApplication.Services;
+using CustomerApplication.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 
 CultureInfo cultureInfo = new("en-AU");
@@ -17,6 +18,8 @@ builder.Services.AddDbContext<BankContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("BankContext"));
     options.UseLazyLoadingProxies();
 });
+
+builder.Services.AddHostedService<BillPayBackgroundService>();
 
 // Store session and make cookie essential.
 

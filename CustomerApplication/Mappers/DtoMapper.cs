@@ -43,7 +43,7 @@ public static class DtoMapper
         return new Account()
         {
             AccountNumber = accountDto.AccountNumber,
-            AccountType = (AccountType)accountDto.AccountType,
+            AccountType = accountDto.AccountType == 'C' ? AccountType.Checking : AccountType.Saving,
             CustomerID = accountDto.CustomerID,
             Transactions = transactions
         };

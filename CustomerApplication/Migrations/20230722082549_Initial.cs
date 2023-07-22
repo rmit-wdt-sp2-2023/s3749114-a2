@@ -95,11 +95,13 @@ namespace CustomerApplication.Migrations
                     PayeeID = table.Column<int>(type: "int", nullable: false),
                     Amount = table.Column<decimal>(type: "money", nullable: false),
                     ScheduledTimeUtc = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    Period = table.Column<string>(type: "char", nullable: false)
+                    Period = table.Column<int>(type: "int", nullable: false),
+                    BillPayStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_BillPays", x => x.BillPayID);
+                    table.CheckConstraint("CH_BillPay_Amount", "Amount > 0");
                     table.ForeignKey(
                         name: "FK_BillPays_Accounts_AccountNumber",
                         column: x => x.AccountNumber,
@@ -130,6 +132,7 @@ namespace CustomerApplication.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Transactions", x => x.TransactionID);
+                    table.CheckConstraint("CH_Transaction_Amount", "Amount > 0");
                     table.ForeignKey(
                         name: "FK_Transactions_Accounts_AccountNumber",
                         column: x => x.AccountNumber,

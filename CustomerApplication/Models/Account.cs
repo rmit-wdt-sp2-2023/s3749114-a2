@@ -22,6 +22,9 @@ public class Account
     [InverseProperty("Account")]
     public virtual List<Transaction> Transactions { get; init; } = new();
 
+    [InverseProperty("Account")]
+    public virtual List<BillPay> BillPays { get; init; } = new();
+
     // Iterates transactions and caculates the total balance of the account.
 
     public decimal Balance()
@@ -38,7 +41,7 @@ public class Account
         return balance;
     }
 
-    // Caclulates the account's available balance according to the minimum balance requirements. 
+    // Calculates the account's available balance according to the minimum balance requirements. 
 
     public decimal AvailableBalance()
     {
@@ -67,6 +70,31 @@ public class Account
     public (List<ValidationResult>, List<Transaction>) TransferFrom(
         int? destinationNum, decimal amount, string comment) =>
             Debit(TransactionType.Transfer, amount, comment, destinationNum);
+
+    public (List<ValidationResult>, BillPay) BillPaySchedule(
+        int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+    {
+        BillPay billPay = new()
+        {
+            AccountNumber = AccountNumber,
+            PayeeID = payeeID,
+            Amount = amount,
+            ScheduledTimeUtc = ScheduledTimeUtc,
+            Period = period,
+            BillPayStatus = BillPayStatus.Scheduled
+        };
+        if (!ValidationMethods.Validate(billPay, out List<ValidationResult> errors))
+            return (errors, null);
+
+        BillPays.Add(billPay);
+        return (null, billPay);
+    }
+
+    public (List<ValidationResult>, Transaction) BillPay(decimal amount)
+    {
+        (List<ValidationResult> errors, List<Transaction> transactions) = Debit(TransactionType.BillPay, amount);
+        return (errors, transactions?.First());
+    }
 
     // Creates a credit transaction and the completed transaction is returned.
 
