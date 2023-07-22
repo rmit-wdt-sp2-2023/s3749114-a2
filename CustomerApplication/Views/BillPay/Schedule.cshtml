@@ -1,4 +1,4 @@
-﻿@model BillPayViewModel
+﻿@model BillPayScheduleViewModel
 @{ ViewData["Title"] = "Schedule BillPay"; }
 
 <h1>Schedule BillPay</h1>
@@ -6,27 +6,7 @@
     <fieldset>
         <legend>From</legend>
         <div class="mb-3">
-            @foreach (AccountViewModel a in Model.AccountViewModels)
-                {
-                <input type="radio" asp-for="AccountNumber" value="@a.AccountNumber" id="@a.AccountNumber" class="btn-check">
-                <label class="btn btn-outline-primary w-100 text-start" for="@a.AccountNumber">
-                    <span class="row">
-                        <span class="col">
-                            @a.AccountType<br>
-                            @a.AccountNumber
-                        </span>
-                        <span class="col">
-                            @Html.DisplayNameFor(x => a.Balance)<br>
-                            @Html.DisplayFor(x => a.Balance)
-                        </span>
-                        <span class="col">
-                            @Html.DisplayNameFor(x => a.AvailableBalance)<br>
-                            @Html.DisplayFor(x => a.AvailableBalance)
-                        </span>
-                    </span>
-                </label>
-                <br>
-                }
+            @Html.EditorFor(x => x.AccountViewModels)
             <span asp-validation-for="AccountNumber" class="text-danger"></span>
         </div>
     </fieldset>

@@ -22,6 +22,9 @@ public class Account
     [InverseProperty("Account")]
     public virtual List<Transaction> Transactions { get; init; } = new();
 
+    [InverseProperty("Account")]
+    public virtual List<BillPay> BillPays { get; init; } = new();
+
     // Iterates transactions and caculates the total balance of the account.
 
     public decimal Balance()
@@ -67,6 +70,35 @@ public class Account
     public (List<ValidationResult>, List<Transaction>) TransferFrom(
         int? destinationNum, decimal amount, string comment) =>
             Debit(TransactionType.Transfer, amount, comment, destinationNum);
+
+    public (List<ValidationResult>, BillPay) BillPay(
+        int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+    {
+        BillPay billPay = new()
+        {
+            AccountNumber = AccountNumber,
+            PayeeID = payeeID,
+            Amount = amount,
+            ScheduledTimeUtc = ScheduledTimeUtc,
+            Period = period,
+            BillPayStatus = BillPayStatus.Scheduled
+        };
+        Console.WriteLine("BILLPAY DEETS");
+        Console.WriteLine(payeeID);
+        Console.WriteLine(amount);
+        Console.WriteLine(ScheduledTimeUtc);
+        Console.WriteLine(period);
+        if (!ValidationMethods.Validate(billPay, out List<ValidationResult> errors))
+        {
+            Console.WriteLine("BILLPAY INVALID");
+            return (errors, null);
+
+        }
+            
+
+        BillPays.Add(billPay);
+        return (null, billPay);
+    }
 
     // Creates a credit transaction and the completed transaction is returned.
 

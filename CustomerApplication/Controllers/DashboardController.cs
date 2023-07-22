@@ -96,7 +96,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult ConfirmDeposit(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.ConfirmDeposit(
+        List<ValidationResult> errors = _bankService.SubmitDeposit(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
         if (errors is null)

@@ -63,9 +63,8 @@ namespace CustomerApplication.Migrations
                     b.Property<int>("PayeeID")
                         .HasColumnType("int");
 
-                    b.Property<string>("Period")
-                        .IsRequired()
-                        .HasColumnType("char");
+                    b.Property<int>("Period")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("ScheduledTimeUtc")
                         .HasColumnType("datetime2");
@@ -238,7 +237,7 @@ namespace CustomerApplication.Migrations
             modelBuilder.Entity("CustomerApplication.Models.BillPay", b =>
                 {
                     b.HasOne("CustomerApplication.Models.Account", "Account")
-                        .WithMany()
+                        .WithMany("BillPays")
                         .HasForeignKey("AccountNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -284,6 +283,8 @@ namespace CustomerApplication.Migrations
 
             modelBuilder.Entity("CustomerApplication.Models.Account", b =>
                 {
+                    b.Navigation("BillPays");
+
                     b.Navigation("Transactions");
                 });
 

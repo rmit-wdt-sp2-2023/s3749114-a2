@@ -11,9 +11,11 @@
                 <th scope="col">@Html.DisplayNameFor(x => Model[0].BillPayID)</th>
                 <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountNumber)</th>
                 <th scope="col">@Html.DisplayNameFor(x => Model[0].PayeeID)</th>
+                <th scope="col">@Html.DisplayNameFor(x => Model[0].Amount)</th>
                 <th scope="col">@Html.DisplayNameFor(x => Model[0].ScheduledTimeUtc)</th>
                 <th scope="col">@Html.DisplayNameFor(x => Model[0].Period)</th>
                 <th scope="col">@Html.DisplayNameFor(x => Model[0].BillPayStatus)</th>
+                <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
@@ -23,9 +25,11 @@
                     <td>@b.BillPayID</td>
                     <td>@b.AccountNumber</td>
                     <td>@b.PayeeID</td>
-                    <td>@b.ScheduledTimeUtc</td>
-                    <td>@b.Period</td>
+                    <td>@Html.DisplayFor(x => b.Amount)</td>
+                    <td>@b.ScheduledTimeUtc.ToLocalTime()</td>
+                    <td>@Html.DisplayFor(x => b.Period)</td>
                     <td>@b.BillPayStatus</td>
+                    <td><a asp-action="Cancel" asp-route-id="@b.BillPayID"><i class="bi bi-x"></i></a></td>
                 </tr>
             }
         </tbody>
@@ -36,4 +40,3 @@ else
     <p>You have no scheduled BillPays.</p>
 }
 <a asp-action="Schedule" class="btn btn-primary">Schedule new</a>
-<a asp-controller="Dashboard" asp-action="Index">Go back to accounts</a>

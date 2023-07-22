@@ -1,4 +1,5 @@
-﻿using Castle.Core.Resource;
+﻿using System.ComponentModel.DataAnnotations;
+using Castle.Core.Resource;
 using CustomerApplication.Filters;
 using CustomerApplication.Models;
 using CustomerApplication.Services;
@@ -34,10 +35,9 @@ public class BillPayController : Controller
         return View(viewModels);
     }
 
-    public BillPayViewModel BillPayViewModel()
+    public BillPayScheduleViewModel BillPayScheduleViewModel()
     {
         List<AccountViewModel> viewModels = new();
-
         foreach (Account a in _bankService.GetAccounts(CustomerID))
         {
             viewModels.Add(new AccountViewModel
@@ -48,36 +48,81 @@ public class BillPayController : Controller
                 AvailableBalance = a.AvailableBalance()
             });
         }
-
-        BillPayViewModel viewModel = new()
+        BillPayScheduleViewModel viewModel = new()
         {
             AccountViewModels = viewModels
         };
-
         return viewModel;
     }
 
     public IActionResult Schedule()
     {
-        return View(BillPayViewModel());
+        return View(BillPayScheduleViewModel());
     }
 
     [HttpPost]
-    public IActionResult Confirm(BillPayViewModel viewModel)
+    public IActionResult Confirm(BillPayScheduleViewModel viewModel)
     {
+        List<ValidationResult> errors = _bankService.ConfirmBillPay(
+            viewModel.AccountNumber.GetValueOrDefault(), viewModel.PayeeID.GetValueOrDefault(),
+            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeUtc.GetValueOrDefault(), viewModel.Period);
 
-        // if valid
+        if (errors is not null)
+            foreach (ValidationResult e in errors)
+                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+
+        if (!ModelState.IsValid)
+            return View(nameof(Schedule), BillPayScheduleViewModel());
+
+        Account account = _bankService.GetAccount(viewModel.AccountNumber.GetValueOrDefault());
+        viewModel.AccountType = account.AccountType;
+
         return View(viewModel);
-
-        // if invalid
-        //return View(nameof(Schedule), BillPayViewModel());
     }
 
-    public IActionResult Cancel()
+    [HttpPost]
+    public IActionResult Submit(BillPayScheduleViewModel viewModel)
     {
-        return View();
+        List<ValidationResult> errors = _bankService.SubmitBillPay(
+            viewModel.AccountNumber.GetValueOrDefault(), viewModel.PayeeID.GetValueOrDefault(),
+            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeUtc.GetValueOrDefault(), viewModel.Period);
+
+        if (errors is null)
+            return View("Success", viewModel);
+
+        foreach (ValidationResult e in errors)
+            ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+
+        return View(nameof(Schedule), BillPayScheduleViewModel());
     }
 
+    public IActionResult Cancel(int id)
+    {
+        BillPay billPay = _bankService.GetBillPay(id);
 
+        return View(new BillPayViewModel()
+        {
+            BillPayID = billPay.BillPayID,
+            AccountNumber = billPay.AccountNumber,
+            PayeeID = billPay.PayeeID,
+            Amount = billPay.Amount,
+            ScheduledTimeUtc = billPay.ScheduledTimeUtc,
+            Period = billPay.Period,
+            BillPayStatus = billPay.BillPayStatus
+        });
+    }
 
+    [HttpPost]
+    public IActionResult Cancel(BillPayViewModel viewModel)
+    {
+
+        ValidationResult error = _bankService.CancelBillPay(viewModel.BillPayID);
+        if (error is not null)
+        {
+            Console.WriteLine("BILL PAY ID " + viewModel.BillPayID);
+            Console.WriteLine("ERROR");
+        }
+
+        return RedirectToAction(nameof(Index));
+    }
 }

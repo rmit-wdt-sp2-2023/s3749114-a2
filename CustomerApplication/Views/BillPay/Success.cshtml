@@ -1,14 +1,16 @@
-﻿@model BillPayViewModel
-@{ ViewData["Title"] = "Cancel BillPay"; }
+﻿@model BillPayScheduleViewModel
+@{ ViewData["Title"] = "BillPay successful"; }
 
-<h1>Cancel BillPay</h1>
+<h1>BillPay successful</h1>
 
-<p>Are you sure you want to cancel this BillPay?</p>
-
+<h2>Your receipt</h2>
 <h3>From</h3>
 <dl>
     <dt>@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
     <dd>@Model.AccountNumber</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.AccountType)</dt>
+    <dd>@Html.DisplayFor(x => Model.AccountType)</dd>
 </dl>
 <h3>To</h3>
 <dl>
@@ -17,21 +19,13 @@
 </dl>
 <h3>Details</h3>
 <dl>
-    <dt>@Html.DisplayNameFor(x => Model.BillPayID)</dt>
-    <dd>@Html.DisplayFor(x => Model.BillPayID)</dd>
-
     <dt>@Html.DisplayNameFor(x => Model.Amount)</dt>
     <dd>@Html.DisplayFor(x => Model.Amount)</dd>
 
     <dt>@Html.DisplayNameFor(x => Model.ScheduledTimeUtc)</dt>
-    <dd>@Model.ScheduledTimeUtc.ToLocalTime()</dd>
+    <dd>@Model.ScheduledTimeUtc</dd>
 
     <dt>@Html.DisplayNameFor(x => Model.Period)</dt>
     <dd>@Html.DisplayFor(x => Model.Period)</dd>
 </dl>
-
-<form asp-action="Cancel">
-    <input type="hidden" asp-for="BillPayID">
-    <button asp-action="Index" class="btn btn-secondary">No</button>
-    <button type="submit" class="btn btn-primary">Yes</button>
-</form>
+<a asp-action="Index">Go back to BillPay</a>

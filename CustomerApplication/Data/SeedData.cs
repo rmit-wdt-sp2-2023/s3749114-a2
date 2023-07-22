@@ -2,6 +2,8 @@
 using CustomerApplication.Models;
 using CustomerApplication.Dtos;
 using CustomerApplication.Mappers;
+using System.ComponentModel.DataAnnotations;
+using Castle.Core.Resource;
 
 namespace CustomerApplication.Data;
 
@@ -40,6 +42,28 @@ public static class SeedData
             context.Customers.Add(customer);
         foreach (Login login in logins)
             context.Logins.Add(login);
+
+        // Creates and insert payees into database.
+
+        context.Payees.Add(new Payee()
+        {
+            Name = "Optus",
+            Address = "367 Collins Street",
+            City = "Melbourne",
+            State = "VIC",
+            PostCode = "3000",
+            Phone = "(03) 7022 8530"
+        });
+
+        context.Payees.Add(new Payee()
+        {
+            Name = "Telstra",
+            Address = "246-260 Bourke Street",
+            City = "Melbourne",
+            State = "VIC",
+            PostCode = "3000",
+            Phone = "(03) 8647 4954"
+        });
 
         context.SaveChanges();
     }

@@ -21,6 +21,7 @@
   <ItemGroup>
     <None Remove="Views\Login\" />
     <None Remove="Views\BillPay\" />
+    <None Remove="Views\Shared\EditorTemplates\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -30,6 +31,7 @@
   <ItemGroup>
     <Folder Include="Views\Login\" />
     <Folder Include="Views\BillPay\" />
+    <Folder Include="Views\Shared\EditorTemplates\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\Dashboard\BillyPay.cshtml" />
