@@ -28,8 +28,9 @@
             <input asp-for="Amount" class="form-control-plaintext" readonly>
         </div>
         <div class="mb-3">
-            <label asp-for="ScheduledTimeUtc" class="control-label"></label>
-            <input asp-for="ScheduledTimeUtc" class="form-control-plaintext" readonly>
+            <label asp-for="ScheduledTimeLocal" class="control-label"></label>
+            <input class="form-control-plaintext" readonly value="@Html.DisplayFor(x => Model.ScheduledTimeLocal)">
+            <input asp-for="ScheduledTimeLocal" class="form-control-plaintext" hidden>
         </div>
         <div class="mb-3">
             <label asp-for="Period" class="control-label"></label>

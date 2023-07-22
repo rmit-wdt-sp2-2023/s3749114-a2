@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Castle.Core.Resource;
 using CustomerApplication.Filters;
 using CustomerApplication.Models;
 using CustomerApplication.Services;
@@ -18,7 +17,11 @@ public class BillPayController : Controller
 
     public IActionResult Index()
     {
+        ViewBag.DisplayBlocked = false;
+        ViewBag.DisplayFailed = false;
+
         List<BillPayViewModel> viewModels = new();
+
         foreach (BillPay b in _bankService.GetBillPays(CustomerID))
         {
             viewModels.Add(new BillPayViewModel()
@@ -27,10 +30,14 @@ public class BillPayController : Controller
                 AccountNumber = b.AccountNumber,
                 PayeeID = b.PayeeID,
                 Amount = b.Amount,
-                ScheduledTimeUtc = b.ScheduledTimeUtc,
+                ScheduledTimeLocal = b.ScheduledTimeUtc.ToLocalTime(),
                 Period = b.Period,
                 BillPayStatus = b.BillPayStatus
             });
+            if (b.BillPayStatus == BillPayStatus.Failed)
+                ViewBag.DisplayFailed = true;
+            else if (b.BillPayStatus == BillPayStatus.Blocked)
+                ViewBag.DisplayFailed = true;
         }
         return View(viewModels);
     }
@@ -65,7 +72,7 @@ public class BillPayController : Controller
     {
         List<ValidationResult> errors = _bankService.ConfirmBillPay(
             viewModel.AccountNumber.GetValueOrDefault(), viewModel.PayeeID.GetValueOrDefault(),
-            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeUtc.GetValueOrDefault(), viewModel.Period);
+            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeLocal.GetValueOrDefault(), viewModel.Period);
 
         if (errors is not null)
             foreach (ValidationResult e in errors)
@@ -85,7 +92,7 @@ public class BillPayController : Controller
     {
         List<ValidationResult> errors = _bankService.SubmitBillPay(
             viewModel.AccountNumber.GetValueOrDefault(), viewModel.PayeeID.GetValueOrDefault(),
-            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeUtc.GetValueOrDefault(), viewModel.Period);
+            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeLocal.GetValueOrDefault(), viewModel.Period);
 
         if (errors is null)
             return View("Success", viewModel);
@@ -106,7 +113,7 @@ public class BillPayController : Controller
             AccountNumber = billPay.AccountNumber,
             PayeeID = billPay.PayeeID,
             Amount = billPay.Amount,
-            ScheduledTimeUtc = billPay.ScheduledTimeUtc,
+            ScheduledTimeLocal = billPay.ScheduledTimeUtc.ToLocalTime(),
             Period = billPay.Period,
             BillPayStatus = billPay.BillPayStatus
         });

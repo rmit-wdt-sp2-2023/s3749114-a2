@@ -23,7 +23,7 @@ public static class ValidationMethods
 
     public static ValidationResult DateIsTenMinsFromNow(DateTime value, ValidationContext context)
     {
-        if (value > DateTime.UtcNow.AddMinutes(10))
+        if (value > DateTime.Now.AddMinutes(10))
             return ValidationResult.Success;
         else
             return new ValidationResult(

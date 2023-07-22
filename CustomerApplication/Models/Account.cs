@@ -41,7 +41,7 @@ public class Account
         return balance;
     }
 
-    // Caclulates the account's available balance according to the minimum balance requirements. 
+    // Calculates the account's available balance according to the minimum balance requirements. 
 
     public decimal AvailableBalance()
     {
@@ -71,7 +71,7 @@ public class Account
         int? destinationNum, decimal amount, string comment) =>
             Debit(TransactionType.Transfer, amount, comment, destinationNum);
 
-    public (List<ValidationResult>, BillPay) BillPay(
+    public (List<ValidationResult>, BillPay) BillPaySchedule(
         int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
     {
         BillPay billPay = new()
@@ -83,21 +83,17 @@ public class Account
             Period = period,
             BillPayStatus = BillPayStatus.Scheduled
         };
-        Console.WriteLine("BILLPAY DEETS");
-        Console.WriteLine(payeeID);
-        Console.WriteLine(amount);
-        Console.WriteLine(ScheduledTimeUtc);
-        Console.WriteLine(period);
         if (!ValidationMethods.Validate(billPay, out List<ValidationResult> errors))
-        {
-            Console.WriteLine("BILLPAY INVALID");
             return (errors, null);
-
-        }
-            
 
         BillPays.Add(billPay);
         return (null, billPay);
+    }
+
+    public (List<ValidationResult>, Transaction) BillPay(decimal amount)
+    {
+        (List<ValidationResult> errors, List<Transaction> transactions) = Debit(TransactionType.BillPay, amount);
+        return (errors, transactions?.First());
     }
 
     // Creates a credit transaction and the completed transaction is returned.

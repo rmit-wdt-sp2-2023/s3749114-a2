@@ -3,7 +3,6 @@ using CustomerApplication.Data;
 using CustomerApplication.Models;
 using CustomerApplication.Validation;
 using System.ComponentModel.DataAnnotations;
-using CustomerApplication.ViewModels;
 
 namespace CustomerApplication.Services;
 
@@ -104,7 +103,7 @@ public class BankService
         if (payeeError is not null)
             errors.Add(payeeError);
 
-        return errors.Count > 0 ? (errors, null) : account.BillPay(payeeID, amount, ScheduledTimeUtc, period);
+        return errors.Count > 0 ? (errors, null) : account.BillPaySchedule(payeeID, amount, ScheduledTimeUtc, period);
     }
 
     // Methods validate transactions and update the database if valid.
@@ -289,7 +288,7 @@ public class BankService
         foreach (Account a in GetAccounts(customerID))
             billPays.AddRange(_context.BillPays.Where(x => x.AccountNumber == a.AccountNumber).ToList());
 
-        return billPays.OrderByDescending(x => x.ScheduledTimeUtc).ToList();
+        return billPays.OrderBy(x => x.ScheduledTimeUtc).ToList();
     }
 
     public BillPay GetBillPay(int billPayID) => _context.BillPays.FirstOrDefault(x => x.BillPayID == billPayID);

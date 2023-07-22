@@ -6,7 +6,27 @@
     <fieldset>
         <legend>From</legend>
         <div class="mb-3">
-            @Html.EditorFor(x => x.AccountViewModels)
+                @foreach (var account in Model.AccountViewModels)
+                {
+                    <input type="radio" asp-for="AccountNumber" value="@account.AccountNumber" id="@account.AccountNumber" class="btn-check" autocomplete="off">
+                    <label class="btn btn-outline-primary w-100 text-start" for="@account.AccountNumber">
+                        <span class="row">
+                            <span class="col">
+                                @account.AccountType<br>
+                                @account.AccountNumber<br>
+                            </span>
+                            <span class="col">
+                                @Html.DisplayNameFor(x => account.Balance)<br>
+                                @Html.DisplayFor(x => account.Balance)
+                            </span>
+                            <span class="col">
+                                @Html.DisplayNameFor(x => account.AvailableBalance)<br>
+                                @Html.DisplayFor(x => account.AvailableBalance)
+                            </span>
+                        </span>
+                    </label>
+                    <br>
+                }
             <span asp-validation-for="AccountNumber" class="text-danger"></span>
         </div>
     </fieldset>
@@ -29,9 +49,9 @@
             <span asp-validation-for="Amount" class="text-danger"></span>
         </div>
         <div class="mb-3">
-            <label asp-for="ScheduledTimeUtc" class="control-label"></label>
-            <input asp-for="ScheduledTimeUtc" class="form-control">
-            <span asp-validation-for="ScheduledTimeUtc" class="text-danger"></span>
+            <label asp-for="ScheduledTimeLocal" class="control-label"></label>
+            <input asp-for="ScheduledTimeLocal" class="form-control">
+            <span asp-validation-for="ScheduledTimeLocal" class="text-danger"></span>
         </div>
         <div class="mb-3">
             <label asp-for="Period" class="control-label"></label>

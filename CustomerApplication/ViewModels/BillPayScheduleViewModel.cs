@@ -16,8 +16,8 @@ public class BillPayScheduleViewModel
     public decimal? Amount { get; set; }
 
     [Display(Name = "Scheduled time")]
-    [DisplayFormat(DataFormatString = "{0:dd:mm:yyyhh:mm TT}", ApplyFormatInEditMode = true)]
-    public DateTime? ScheduledTimeUtc { get; set; }
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}", ApplyFormatInEditMode = true)]
+    public DateTime? ScheduledTimeLocal{ get; set; }
 
     public Period Period { get; set; }
 

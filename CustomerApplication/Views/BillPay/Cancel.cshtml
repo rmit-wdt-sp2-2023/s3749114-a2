@@ -6,28 +6,30 @@
 <p>Are you sure you want to cancel this BillPay?</p>
 
 <h3>From</h3>
-<dl>
-    <dt>@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
-    <dd>@Model.AccountNumber</dd>
+<dl class="row">
+    <dt class="col-sm-2">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+    <dd class="col-sm-10">@Model.AccountNumber</dd>
 </dl>
+
 <h3>To</h3>
-<dl>
-    <dt>@Html.DisplayNameFor(x => Model.PayeeID)</dt>
-    <dd>@Model.PayeeID</dd>
+<dl class="row">
+    <dt class="col-sm-2">@Html.DisplayNameFor(x => Model.PayeeID)</dt>
+    <dd class="col-sm-10">@Model.PayeeID</dd>
 </dl>
+
 <h3>Details</h3>
-<dl>
-    <dt>@Html.DisplayNameFor(x => Model.BillPayID)</dt>
-    <dd>@Html.DisplayFor(x => Model.BillPayID)</dd>
+<dl class="row">
+    <dt class="col-sm-2">@Html.DisplayNameFor(x => Model.BillPayID)</dt>
+    <dd class="col-sm-10">@Html.DisplayFor(x => Model.BillPayID)</dd>
 
-    <dt>@Html.DisplayNameFor(x => Model.Amount)</dt>
-    <dd>@Html.DisplayFor(x => Model.Amount)</dd>
+    <dt class="col-sm-2">@Html.DisplayNameFor(x => Model.Amount)</dt>
+    <dd class="col-sm-10">@Html.DisplayFor(x => Model.Amount)</dd>
 
-    <dt>@Html.DisplayNameFor(x => Model.ScheduledTimeUtc)</dt>
-    <dd>@Model.ScheduledTimeUtc.ToLocalTime()</dd>
+    <dt class="col-sm-2">@Html.DisplayNameFor(x => Model.ScheduledTimeLocal)</dt>
+    <dd class="col-sm-10">@Html.DisplayFor(x => Model.ScheduledTimeLocal)</dd>
 
-    <dt>@Html.DisplayNameFor(x => Model.Period)</dt>
-    <dd>@Html.DisplayFor(x => Model.Period)</dd>
+    <dt class="col-sm-2">@Html.DisplayNameFor(x => Model.Period)</dt>
+    <dd class="col-sm-10">@Html.DisplayFor(x => Model.Period)</dd>
 </dl>
 
 <form asp-action="Cancel">
