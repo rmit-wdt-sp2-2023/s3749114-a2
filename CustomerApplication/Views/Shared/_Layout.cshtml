@@ -45,6 +45,7 @@
                     </ul>
                     @if (isLoggedIn)
                     {
+                        <img style=" width: 55px; height: 55px; object-fit: contain;" src="@Url.Content("../ProfilePictures/default.png")" alt="Profile picture">
                         <a class="navbar-text" asp-controller="Dashboard" asp-action="Profile">@Context.Session.GetString(nameof(Customer.Name))</a>
                         <a class="btn btn-primary" asp-controller="Login" asp-action="Logout">Logout</a>
                     }
