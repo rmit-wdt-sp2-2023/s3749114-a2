@@ -163,91 +163,6 @@ public class DashboardController : Controller
         return View(nameof(Statements), viewModel);
     }
 
-    // Displays the BillPay page.
-
-    public IActionResult BillPay() => View();
-
-    public IActionResult ScheduleBillPay() => View();
-
-    public IActionResult SubmitBillPay() => View();
-
-    // Displays the profile page.
-
-    public IActionResult Profile() => View(CustomerViewModel());
-
-    // Displays the edit profile page.
-
-    public IActionResult EditDetails()
-    {
-        ViewBag.DisplaySuccess = false;
-        return View(CustomerViewModel());
-    }
-
-    // Processes edits to the user profile and reloads the page with success or error messages. 
-
-    [HttpPost]
-    public IActionResult SubmitEditDetails(CustomerViewModel viewModel)
-    {
-        List<ValidationResult> errors = _bankService.UpdateCustomer(CustomerID, viewModel.Name, viewModel.TFN,
-            viewModel.Address, viewModel.City, viewModel.State, viewModel.PostCode, viewModel.Mobile);
-
-        if (errors is not null)
-            foreach (ValidationResult e in errors)
-                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
-
-        if (!ModelState.IsValid)
-        {
-            ViewBag.DisplaySuccess = false;
-            return View(nameof(EditDetails), viewModel);
-        }
-        ViewBag.DisplaySuccess = true;
-        return View(nameof(EditDetails), viewModel);
-    }
-
-    // Displays the change password page.
-
-    public IActionResult ChangePassword()
-    {
-        ViewBag.DisplaySuccess = false;
-        return View(new ChangePasswordViewModel());
-    }
-
-    [HttpPost]
-    public IActionResult SubmitChangePassword(ChangePasswordViewModel viewModel)
-    {
-        List<ValidationResult> errors = _bankService.ChangePassword(
-            CustomerID, viewModel.OldPassword, viewModel.NewPassword);
-
-        if (errors is not null)
-            foreach (ValidationResult e in errors)
-                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
-  
-        if (!ModelState.IsValid)
-        {
-            ViewBag.DisplaySuccess = false;
-            return View(nameof(ChangePassword), viewModel);
-        }
-        ViewBag.DisplaySuccess = true;
-        return View(nameof(ChangePassword), viewModel);
-    }
-
-    // VIEW MODEL CREATION
-
-    public CustomerViewModel CustomerViewModel()
-    {
-        Customer customer = _bankService.GetCustomer(CustomerID);
-        return new CustomerViewModel
-        {
-            Name = customer.Name,
-            TFN = customer.TFN,
-            Address = customer.Address,
-            City = customer.City,
-            State = customer.State,
-            PostCode= customer.PostCode,
-            Mobile = customer.Mobile
-        };
-    }
-
     public StatementsViewModel StatementsViewModel()
     {
         return new StatementsViewModel
@@ -281,6 +196,4 @@ public class DashboardController : Controller
         }
         return viewModel;
     }
-
-
 }
