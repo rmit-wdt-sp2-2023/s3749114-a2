@@ -1,19 +1,25 @@
 using System.Globalization;
 using CustomerApplication.Data;
+using CustomerApplication.Services;
+using CustomerApplication.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
 
-var cultureInfo = new CultureInfo("en-AU");
+CultureInfo cultureInfo = new("en-AU");
 cultureInfo.NumberFormat.CurrencySymbol = "$";
 CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
-var builder = WebApplication.CreateBuilder(args);
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+// Add services to container.
 
 builder.Services.AddDbContext<BankContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("BankContext"));
     options.UseLazyLoadingProxies();
 });
+
+builder.Services.AddHostedService<BillPayBackgroundService>();
 
 // Store session and make cookie essential.
 
@@ -23,24 +29,24 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Add services to container.
+builder.Services.AddScoped<BankService>();
 
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
+WebApplication app = builder.Build();
 
 // Seed data.
 
 using (var scope = app.Services.CreateScope())
 {
-    var services = scope.ServiceProvider;
+    IServiceProvider services = scope.ServiceProvider;
     try
     {
         SeedData.Initialise(services);
     }
     catch (Exception ex)
     {
-        var logger = services.GetRequiredService<ILogger<Program>>();
+        ILogger logger = services.GetRequiredService<ILogger<Program>>();
         logger.LogError(ex, "An error occurred seeding the database.");
     }
 }

@@ -1,0 +1,23 @@
+﻿@model List<AccountViewModel>
+
+@foreach (AccountViewModel a in Model)
+{
+    <input type="radio" name="AccountNumber" value="@a.AccountNumber" id="@a.AccountNumber" class="btn-check">
+    <label class="btn btn-outline-primary w-100 text-start" for="@a.AccountNumber">
+        <span class="row">
+            <span class="col">
+                @a.AccountType<br>
+                @a.AccountNumber
+            </span>
+            <span class="col">
+                @Html.DisplayNameFor(x => a.Balance)<br>
+                @Html.DisplayFor(x => a.Balance)
+            </span>
+            <span class="col">
+                @Html.DisplayNameFor(x => a.AvailableBalance)<br>
+                @Html.DisplayFor(x => a.AvailableBalance)
+            </span>
+        </span>
+    </label>
+    <br>
+}

@@ -1,0 +1,49 @@
+﻿@model ProfileViewModel
+@{ ViewData["Title"] = "Edit details"; }
+
+<h1>Edit details</h1>
+
+<form asp-action="SubmitEditDetails">
+    <div class="mb-3">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" value=@Model.Name>
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="TFN" class="control-label"></label>
+        <input asp-for="TFN" class="form-control" value=@Model.TFN>
+        <div class="form-text">Must be of the format: XXX XXX XXX</div>
+        <span asp-validation-for="TFN" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Address" class="control-label"></label>
+        <input asp-for="Address" class="form-control" value=@Model.Address>
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="City" class="control-label"></label>
+        <input asp-for="City" class="form-control" value=@Model.City>
+        <span asp-validation-for="City" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="State" class="control-label"></label>
+        <input asp-for="State" class="form-control" value=@Model.State>
+        <div class="form-text">Enter 2 or 3 lettered Australian state, e.g., SA, VIC, NSW, etc.</div>
+        <span asp-validation-for="State" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="PostCode" class="control-label"></label>
+        <input asp-for="PostCode" class="form-control" value=@Model.PostCode>
+        <span asp-validation-for="PostCode" class="text-danger"></span>
+    </div>
+    <div class="mb-3">
+        <label asp-for="Mobile" class="control-label"></label>
+        <input asp-for="Mobile" class="form-control" value=@Model.Mobile>
+        <div class="form-text">Must be of the format: 04XX XXX XXX</div>
+        <span asp-validation-for="Mobile" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+</form>
+@Html.ValidationMessage("Other", new { @class = "text-danger" })
+
+<a asp-action="Index">Back to profile</a>

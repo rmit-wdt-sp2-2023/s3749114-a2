@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using BankLibrary.Models;
+using CustomerApplication.Models;
 
 namespace CustomerApplication.Data;
 

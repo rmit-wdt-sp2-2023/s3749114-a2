@@ -1,0 +1,31 @@
+﻿@model BillPayScheduleViewModel
+@{ ViewData["Title"] = "BillPay successful"; }
+
+<h1>BillPay successful</h1>
+
+<h2>Your receipt</h2>
+<h3>From</h3>
+<dl>
+    <dt>@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+    <dd>@Model.AccountNumber</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.AccountType)</dt>
+    <dd>@Html.DisplayFor(x => Model.AccountType)</dd>
+</dl>
+<h3>To</h3>
+<dl>
+    <dt>@Html.DisplayNameFor(x => Model.PayeeID)</dt>
+    <dd>@Model.PayeeID</dd>
+</dl>
+<h3>Details</h3>
+<dl>
+    <dt>@Html.DisplayNameFor(x => Model.Amount)</dt>
+    <dd>@Html.DisplayFor(x => Model.Amount)</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.ScheduledTimeLocal)</dt>
+    <dd>@Html.DisplayFor(x => Model.ScheduledTimeLocal)</dd>
+
+    <dt>@Html.DisplayNameFor(x => Model.Period)</dt>
+    <dd>@Html.DisplayFor(x => Model.Period)</dd>
+</dl>
+<a asp-action="Index">Go back to BillPay</a>
