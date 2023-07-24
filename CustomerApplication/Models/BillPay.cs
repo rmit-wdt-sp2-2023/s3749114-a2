@@ -29,7 +29,7 @@ public class BillPay
 
     [Required]
     [DataType(DataType.Date)]
-    [CustomValidation(typeof(ValidationMethods), "DateIsTenMinsFromNow")]
+    //[CustomValidation(typeof(ValidationMethods), "DateIsTenMinsFromNow")]
     public DateTime ScheduledTimeUtc { get; set; }
 
     [Required]

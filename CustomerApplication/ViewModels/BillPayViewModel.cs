@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CustomerApplication.Models;
+using CustomerApplication.Validation;
 
 namespace CustomerApplication.ViewModels;
 
@@ -19,6 +20,7 @@ public class BillPayViewModel
 
     [Display(Name = "Scheduled time")]
     [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}", ApplyFormatInEditMode = true)]
+    [CustomValidation(typeof(ValidationMethods), "DateIsTenMinsFromNow")]
     public DateTime ScheduledTimeLocal { get; set; }
 
     public Period Period { get; set; }

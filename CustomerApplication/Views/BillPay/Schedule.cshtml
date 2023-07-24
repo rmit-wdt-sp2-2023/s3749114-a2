@@ -1,7 +1,7 @@
 ﻿@model BillPayScheduleViewModel
 @{ ViewData["Title"] = "Schedule BillPay"; }
 
-<h1>Schedule BillPay</h1>
+<h1 class="mb-3">Schedule BillPay</h1>
 <form asp-action="Confirm">
     <fieldset>
         <legend>From</legend>
@@ -9,8 +9,8 @@
                 @foreach (var account in Model.AccountViewModels)
                 {
                     <input type="radio" asp-for="AccountNumber" value="@account.AccountNumber" id="@account.AccountNumber" class="btn-check" autocomplete="off">
-                    <label class="btn btn-outline-primary w-100 text-start" for="@account.AccountNumber">
-                        <span class="row">
+                    <label class="btn btn-outline-primary w-100 text-start mb-2" for="@account.AccountNumber">
+                        <span class="row p-1">
                             <span class="col">
                                 @account.AccountType<br>
                                 @account.AccountNumber<br>

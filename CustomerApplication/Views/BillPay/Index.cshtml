@@ -3,9 +3,9 @@
 <script>const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
 const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))</script>
 
-<h1>BillPay</h1>
+<h1 class="mb-3">BillPay</h1>
 
-<h2>All scheduled</h2>
+<h2 class="mb-3">All scheduled</h2>
 
 @if (Model.Count > 0)
 {
@@ -68,4 +68,4 @@ else
 {
     <p>You have no scheduled BillPays.</p>
 }
-<a asp-action="Schedule" class="btn btn-primary">Schedule new</a>
+<a asp-action="Schedule" class="btn btn-primary mt-5">Schedule new</a>

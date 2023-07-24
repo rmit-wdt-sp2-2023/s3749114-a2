@@ -28,8 +28,13 @@ public static class ValidationMethods
         if (value > DateTime.Now.AddMinutes(10))
             return ValidationResult.Success;
         else
+        {
+            Console.WriteLine("BILLPAY TIME NOT VALID");
             return new ValidationResult(
                 "Must be at least 10 minutes into the future.", new List<string>() { context.MemberName });
+
+        }
+            
     }
 
     public static bool Validate<T>(T model, out List<ValidationResult> results)
