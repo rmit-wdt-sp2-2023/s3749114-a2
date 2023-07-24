@@ -19,13 +19,14 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="Magick.NET.Core" Version="13.1.3" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.1.3" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Login\" />
     <None Remove="Views\BillPay\" />
-    <None Remove="Views\Shared\EditorTemplates\" />
     <None Remove="BackgroundServices\" />
     <None Remove="Views\Profile\" />
+    <None Remove="Views\Statements\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -35,9 +36,9 @@
   <ItemGroup>
     <Folder Include="Views\Login\" />
     <Folder Include="Views\BillPay\" />
-    <Folder Include="Views\Shared\EditorTemplates\" />
     <Folder Include="BackgroundServices\" />
     <Folder Include="Views\Profile\" />
+    <Folder Include="Views\Statements\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\Dashboard\BillyPay.cshtml" />

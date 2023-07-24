@@ -1,10 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using CustomerApplication.Data;
 using CustomerApplication.ViewModels;
 using CustomerApplication.Models;
 using CustomerApplication.Filters;
 using CustomerApplication.Services;
-using CustomerApplication.Utilities.Paging;
 using System.ComponentModel.DataAnnotations;
 
 namespace CustomerApplication.Controllers;
@@ -141,35 +139,6 @@ public class DashboardController : Controller
     // Displays the transaction success page. 
 
     public IActionResult Success(TransactionViewModel viewModel) => View(viewModel);
-
-    // Displays the statements page. 
-
-    public IActionResult Statements() => View(StatementsViewModel());
-
-    [HttpPost]
-    public IActionResult Statements(int id, StatementsViewModel viewModel)
-    {
-        if (!ModelState.IsValid)
-            return View(viewModel);
-
-        List<Transaction> transactions = _bankService.GetTransactions(viewModel.AccountNumber.GetValueOrDefault());
-
-        viewModel.PageNumber = id;
-        viewModel.TransactionPages = Paging.CalculateTotalPages(transactions.Count, viewModel.PageSize);
-        viewModel.TotalPages = viewModel.TransactionPages == 0 ? 1 : viewModel.TransactionPages;
-        viewModel.Transactions = Paging.GetPage(transactions, viewModel.PageNumber, viewModel.PageSize);
-        viewModel.AccountsViewModel = AccountsViewModel();
-
-        return View(nameof(Statements), viewModel);
-    }
-
-    public StatementsViewModel StatementsViewModel()
-    {
-        return new StatementsViewModel
-        {
-            AccountsViewModel = AccountsViewModel()
-        };
-    }
 
     public TransactionViewModel TransactionViewModel(TransactionType transactionType)
     {

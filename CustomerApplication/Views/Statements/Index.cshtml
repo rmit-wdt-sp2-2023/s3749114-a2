@@ -1,0 +1,85 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model StatementsViewModel
+@{ ViewData["Title"] = "Statements"; }
+
+<h1 class="mb-3">Statements</h1>
+
+<form asp-action="Statements">
+    <fieldset>
+        <legend>Select account</legend>
+        <div class="mb-5">
+            @foreach (var account in Model.AccountsViewModel)
+            {
+                <input type="radio" asp-for="AccountNumber" value="@account.AccountNumber" class="btn-check"
+                       id="@account.AccountNumber" autocomplete="off" onchange="this.form.submit()">
+                <label class="btn btn-outline-primary w-100 text-start mb-2" for="@account.AccountNumber">
+                    <span class="row p-1">
+                        <span class="col">
+                            @account.AccountType<br>
+                            @account.AccountNumber<br>
+                        </span>
+                        <span class="col">
+                            @Html.DisplayNameFor(x => account.Balance)<br>
+                            @Html.DisplayFor(x => account.Balance)
+                        </span>
+                        <span class="col">
+                            @Html.DisplayNameFor(x => account.AvailableBalance)<br>
+                            @Html.DisplayFor(x => account.AvailableBalance)
+                        </span>
+                    </span>
+                </label>
+                <br>
+            }
+            <span asp-validation-for="AccountNumber" class="text-danger"></span>
+        </div>
+    </fieldset>
+</form>
+
+@if (Model.AccountNumber is not null)
+{
+    <h2 class="mb-3">Transaction history</h2>
+    @if (Model.Transactions.Count <= 0)
+    {
+        <span>No transacions found.</span>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].TransactionID)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].TransactionType)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].AccountNumber)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].DestinationNumber)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].Amount)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].TransactionTimeUtc)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].Comment)</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (Transaction t in Model.Transactions)
+                {
+                    <tr>
+                        <td>@t.TransactionID</td>
+                        <td>@Html.DisplayFor(x => t.TransactionType)</td>
+                        <td>@t.AccountNumber</td>
+                        <td>@t.DestinationNumber</td>
+                        <td>@Html.DisplayFor(x => t.Amount)</td>
+                        <td>@t.LocalTimeString()</td>
+                        <td>@t.Comment</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+ 
+        @Html.PagedListPager(Model.Transactions, page => Url.Action("Statements", new { Model.AccountNumber, page }),
+        new PagedListRenderOptions
+        {
+            LiElementClasses = new[] { "page-item" },
+            PageClasses = new[] { "page-link" },
+            UlElementClasses = new[] { "pagination", "justify-content-center", "mt-5" }
+        });
+    }
+}

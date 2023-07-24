@@ -36,7 +36,7 @@
                                 <a class="nav-link" asp-controller="Dashboard" asp-action="Transfer">Transfer</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Dashboard" asp-action="Statements">Statements</a>
+                                <a class="nav-link" asp-controller="Statements" asp-action="Index">Statements</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="BillPay" asp-action="Index">BillPay</a>
@@ -67,7 +67,7 @@
         </nav>
     </header>
     <!-- Main -->
-    <main role="main" class="container">@RenderBody()</main>
+    <main role="main" class="container mt-5 mb-5">@RenderBody()</main>
     <!-- Footer -->
     <footer class="container">
         <p class="text-center">

@@ -3,11 +3,9 @@ using CustomerApplication.Data;
 using CustomerApplication.Models;
 using CustomerApplication.Validation;
 using System.ComponentModel.DataAnnotations;
-using CustomerApplication.Utilities;
-using static System.Net.Mime.MediaTypeNames;
 using ImageMagick;
-using System.IO;
-using System.Drawing;
+using X.PagedList;
+using Microsoft.EntityFrameworkCore;
 
 namespace CustomerApplication.Services;
 
@@ -53,6 +51,13 @@ public class BankService
                 return transactions;
         }
         return null;
+    }
+
+    public IPagedList<Transaction> GetPagedTransactions(int accountNum, int page, int pageSize)
+    {
+        IPagedList<Transaction> pagedList = _context.Transactions.Where(x => x.AccountNumber == accountNum)
+            .OrderByDescending(x => x.TransactionTimeUtc).ToPagedList(page, pageSize);
+        return pagedList.Count > 0 ? pagedList : null;
     }
 
     private (ValidationResult, Account) GetAccount(int accountNum, string propertyName)
