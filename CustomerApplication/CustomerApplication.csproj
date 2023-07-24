@@ -16,6 +16,13 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="7.0.9" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="7.0.9" />
     <PackageReference Include="SimpleHashing.Net" Version="2.1.0" />
+<<<<<<< Updated upstream
+=======
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+    <PackageReference Include="Magick.NET.Core" Version="13.1.3" />
+    <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.1.3" />
+    <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
+>>>>>>> Stashed changes
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Login\" />
