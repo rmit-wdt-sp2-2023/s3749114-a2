@@ -329,39 +329,31 @@ public class BankService
 
         // -----
 
-        if (Directory.Exists(tempFilePath) || File.Exists(tempFilePath))
-        {
-            Console.WriteLine("IT EXISTS");
-        }
-
         string newFileName = $"{customerID}.jpg";
         string newFilePath = Path.Combine(_directory, newFileName);
 
         try
         {
-
-      
         using MagickImage image = new(tempFilePath);
 
- 
         image.Resize(new MagickGeometry(400, 400));
         image.Format = MagickFormat.Jpg;
         image.Quality = 100;
         image.Alpha(AlphaOption.Remove);
         image.BackgroundColor = new MagickColor("#FFFFFF");
-
-
-
         image.Write(newFilePath);
 
         }
-        catch(MagickCoderErrorException)
+        catch (MagickCoderErrorException)
         {
             return (new ValidationResult("Upload failed. Image may be corrupt. Try a different image",
                 new List<string>() { "ProfileImage" }), null);
         }
-
-
+        catch (MagickException)
+        {
+            return (new ValidationResult("Error processing image. Try again or choose a different image",
+                new List<string>() { "ProfileImage" }), null);
+        }
 
         File.Delete(tempFilePath);
 
