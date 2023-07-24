@@ -107,6 +107,9 @@ namespace CustomerApplication.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("State")
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");

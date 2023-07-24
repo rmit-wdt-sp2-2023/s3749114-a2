@@ -1,17 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CustomerApplication.Models;
+namespace CustomerApplication.ViewModels;
 
-public class Customer
+public class ProfileViewModel
 {
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
-    [Range(1000, 9999)]
-    public required int CustomerID { get; init; }
-
-    [Required]
+    [Required(ErrorMessage = "The name field is required.")]
     [StringLength(50, ErrorMessage = "Cannot be more than 50 characters.")]
-    public required string Name { get; set; }
+    public string Name { get; set; }
 
     [StringLength(11, MinimumLength = 11, ErrorMessage = "Must be exactly 11 characters.")]
     [RegularExpression(@"^\d{3} \d{3} \d{3}$", ErrorMessage = "Must contain digits in the specified format.")]
@@ -29,8 +24,8 @@ public class Customer
     public string State { get; set; }
 
     [Display(Name = "Postcode")]
-    [StringLength(4)]
-    [RegularExpression(@"^\d{4}$")]
+    [StringLength(4, MinimumLength = 4, ErrorMessage = "Must be exactly 4 digits.")]
+    [RegularExpression(@"^\d{4}$", ErrorMessage = "Must contain digits only.")]
     public string PostCode { get; set; }
 
     [StringLength(12, MinimumLength = 12, ErrorMessage = "Must be exactly 12 characters.")]
@@ -38,6 +33,5 @@ public class Customer
     public string Mobile { get; set; }
 
     public string ProfilePicture { get; set; }
-
-    public virtual List<Account> Accounts { get; init; } = new();
 }
+

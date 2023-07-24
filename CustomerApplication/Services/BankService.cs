@@ -3,6 +3,11 @@ using CustomerApplication.Data;
 using CustomerApplication.Models;
 using CustomerApplication.Validation;
 using System.ComponentModel.DataAnnotations;
+using CustomerApplication.Utilities;
+using static System.Net.Mime.MediaTypeNames;
+using ImageMagick;
+using System.IO;
+using System.Drawing;
 
 namespace CustomerApplication.Services;
 
@@ -10,9 +15,15 @@ public class BankService
 {
     private readonly BankContext _context;
 
+    private readonly string _directory;
+
     private static readonly ISimpleHash SimpleHash = new SimpleHash();
 
-    public BankService(BankContext context) => _context = context;
+    public BankService(BankContext context, IWebHostEnvironment webHostEnvironment)
+    {
+        _context = context;
+        _directory = Path.Combine(webHostEnvironment.WebRootPath, "ProfilePictures");
+    }
 
     public Login Login(string loginID, string password)
     {
@@ -43,8 +54,6 @@ public class BankService
         }
         return null;
     }
-
-    public Customer GetCustomer(int customerID) => _context.Customers.FirstOrDefault(c => c.CustomerID == customerID);
 
     private (ValidationResult, Account) GetAccount(int accountNum, string propertyName)
     {
@@ -225,10 +234,16 @@ public class BankService
         }
     }
 
+    /* * * * * * * * * * * * * * * * * 
+     *     Customers / Profiles      *
+     * * * * * * * * * * * * * * * * */
+
+    public Customer GetCustomer(int customerID) => _context.Customers.FirstOrDefault(c => c.CustomerID == customerID);
+
     public List<ValidationResult> UpdateCustomer(int customerID, string name, string TFN,
         string address, string city, string state, string postCode, string mobile)
     {
-        Customer customer = _context.Customers.FirstOrDefault(c => c.CustomerID == customerID);
+        Customer customer = GetCustomer(customerID);
         List<ValidationResult> errors = new();
 
         if (customer is null)
@@ -240,7 +255,7 @@ public class BankService
         customer.TFN = TFN;
         customer.Address = address;
         customer.City = city;
-        customer.State = state.ToUpper();
+        customer.State = state?.ToUpper();
         customer.PostCode = postCode;
         customer.Mobile = mobile;
 
@@ -249,37 +264,148 @@ public class BankService
 
         _context.Customers.Update(customer);
         _context.SaveChanges();
+
         return null;
     }
 
-    public List<ValidationResult> ChangePassword(int customerID, string oldPass, string newPass)
+    public List<ValidationResult> ChangePassword(int customerID, string oldPass, string newPass, string confirmPass) 
     {
         List<ValidationResult> errors = new();
 
         if (oldPass is null)
-            errors.Add(new ValidationResult("Enter your old password.", new List<string>() { "OldPassword" }));
+            errors.Add(new ValidationResult("Enter old password.", new List<string>() { "OldPassword" }));
         if (newPass is null)
-            errors.Add(new ValidationResult("Enter a new password.", new List<string>() { "NewPassword" }));
+            errors.Add(new ValidationResult("Enter new password.", new List<string>() { "NewPassword" }));
+        if (newPass != confirmPass)
+            errors.Add(new ValidationResult("Passwords don't match.", new List<string>() { "ConfirmPassword" }));
+
         if (errors.Count > 0)
             return errors;
 
         Login login = _context.Logins.FirstOrDefault(c => c.CustomerID == customerID);
 
         if (login is null)
-            errors.Add(new ValidationResult("Error, couldn't find user.", new List<string>() { "PasswordFailed" }));
+            errors.Add(new ValidationResult("Error, couldn't find customer.", new List<string>() { "PasswordFailed" }));
         else
-        {
             if (!SimpleHash.Verify(oldPass, login.PasswordHash))
                 errors.Add(new ValidationResult("Incorrect password.", new List<string>() { "OldPassword" }));
-        }
+
         if (errors.Count > 0)
             return errors;
 
         login.PasswordHash = SimpleHash.Compute(newPass);
+
         _context.Logins.Update(login);
         _context.SaveChanges();
+
         return null;
     }
+
+    public (ValidationResult, string fileName) UploadProfilePicture(int customerID, IFormFile profileImage)
+    {
+        if (profileImage is null)
+            return (new ValidationResult("You must select an image.", new List<string>() { "ProfileImage" }), null);
+
+        Customer customer = GetCustomer(customerID);
+
+        if (customer is null)
+            return (new ValidationResult(
+                "Update unsuccessful. Unable to find customer.", new List<string>() { "ProfileImage" }), null);
+
+        // ----
+
+        string ext = Path.GetExtension(profileImage.FileName).ToLowerInvariant();
+
+        string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".heic" };
+
+        if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
+            return (new ValidationResult("Invalid file type.", new List<string>() { "ProfileImage" }), null);
+
+        string tempFilePath = Path.Combine(_directory, $"{customerID}-temp-{ext}");
+
+        using FileStream fileStream = new(tempFilePath, FileMode.Create);
+
+        profileImage.CopyTo(fileStream);
+
+        // -----
+
+        string newFileName = $"{customerID}.jpg";
+        string newFilePath = Path.Combine(_directory, newFileName);
+
+        try
+        {
+        using MagickImage image = new(tempFilePath);
+
+        image.Resize(new MagickGeometry(400, 400));
+        image.Format = MagickFormat.Jpg;
+        image.Quality = 100;
+        image.Alpha(AlphaOption.Remove);
+        image.BackgroundColor = new MagickColor("#FFFFFF");
+        image.Write(newFilePath);
+
+        }
+        catch (MagickCoderErrorException)
+        {
+            return (new ValidationResult("Upload failed. Image may be corrupt. Try a different image",
+                new List<string>() { "ProfileImage" }), null);
+        }
+        catch (MagickException)
+        {
+            return (new ValidationResult("Error processing image. Try again or choose a different image",
+                new List<string>() { "ProfileImage" }), null);
+        }
+
+        File.Delete(tempFilePath);
+
+        //-----
+
+        customer.ProfilePicture = newFileName;
+
+        _context.Customers.Update(customer);
+        _context.SaveChanges();
+
+        return (null, newFileName);
+    }
+
+    public List<ValidationResult> RemoveProfilePicture(int customerID)
+    {
+        List<ValidationResult> errors = new();
+        Customer customer = GetCustomer(customerID);
+
+        if (customer is null)
+        {
+            errors.Add(new ValidationResult("Could not update. Can't find customer.", new List<string>() { "Other" }));
+            return errors;
+        }
+
+        if (customer.ProfilePicture is null)
+        {
+            errors.Add(new ValidationResult("No profile picture to remove.", new List<string>() { "ProfilePicture" }));
+            return errors;
+        }
+
+        string filePath = Path.Combine(_directory, customer.ProfilePicture);
+
+        try
+        {
+            File.Delete(filePath);
+        }
+        catch (Exception)
+        {
+            errors.Add(new ValidationResult(
+                "Couldn't remove profile picture.", new List<string>() { "ProfilePicture" }));
+        }
+        customer.ProfilePicture = null;
+
+        _context.Customers.Update(customer);
+        _context.SaveChanges();
+
+        return null;
+    }
+
+    /* * * * * * * * * * * * * * * * * 
+     *            BillPays           *
+     * * * * * * * * * * * * * * * * */
 
     public List<BillPay> GetBillPays(int customerID)
     {

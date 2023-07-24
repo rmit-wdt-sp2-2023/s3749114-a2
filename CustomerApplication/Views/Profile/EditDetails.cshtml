@@ -1,7 +1,8 @@
-﻿@model CustomerViewModel
-@{ ViewData["Title"] = "Edit Details"; }
+﻿@model ProfileViewModel
+@{ ViewData["Title"] = "Edit details"; }
 
-<h1>Edit Details</h1>
+<h1>Edit details</h1>
+
 <form asp-action="SubmitEditDetails">
     <div class="mb-3">
         <label asp-for="Name" class="control-label"></label>
@@ -27,6 +28,7 @@
     <div class="mb-3">
         <label asp-for="State" class="control-label"></label>
         <input asp-for="State" class="form-control" value=@Model.State>
+        <div class="form-text">Enter 2 or 3 lettered Australian state, e.g., SA, VIC, NSW, etc.</div>
         <span asp-validation-for="State" class="text-danger"></span>
     </div>
     <div class="mb-3">
@@ -42,9 +44,6 @@
     </div>
     <button type="submit" class="btn btn-primary">Update</button>
 </form>
-@if (@ViewBag.DisplaySuccess)
-{
-    <span class="text-success">Profile updated successfully.</span>
-}
 @Html.ValidationMessage("Other", new { @class = "text-danger" })
-<a asp-controller="Dashboard" asp-action="Profile">Back to Profile</a>
+
+<a asp-action="Index">Back to profile</a>

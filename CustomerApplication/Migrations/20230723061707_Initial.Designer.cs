@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CustomerApplication.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20230722082549_Initial")]
+    [Migration("20230723061707_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -109,6 +109,9 @@ namespace CustomerApplication.Migrations
                     b.Property<string>("PostCode")
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
+
+                    b.Property<string>("ProfilePicture")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("State")
                         .HasMaxLength(3)
