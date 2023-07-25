@@ -1,67 +1,73 @@
 ﻿@model BillPayScheduleViewModel
 @{ ViewData["Title"] = "Schedule BillPay"; }
 
-<h1>Schedule BillPay</h1>
-<form asp-action="Confirm">
-    <fieldset>
-        <legend>From</legend>
-        <div class="mb-3">
-                @foreach (var account in Model.AccountViewModels)
+<div class="border rounded p-5">
+    <h1 class="mb-5">Schedule BillPay</h1>
+    <form asp-action="ConfirmSchedule">
+        <fieldset class="mb-4">
+            <legend class="h4">From</legend>
+            <div class="btn-group-vertical w-100 mt-1" role="group">
+                @foreach (AccountViewModel a in Model.AccountViewModels)
                 {
-                    <input type="radio" asp-for="AccountNumber" value="@account.AccountNumber" id="@account.AccountNumber" class="btn-check" autocomplete="off">
-                    <label class="btn btn-outline-primary w-100 text-start" for="@account.AccountNumber">
-                        <span class="row">
+                    <input type="radio" class="btn-check" autocomplete="off"
+                           asp-for="AccountNumber" value="@a.AccountNumber" id="@a.AccountNumber">
+                    <label class="btn btn-outline-primary text-start" for="@a.AccountNumber">
+                        <span class="row p-1">
                             <span class="col">
-                                @account.AccountType<br>
-                                @account.AccountNumber<br>
+                                @a.AccountType<br>
+                                @a.AccountNumber<br>
                             </span>
                             <span class="col">
-                                @Html.DisplayNameFor(x => account.Balance)<br>
-                                @Html.DisplayFor(x => account.Balance)
+                                @Html.DisplayNameFor(x => a.Balance)<br>
+                                @Html.DisplayFor(x => a.Balance)
                             </span>
                             <span class="col">
-                                @Html.DisplayNameFor(x => account.AvailableBalance)<br>
-                                @Html.DisplayFor(x => account.AvailableBalance)
+                                @Html.DisplayNameFor(x => a.AvailableBalance)<br>
+                                @Html.DisplayFor(x => a.AvailableBalance)
                             </span>
                         </span>
                     </label>
-                    <br>
                 }
-            <span asp-validation-for="AccountNumber" class="text-danger"></span>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>To</legend>
-        <div class="mb-3">
-            <label asp-for="PayeeID" class="control-label"></label>
-            <input asp-for="PayeeID" class="form-control">
-            <span asp-validation-for="PayeeID" class="text-danger"></span>
-        </div>
-    </fieldset>
-    <fieldset>
-        <legend>Details</legend>
-        <div class="mb-3">
-            <label asp-for="Amount" class="control-label"></label>
-            <div class="input-group">
-                <div class="input-group-text">$</div>
-                <input asp-for="Amount" class="form-control">
             </div>
-            <span asp-validation-for="Amount" class="text-danger"></span>
+            <span asp-validation-for="AccountNumber" class="text-danger mt-2 d-block"></span>
+        </fieldset>
+        <fieldset class="mb-4">
+            <legend class="h4">To</legend>
+            <label asp-for="PayeeID" class="control-label mb-2"></label>
+            <input asp-for="PayeeID" class="form-control">
+            <span asp-validation-for="PayeeID" class="text-danger mt-2 d-block"></span>
+        </fieldset>
+        <fieldset>
+            <legend class="h4">Details</legend>
+            <div class="mb-3">
+                <label asp-for="Amount" class="control-label mb-2"></label>
+                <div class="input-group">
+                    <div class="input-group-text">$</div>
+                    <input asp-for="Amount" class="form-control">
+                </div>
+                <span asp-validation-for="Amount" class="text-danger mt-2 d-block"></span>
+            </div>
+            <fieldset class="mb-3">
+                <legend class="col-form-label mb-2 p-0">@Html.DisplayNameFor(x => Model.Period)</legend>
+                <div class="btn-group" role="group">
+                    @foreach (Period p in System.Enum.GetValues(typeof(Period)))
+                    {
+                        <input class="btn-check" type="radio" asp-for="Period" value="@((int)p)" id="@((int)p)">
+                        Period period = (Period)p;
+                        <label class="btn btn-outline-primary" for="@((int)p)">@Html.DisplayFor(x => period)</label>
+                    }
+                </div>
+                <span asp-validation-for="Period" class="text-danger mt-2 d-block"></span>
+            </fieldset>
+            <div class="mb-4">
+                <label asp-for="ScheduledTimeLocal" class="control-label mb-2"></label>
+                <input asp-for="ScheduledTimeLocal" class="form-control">
+                <span asp-validation-for="ScheduledTimeLocal" class="text-danger mt-2 d-block"></span>
+            </div>
+        </fieldset>
+        <div class="d-grid gap-2 d-md-flex mt-5">
+            <button type="submit" class="btn btn-primary">Continue</button>
+            <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
         </div>
-        <div class="mb-3">
-            <label asp-for="ScheduledTimeLocal" class="control-label"></label>
-            <input asp-for="ScheduledTimeLocal" class="form-control">
-            <span asp-validation-for="ScheduledTimeLocal" class="text-danger"></span>
-        </div>
-        <div class="mb-3">
-            <label asp-for="Period" class="control-label"></label>
-            <select asp-for="Period" asp-items="Html.GetEnumSelectList<Period>()" class="form-select">
-            </select>
-            <span asp-validation-for="Period" class="text-danger"></span>
-        </div>
-    </fieldset>
-    <div class="mb-3">
-        <button type="submit" class="btn btn-primary">Continue</button>
-    </div>
-</form>
-<a asp-action="Index">Go back to BillPay</a>
+    </form>
+</div>

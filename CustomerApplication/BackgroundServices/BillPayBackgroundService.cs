@@ -27,7 +27,6 @@ public class BillPayBackgroundService : BackgroundService
         List<BillPay> billpays = await context.BillPays.ToListAsync(cancellationToken);
 
         foreach (BillPay b in billpays)
-        {
             if (b.ScheduledTimeUtc <= DateTime.UtcNow && b.BillPayStatus == BillPayStatus.Scheduled)
             {
                 Account account = context.Accounts.Find(b.AccountNumber);
@@ -52,7 +51,6 @@ public class BillPayBackgroundService : BackgroundService
                     }
                 }
             }
-        }
         await context.SaveChangesAsync(cancellationToken);
     }
 }

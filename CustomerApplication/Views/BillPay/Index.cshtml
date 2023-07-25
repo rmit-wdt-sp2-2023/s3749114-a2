@@ -1,71 +1,75 @@
 ﻿@model List<BillPayViewModel>
 @{ ViewData["Title"] = "BillPay"; }
-<script>const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))</script>
 
-<h1>BillPay</h1>
-
-<h2>All scheduled</h2>
-
-@if (Model.Count > 0)
-{
-    @if (ViewBag.DisplayFailed)
+<div class="border rounded p-5">
+    <h1 class="mb-5">BillPay schedule</h1>
+    @if (ViewBag.DisplayCancelled)
     {
-        <div class="alert alert-danger" role="alert">
-            A scheduled BillPay has failed due to insufficient funds. You may press
-            the cross to cancel it and/or schedule a new BillPay to try again.
-        </div>
+        <div class="alert alert-success" role="alert">BillPay cancelled successfully.</div>
     }
-    @if (ViewBag.DisplayBlocked)
+    @if (Model.Count > 0)
     {
-        <div class="alert alert-danger" role="alert">
-            A scheduled BillPay has been blocked and will not be processed until an
-            admin unblocks it. You may press the cross to cancel the BillPay if desired.
-        </div>
-    }
-    <table class="table">
-        <thead>
-            <tr>
-                <th scope="col">@Html.DisplayNameFor(x => Model[0].BillPayID)</th>
-                <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountNumber)</th>
-                <th scope="col">@Html.DisplayNameFor(x => Model[0].PayeeID)</th>
-                <th scope="col">@Html.DisplayNameFor(x => Model[0].Amount)</th>
-                <th scope="col">@Html.DisplayNameFor(x => Model[0].ScheduledTimeLocal)</th>
-                <th scope="col">@Html.DisplayNameFor(x => Model[0].Period)</th>
-                <th scope="col">@Html.DisplayNameFor(x => Model[0].BillPayStatus)</th>
-                <th scope="col"></th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (BillPayViewModel b in Model)
-            {
+        @if (ViewBag.DisplayFailed)
+        {
+            <div class="alert alert-danger" role="alert">
+                A scheduled BillPay has failed due to insufficient funds. Press the cross to cancel it.
+            </div>
+        }
+        @if (ViewBag.DisplayBlocked)
+        {
+            <div class="alert alert-danger" role="alert">
+                A scheduled BillPay has been blocked and will not be processed until an
+                admin unblocks it. You may press the cross to cancel the BillPay if desired.
+            </div>
+        }
+        @if (ViewBag.DisplaySuccess)
+        {
+            <div class="alert alert-success" role="alert">BillPay scheduled successfully.</div>
+        }
+        <table class="table mb-5">
+            <thead>
                 <tr>
-                    <td class="align-middle">@b.BillPayID</td>
-                    <td class="align-middle">@b.AccountNumber</td>
-                    <td class="align-middle">@b.PayeeID</td>
-                    <td class="align-middle">@Html.DisplayFor(x => b.Amount)</td>
-                    <td class="align-middle">@Html.DisplayFor(x => b.ScheduledTimeLocal)</td>
-                    <td class="align-middle">@Html.DisplayFor(x => b.Period)</td>
-                    <td class="align-middle">
-                        @if (@b.BillPayStatus == BillPayStatus.Blocked || @b.BillPayStatus == BillPayStatus.Failed)
-                        {
-                            <span class="text-danger">@b.BillPayStatus</span>
-                        }
-                        else
-                        {
-                            <span class="text-success">@b.BillPayStatus</span>
-                        }   
-                    </td>
-                    <td class="align-middle">
-                        <a asp-action="Cancel" asp-route-id="@b.BillPayID"><i class="h4 bi bi-x text-dark"></i></a>
-                    </td>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].BillPayID)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountNumber)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].PayeeID)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].Amount)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].ScheduledTimeLocal)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].Period)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].BillPayStatus)</th>
+                    <th scope="col"></th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
-else
-{
-    <p>You have no scheduled BillPays.</p>
-}
-<a asp-action="Schedule" class="btn btn-primary">Schedule new</a>
+            </thead>
+            <tbody>
+                @foreach (BillPayViewModel b in Model)
+                {
+                    <tr>
+                        <td class="align-middle">@b.BillPayID</td>
+                        <td class="align-middle">@b.AccountNumber</td>
+                        <td class="align-middle">@b.PayeeID</td>
+                        <td class="align-middle">@Html.DisplayFor(x => b.Amount)</td>
+                        <td class="align-middle">@Html.DisplayFor(x => b.ScheduledTimeLocal)</td>
+                        <td class="align-middle">@Html.DisplayFor(x => b.Period)</td>
+                        <td class="align-middle">
+                            @if (@b.BillPayStatus == BillPayStatus.Blocked || @b.BillPayStatus == BillPayStatus.Failed)
+                            {
+                                <span class="text-danger fw-bold">@b.BillPayStatus</span>
+                            }
+                            else
+                            {
+                                @b.BillPayStatus
+                            }
+                        </td>
+                        <td class="align-middle">
+                            <a asp-action="ConfirmCancel" asp-route-id="@b.BillPayID"><i class="h4 bi bi-x text-dark"></i></a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-primary mb-5" role="alert">You have no scheduled BillPays.</div>
+    }
+    <a asp-action="Schedule" class="btn btn-primary mt-3"><i class="bi bi-calendar-plus"></i>&#160;&#160;Schedule new&#160;</a>
+</div>

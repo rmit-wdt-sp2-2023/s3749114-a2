@@ -1,0 +1,90 @@
+﻿@using X.PagedList
+@using X.PagedList.Mvc.Core
+@using X.PagedList.Web.Common
+@model StatementsViewModel
+@{ ViewData["Title"] = "Statements"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">View statements</h1>
+    @if (Model.AccountsViewModel.Count > 0)
+    {
+        <form asp-action="Statements">
+            <fieldset>
+                <legend class="h4">Account</legend>
+                <div class="btn-group-vertical w-100 mt-1" role="group">
+                    @foreach (AccountViewModel a in Model.AccountsViewModel)
+                    {
+                        <input type="radio" class="btn-check" autocomplete="off" onchange="this.form.submit()"
+                               asp-for="AccountNumber" value="@a.AccountNumber" id="@a.AccountNumber">
+                        <label class="btn btn-outline-primary text-start" for="@a.AccountNumber">
+                            <span class="row p-1">
+                                <span class="col">
+                                    @a.AccountType<br>
+                                    @a.AccountNumber<br>
+                                </span>
+                                <span class="col">
+                                    @Html.DisplayNameFor(x => a.Balance)<br>
+                                    @Html.DisplayFor(x => a.Balance)
+                                </span>
+                                <span class="col">
+                                    @Html.DisplayNameFor(x => a.AvailableBalance)<br>
+                                    @Html.DisplayFor(x => a.AvailableBalance)
+                                </span>
+                            </span>
+                        </label>
+                    }
+                </div>
+                <span asp-validation-for="AccountNumber" class="text-danger mt-2 d-block"></span>
+            </fieldset>
+        </form>
+    }
+    else
+    {
+        <div class="alert alert-primary mb-5" role="alert">You have no accounts to view statements for.</div>
+    }
+    @if (Model.AccountNumber is not null)
+    {
+        <h4 class="mt-5">Transaction history</h4>
+        @if (Model.Transactions.Count <= 0)
+        {
+            <div class="alert alert-primary mb-5" role="alert">There are no transactions for this account.</div>
+        }
+        else
+        {
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].TransactionID)</th>
+                        <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].TransactionType)</th>
+                        <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].AccountNumber)</th>
+                        <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].DestinationNumber)</th>
+                        <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].Amount)</th>
+                        <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].TransactionTimeUtc)</th>
+                        <th scope="col">@Html.DisplayNameFor(x => Model.Transactions[0].Comment)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (Transaction t in Model.Transactions)
+                    {
+                        <tr>
+                            <td>@t.TransactionID</td>
+                            <td>@Html.DisplayFor(x => t.TransactionType)</td>
+                            <td>@t.AccountNumber</td>
+                            <td>@t.DestinationNumber</td>
+                            <td>@Html.DisplayFor(x => t.Amount)</td>
+                            <td>@t.LocalTimeString()</td>
+                            <td>@t.Comment</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            @Html.PagedListPager(Model.Transactions, page => Url.Action("Statements", new { Model.AccountNumber, page }),
+            new PagedListRenderOptions
+            {
+                LiElementClasses = new[] { "page-item" },
+                PageClasses = new[] { "page-link" },
+                UlElementClasses = new[] { "pagination", "justify-content-center", "mt-5" }
+            });
+        }
+    }
+</div>

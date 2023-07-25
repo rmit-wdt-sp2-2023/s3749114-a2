@@ -8,7 +8,7 @@ public class BillPayViewModel
     [Display(Name = "ID")]
     public int BillPayID { get; set; }
 
-    [Display(Name = "Account number")]
+    [Display(Name = "Account no.")]
     public int AccountNumber { get; set; }
 
     [Display(Name = "Payee ID")]

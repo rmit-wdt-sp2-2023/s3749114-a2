@@ -22,13 +22,13 @@
 
 @if (Model.ProfilePicture is null)
 {
-    <img style="width: 400px; height: 400px; object-fit: contain; background-color: #d9e9ff" alt="Profile picture"
-         src="@Url.Content("../ProfilePictures/default.png")">
+    <img style="width: 400px; height: 400px; object-fit: contain; background-color: #d9e9ff" 
+         alt="Profile picture" src="@Url.Content("../ProfilePictures/default.png")">
 }
-    else
-    {
-    <img style="width: 400px; height: 400px; object-fit: contain; background-color: #d9e9ff" alt="Profile picture"
-         src="@Url.Content($"../ProfilePictures/{Model.ProfilePicture}")">
+else
+{
+    <img style="width: 400px; height: 400px; object-fit: contain; background-color: #d9e9ff" 
+         alt="Profile picture" src="@Url.Content($"../ProfilePictures/{Model.ProfilePicture}")">
 }
 <a asp-action="UploadProfilePicture">Upload profile picture</a>
 <a asp-action="RemoveProfilePicture">Remove profile picture</a>

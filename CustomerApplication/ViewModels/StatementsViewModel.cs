@@ -1,26 +1,17 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CustomerApplication.Models;
+using X.PagedList;
 
 namespace CustomerApplication.ViewModels;
 
 public class StatementsViewModel
 {
-    [Required]
+    [Required(ErrorMessage = "You must select an account.")]
     [Display(Name = "Account Number")]
-    [Range(1000, 9999, ErrorMessage = "You must select an Account.")]
+    [Range(1000, 9999, ErrorMessage = "Invalid account number.")]
     public int? AccountNumber { get; set; }
 
     public List<AccountViewModel> AccountsViewModel { get; set; }
 
-    public List<Transaction> Transactions { get; set; }
-
-    public int PageNumber { get; set; }
-
-    public int TotalPages { get; set; }
-
-    public int TransactionPages { get; set; }
-
-    public int PageSize { get; } = 4;
-
-    public int FirstPage { get; } = 1;
+    public IPagedList<Transaction> Transactions { get; set; }
 }

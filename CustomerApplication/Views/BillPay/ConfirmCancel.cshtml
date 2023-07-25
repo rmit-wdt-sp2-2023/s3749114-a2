@@ -1,0 +1,35 @@
+﻿@model BillPayViewModel
+@{ ViewData["Title"] = "Confirm BillPay cancellation"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">Confirm BillPay cancellation</h1>
+    <h4>From</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+        <dd class="col-8">@Model.AccountNumber</dd>
+    </dl>
+    <h4>To</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.PayeeID)</dt>
+        <dd class="col-8">@Model.PayeeID</dd>
+    </dl>
+    <h4>Details</h4>
+    <dl class="row mb-3">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.BillPayID)</dt>
+        <dd class="col-8">@Model.BillPayID</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Amount)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.Amount)</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.ScheduledTimeLocal)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.ScheduledTimeLocal)</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Period)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.Period)</dd>
+    </dl>
+    <span asp-validation-for="BillPayID" class="text-danger mt-2 d-block"></span>
+    <form asp-action="SubmitCancel">
+        <input asp-for="BillPayID" hidden>
+        <div class="d-grid gap-2 d-md-flex mt-5">
+            <button type="submit" class="btn btn-primary">Cancel BillPay</button>
+            <a class="btn btn-outline-primary" asp-action="Index">Do not cancel</a>
+        </div>
+    </form>
+</div>
