@@ -34,4 +34,3 @@ public class ProfileViewModel
 
     public string ProfilePicture { get; set; }
 }
-

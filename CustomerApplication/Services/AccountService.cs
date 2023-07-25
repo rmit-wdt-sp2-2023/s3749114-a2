@@ -17,9 +17,11 @@ namespace CustomerApplication.Services
 
         public (ValidationResult, Account) GetAccount(int accountNum, string propertyName)
         {
-            Account account = GetAccount(accountNum);  
+            Account account = GetAccount(accountNum);
+
             if (account is null)
                 return (new ValidationResult("Account doesn't exist.", new List<string>() { propertyName }), null);
+
             return (null, account);
         }
     }

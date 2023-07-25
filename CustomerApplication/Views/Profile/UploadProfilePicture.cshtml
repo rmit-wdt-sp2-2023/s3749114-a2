@@ -1,16 +1,18 @@
 ﻿@model UploadProfilePictureViewModel
 @{ ViewData["Title"] = "Upload profile picture"; }
 
-<h1>Upload profile picture</h1>
-
-<form asp-action="SubmitUploadProfilePicture" enctype="multipart/form-data">
-    <div class="mb-3">
-        <label asp-for="ProfileImage" class="control-label"></label>
-        <input asp-for="ProfileImage" class="form-control">
-        <div class="form-text">Accepted file types: jpg, jpeg, png and heic.</div>
-        <span asp-validation-for="ProfileImage" class="text-danger"></span>
-    </div>
-    <button type="submit" class="btn btn-primary">Upload</button>
-</form>
-
-<a asp-action="Index">Back to profile</a>
+<div class="border rounded p-5">
+    <h1 class="mb-5">Upload profile picture</h1>
+    <form asp-action="SubmitUploadProfilePicture" enctype="multipart/form-data">
+        <div class="mb-4">
+            <label asp-for="ProfileImage" class="control-label mb-2"></label>
+            <input asp-for="ProfileImage" class="form-control">
+            <div class="form-text mt-2">Accepted file types: jpg, jpeg, png and heic.</div>
+            <span asp-validation-for="ProfileImage" class="text-danger mt-2 d-block"></span>
+        </div>
+        <div class="d-grid gap-2 d-md-flex mt-5">
+            <button type="submit" class="btn btn-primary">Upload</button>
+            <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>

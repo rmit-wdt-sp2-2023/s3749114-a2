@@ -27,26 +27,22 @@ public class LoginService
     public List<ValidationResult> ChangePassword(int customerID, string oldPass, string newPass, string confirmPass)
     {
         List<ValidationResult> errors = new();
+        Login login = _context.Logins.FirstOrDefault(c => c.CustomerID == customerID);
 
         if (oldPass is null)
             errors.Add(new ValidationResult("Enter old password.", new List<string>() { "OldPassword" }));
+        else
+            if (login is null)
+                errors.Add(new ValidationResult("Error, couldn't find customer.", new List<string>() { "PasswordFailed" }));
+            else
+                if (!SimpleHash.Verify(oldPass, login.PasswordHash))
+                errors.Add(new ValidationResult("Incorrect password.", new List<string>() { "OldPassword" }));
 
         if (newPass is null)
             errors.Add(new ValidationResult("Enter new password.", new List<string>() { "NewPassword" }));
 
         if (newPass != confirmPass)
             errors.Add(new ValidationResult("Passwords don't match.", new List<string>() { "ConfirmPassword" }));
-
-        if (errors.Count > 0)
-            return errors;
-
-        Login login = _context.Logins.FirstOrDefault(c => c.CustomerID == customerID);
-
-        if (login is null)
-            errors.Add(new ValidationResult("Error, couldn't find customer.", new List<string>() { "PasswordFailed" }));
-        else
-            if (!SimpleHash.Verify(oldPass, login.PasswordHash))
-            errors.Add(new ValidationResult("Incorrect password.", new List<string>() { "OldPassword" }));
 
         if (errors.Count > 0)
             return errors;

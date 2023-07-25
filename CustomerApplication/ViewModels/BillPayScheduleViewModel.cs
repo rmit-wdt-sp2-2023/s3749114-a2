@@ -10,8 +10,6 @@ public class BillPayScheduleViewModel
     [Required(ErrorMessage = "You must select an account.")]
     public int? AccountNumber { get; set; }
 
-    public AccountType AccountType { get; set; }
-
     [UIHint("AccountSelection")]
     public List<AccountViewModel> AccountViewModels { get; set; }
 
