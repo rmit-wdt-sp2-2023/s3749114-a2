@@ -60,8 +60,6 @@ public class CustomerService
             return (new ValidationResult(
                 "Update unsuccessful. Unable to find customer.", new List<string>() { "ProfileImage" }), null);
 
-        // ----
-
         string ext = Path.GetExtension(profileImage.FileName).ToLowerInvariant();
 
         string[] permittedExtensions = { ".jpg", ".jpeg", ".png", ".heic" };
@@ -137,10 +135,16 @@ public class CustomerService
         {
             File.Delete(filePath);
         }
+        catch (IOException)
+        {
+            errors.Add(new ValidationResult(
+                "Could not find profile picture to delete.", new List<string>() { "ProfilePicture" }));
+        }
         catch (Exception)
         {
             errors.Add(new ValidationResult(
-                "Couldn't remove profile picture.", new List<string>() { "ProfilePicture" }));
+                "Couldn't remove profile picture. Try again later or contact an admin.",
+                new List<string>() { "ProfilePicture" }));
         }
         customer.ProfilePicture = null;
 
@@ -150,4 +154,3 @@ public class CustomerService
         return null;
     }
 }
-
