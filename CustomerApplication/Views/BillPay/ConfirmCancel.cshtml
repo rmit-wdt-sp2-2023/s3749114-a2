@@ -5,24 +5,24 @@
     <h1 class="mb-5">Confirm BillPay cancellation</h1>
     <h4>From</h4>
     <dl class="row mb-4">
-        <dt class="col-4">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
-        <dd class="col-8">@Model.AccountNumber</dd>
+        <dt class="col-5">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+        <dd class="col-7">@Model.AccountNumber</dd>
     </dl>
     <h4>To</h4>
     <dl class="row mb-4">
-        <dt class="col-4">@Html.DisplayNameFor(x => Model.PayeeID)</dt>
-        <dd class="col-8">@Model.PayeeID</dd>
+        <dt class="col-5">@Html.DisplayNameFor(x => Model.PayeeID)</dt>
+        <dd class="col-7">@Model.PayeeID</dd>
     </dl>
     <h4>Details</h4>
     <dl class="row mb-3">
-        <dt class="col-4">@Html.DisplayNameFor(x => Model.BillPayID)</dt>
-        <dd class="col-8">@Model.BillPayID</dd>
-        <dt class="col-4">@Html.DisplayNameFor(x => Model.Amount)</dt>
+        <dt class="col-5">@Html.DisplayNameFor(x => Model.BillPayID)</dt>
+        <dd class="col-7">@Model.BillPayID</dd>
+        <dt class="col-7">@Html.DisplayNameFor(x => Model.Amount)</dt>
         <dd class="col-8">@Html.DisplayFor(x => Model.Amount)</dd>
-        <dt class="col-4">@Html.DisplayNameFor(x => Model.ScheduledTimeLocal)</dt>
-        <dd class="col-8">@Html.DisplayFor(x => Model.ScheduledTimeLocal)</dd>
-        <dt class="col-4">@Html.DisplayNameFor(x => Model.Period)</dt>
-        <dd class="col-8">@Html.DisplayFor(x => Model.Period)</dd>
+        <dt class="col-7">@Html.DisplayNameFor(x => Model.ScheduledTimeLocal)</dt>
+        <dd class="col-7">@Html.DisplayFor(x => Model.ScheduledTimeLocal)</dd>
+        <dt class="col-5">@Html.DisplayNameFor(x => Model.Period)</dt>
+        <dd class="col-7">@Html.DisplayFor(x => Model.Period)</dd>
     </dl>
     <span asp-validation-for="BillPayID" class="text-danger mt-2 d-block"></span>
     <form asp-action="SubmitCancel">

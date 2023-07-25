@@ -70,20 +70,15 @@ public class CustomerService
             return (new ValidationResult("Invalid file type.", new List<string>() { "ProfileImage" }), null);
 
         string tempFilePath = Path.Combine(_directory, $"{customerID}-temp-{ext}");
-
-        using FileStream fileStream = new(tempFilePath, FileMode.Create);
-
-        profileImage.CopyTo(fileStream);
-
-        // -----
-
         string newFileName = $"{customerID}.jpg";
         string newFilePath = Path.Combine(_directory, newFileName);
 
         try
         {
-            using MagickImage image = new(tempFilePath);
+            using FileStream fileStream = new(tempFilePath, FileMode.Create);
+            profileImage.CopyTo(fileStream);
 
+            using MagickImage image = new(tempFilePath);
             image.Resize(new MagickGeometry(400, 400));
             image.Format = MagickFormat.Jpg;
             image.Quality = 100;
@@ -91,22 +86,28 @@ public class CustomerService
             image.BackgroundColor = new MagickColor("#FFFFFF");
             image.Write(newFilePath);
 
+            File.Delete(tempFilePath);
         }
         catch (MagickCoderErrorException)
         {
-            return (new ValidationResult("Upload failed. Image may be corrupt. Try a different image",
+            return (new ValidationResult("Upload failed. Image may be corrupt. Try a different image.",
+                new List<string>() { "ProfileImage" }), null);
+        }
+        catch (IOException)
+        {
+            return (new ValidationResult("Upload failed. Image does not exist.",
                 new List<string>() { "ProfileImage" }), null);
         }
         catch (MagickException)
         {
-            return (new ValidationResult("Error processing image. Try again or choose a different image",
+            return (new ValidationResult("Error processing image. Try again or choose a different image.",
                 new List<string>() { "ProfileImage" }), null);
         }
-
-        File.Delete(tempFilePath);
-
-        //-----
-
+        catch (Exception)
+        {
+            return (new ValidationResult("Upload failed. Try again or choose a different image.",
+                new List<string>() { "ProfileImage" }), null);
+        }
         customer.ProfilePicture = newFileName;
 
         _context.Customers.Update(customer);
