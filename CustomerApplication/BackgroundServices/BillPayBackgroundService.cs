@@ -27,7 +27,6 @@ public class BillPayBackgroundService : BackgroundService
         List<BillPay> billpays = await context.BillPays.ToListAsync(cancellationToken);
 
         foreach (BillPay b in billpays)
-        {
             if (b.ScheduledTimeUtc <= DateTime.UtcNow && b.BillPayStatus == BillPayStatus.Scheduled)
             {
                 Account account = context.Accounts.Find(b.AccountNumber);
@@ -36,6 +35,7 @@ public class BillPayBackgroundService : BackgroundService
                     (List<ValidationResult> errors, Transaction transaction) = account.BillPay(b.Amount);
                     if (errors is null)
                     {
+                        Console.WriteLine("ERRORS IS NULL");
                         context.Transactions.Add(transaction);
                         if (b.Period == Period.Monthly)
                         {
@@ -52,7 +52,6 @@ public class BillPayBackgroundService : BackgroundService
                     }
                 }
             }
-        }
         await context.SaveChangesAsync(cancellationToken);
     }
 }

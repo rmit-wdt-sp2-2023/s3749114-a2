@@ -72,14 +72,14 @@ public class Account
             Debit(TransactionType.Transfer, amount, comment, destinationNum);
 
     public (List<ValidationResult>, BillPay) BillPaySchedule(
-        int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+        int payeeID, decimal amount, DateTime scheduledTimeLocal, Period period)
     {
         BillPay billPay = new()
         {
             AccountNumber = AccountNumber,
             PayeeID = payeeID,
             Amount = amount,
-            ScheduledTimeUtc = ScheduledTimeUtc,
+            ScheduledTimeUtc = scheduledTimeLocal.ToUniversalTime(),
             Period = period,
             BillPayStatus = BillPayStatus.Scheduled
         };
@@ -137,24 +137,26 @@ public class Account
         ValidationMethods.Validate(transactions.First(), out List<ValidationResult> errors);
 
         if (!MeetsMinBalance(amount, transactionType))
+        {
             errors.Add(new ValidationResult(
                 $"Invalid amount. Your account must have a min balance of {AccountType.MinBalance():C}.",
                 new List<string>() { "Amount" }));
+            Console.WriteLine("DOESN'T MEET MIN BALANCE");
+
+        }
 
         if (transactionType == TransactionType.Transfer && destinationNum is null)
-            errors.Add(new ValidationResult(
-                "Enter an account number.",
+            errors.Add(new ValidationResult("Enter an account number.",
                 new List<string>() { "DestinationNumber" }));
 
         if (transactionType == TransactionType.Transfer && AccountNumber == destinationNum)
-            errors.Add(new ValidationResult(
-                "Origin and destination account numbers must be different",
+            errors.Add(new ValidationResult("Origin and destination account numbers must be different",
                 new List<string>() { "DestinationNumber" }));
 
         if (errors.Count > 0)
             return (errors, null);
 
-        if (!IsNextTransactionFree())
+        if (transactionType != TransactionType.BillPay && !IsNextTransactionFree())
         {
             transactions.Add(new Transaction()
             {
@@ -175,7 +177,7 @@ public class Account
 
     private bool MeetsMinBalance(decimal amount, TransactionType transactionType)
     {
-        if (!IsNextTransactionFree())
+        if (transactionType != TransactionType.BillPay && !IsNextTransactionFree())
             amount += transactionType.ServiceCharge();
         return Balance() - amount >= AccountType.MinBalance();
     }

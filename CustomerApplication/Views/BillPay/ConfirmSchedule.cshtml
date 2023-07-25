@@ -1,0 +1,37 @@
+﻿@model BillPayScheduleViewModel
+@{ ViewData["Title"] = "Confirm BillPay scheduling"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">Confirm BillPay scheduling</h1>
+    <h4>From</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+        <dd class="col-8">@Model.AccountNumber</dd>
+    </dl>
+    <h4>To</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.PayeeID)</dt>
+        <dd class="col-8">@Model.PayeeID</dd>
+    </dl>
+    <h4>Details</h4>
+    <dl class="row mb-0">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Amount)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.Amount)</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.ScheduledTimeLocal)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.ScheduledTimeLocal)</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Period)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.Period)</dd>
+    </dl>
+    <hr class="my-4" style="opacity: 100; border-top-color: #dee2e6;">
+    <form asp-action="SubmitSchedule">
+        <input asp-for="AccountNumber" hidden>
+        <input asp-for="PayeeID" hidden>
+        <input asp-for="Amount" hidden>
+        <input asp-for="ScheduledTimeLocal" hidden>
+        <input asp-for="Period" hidden>
+        <div class="pt-2 d-grid gap-2 d-md-flex justify-content-md-end">
+            <a class="btn btn-outline-primary" asp-action="Index">Cancel</a>
+            <button type="submit" class="btn btn-primary">Confirm</button>
+        </div>
+    </form>
+</div>

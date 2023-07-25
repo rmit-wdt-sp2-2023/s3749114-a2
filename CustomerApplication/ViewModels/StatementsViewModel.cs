@@ -6,9 +6,9 @@ namespace CustomerApplication.ViewModels;
 
 public class StatementsViewModel
 {
-    [Required]
+    [Required(ErrorMessage = "You must select an account.")]
     [Display(Name = "Account Number")]
-    [Range(1000, 9999, ErrorMessage = "You must select an Account.")]
+    [Range(1000, 9999, ErrorMessage = "Invalid account number.")]
     public int? AccountNumber { get; set; }
 
     public List<AccountViewModel> AccountsViewModel { get; set; }

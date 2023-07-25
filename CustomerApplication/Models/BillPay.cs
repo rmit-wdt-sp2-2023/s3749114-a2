@@ -15,21 +15,21 @@ public class BillPay
     public int AccountNumber { get; set; }
     public virtual Account Account { get; set; }
 
-    [Required]
     [ForeignKey("Payee")]
+    [Required(ErrorMessage = "You must enter a payee ID.")]
     public int PayeeID { get; set; }
     public virtual Payee Payee { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "You must enter an amount.")]
     [Column(TypeName = "money")]
     [DataType(DataType.Currency)]
     [CustomValidation(typeof(ValidationMethods), "MoreThanTwoDecimalPlaces")]
     [CustomValidation(typeof(ValidationMethods), "GreaterThanZero")]
     public decimal Amount { get; set; }
 
-    [Required]
+    [Required(ErrorMessage = "You must enter a time.")]
     [DataType(DataType.Date)]
-    //[CustomValidation(typeof(ValidationMethods), "DateIsTenMinsFromNow")]
+    [CustomValidation(typeof(ValidationMethods), "IsTenMinsFromNowUtc")]
     public DateTime ScheduledTimeUtc { get; set; }
 
     [Required]

@@ -97,13 +97,14 @@ public class BankService
     }
 
     public List<ValidationResult> ConfirmBillPay(
-        int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+        int accountNum, int payeeID, decimal amount, DateTime scheduledTimeLocal, Period period)
     {
-        (List<ValidationResult> errors, _) = BillPay(accountNum, payeeID, amount, ScheduledTimeUtc, period);
+        (List<ValidationResult> errors, _) = BillPay(accountNum, payeeID, amount, scheduledTimeLocal, period);
         return errors;
     }
 
-    private (List<ValidationResult>, BillPay) BillPay(int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+    private (List<ValidationResult>, BillPay) BillPay(
+        int accountNum, int payeeID, decimal amount, DateTime scheduledTimeLocal, Period period)
     {
         List<ValidationResult> errors = new();
 
@@ -117,17 +118,17 @@ public class BankService
         if (payeeError is not null)
             errors.Add(payeeError);
 
-        return errors.Count > 0 ? (errors, null) : account.BillPaySchedule(payeeID, amount, ScheduledTimeUtc, period);
+        return errors.Count > 0 ? (errors, null) : account.BillPaySchedule(payeeID, amount, scheduledTimeLocal, period);
     }
 
     // Methods validate transactions and update the database if valid.
 
-    public List<ValidationResult> SubmitBillPay(int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeUtc, Period period)
+    public List<ValidationResult> SubmitBillPay(int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeLocal, Period period)
     {
-        (List<ValidationResult> errors, BillPay billPay) = BillPay(accountNum, payeeID, amount, ScheduledTimeUtc, period);
+        (List<ValidationResult> errors, BillPay billPay) = BillPay(accountNum, payeeID, amount, ScheduledTimeLocal, period);
         if (errors is null)
         {
-            billPay.ScheduledTimeUtc = billPay.ScheduledTimeUtc.ToUniversalTime();
+            billPay.ScheduledTimeUtc = billPay.ScheduledTimeUtc;
             _context.BillPays.Add(billPay);
             _context.SaveChanges();
         }

@@ -6,8 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@ViewData["Title"] - MCBA</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-9ndCyUaIbzAi2FUVXJi0CjmCapSmO7SnpJef0486qhLnuZ2cdeRhO02iuK6FUUVM" crossorigin="anonymous">
-    <link rel="stylesheet" href="~/css/site.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="~/css/site.css">
 </head>
 <body>
     <!-- Navigation -->
@@ -44,16 +44,16 @@
                         }
                     </ul>
                     @if (isLoggedIn)
-                    { 
+                    {
                         @if (@Context.Session.GetString(nameof(Customer.ProfilePicture)) is not null)
                         {
                             <img style="width: 55px; height: 55px; object-fit: contain; background-color: #d9e9ff" alt="Profile picture"
-                                 src="@Url.Content($"../ProfilePictures/{Context.Session.GetString(nameof(Customer.ProfilePicture))}")">
+                                 src="@Url.Content($"~/ProfilePictures/{Context.Session.GetString(nameof(Customer.ProfilePicture))}")">
                         }
                         else
                         {
                             <img style="width: 55px; height: 55px; object-fit: contain; background-color: #d9e9ff"
-                                 src="@Url.Content("../ProfilePictures/default.png")" alt="Profile picture">
+                                 src="@Url.Content("~/ProfilePictures/default.png")" alt="Profile picture">
                         }
                         <a class="navbar-text" asp-controller="Profile" asp-action="Index">@Context.Session.GetString(nameof(Customer.Name))</a>
                         <a class="btn btn-primary" asp-controller="Login" asp-action="Logout">Logout</a>
@@ -66,9 +66,7 @@
             </div>
         </nav>
     </header>
-    <!-- Main -->
-    <main role="main" class="container mt-5 mb-5">@RenderBody()</main>
-    <!-- Footer -->
+    <main role="main" class="container-sm mt-5 mb-5" style="max-width: 980px;">@RenderBody()</main>
     <footer class="container">
         <p class="text-center">
             COSC2363 Web Development Technologies<br>
@@ -76,7 +74,6 @@
             Carelle Mulawa-Richards (s3749114)<br>
         </p>
     </footer>
-
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", false)
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-geWF76RCwLtnZ8qwWowPQNguL3RmwHVBC9FhGdlKrxdiJJigb/j/68SIy3Te4Bkz" crossorigin="anonymous"></script>

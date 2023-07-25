@@ -9,7 +9,7 @@ public class BillPayViewModel
     [Display(Name = "ID")]
     public int BillPayID { get; set; }
 
-    [Display(Name = "Account number")]
+    [Display(Name = "Account no.")]
     public int AccountNumber { get; set; }
 
     [Display(Name = "Payee ID")]
@@ -19,8 +19,7 @@ public class BillPayViewModel
     public decimal Amount { get; set; }
 
     [Display(Name = "Scheduled time")]
-    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}", ApplyFormatInEditMode = true)]
-    [CustomValidation(typeof(ValidationMethods), "DateIsTenMinsFromNow")]
+    //[DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}", ApplyFormatInEditMode = true)]
     public DateTime ScheduledTimeLocal { get; set; }
 
     public Period Period { get; set; }

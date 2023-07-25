@@ -11,103 +11,116 @@ namespace CustomerApplication.Controllers;
 public class BillPayController : Controller
 {
     private readonly BankService _bankService;
+
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
     public BillPayController(BankService bankService) => _bankService = bankService;
 
     public IActionResult Index()
     {
-        ViewBag.DisplayBlocked = false;
-        ViewBag.DisplayFailed = false;
+        List<BillPayViewModel> billPayVM = BillPaysVM();
 
-        List<BillPayViewModel> viewModels = new();
+        (bool displayBlocked, bool displayFailed) = CheckBlockedAndFailed(billPayVM);
 
-        foreach (BillPay b in _bankService.GetBillPays(CustomerID))
-        {
-            viewModels.Add(new BillPayViewModel()
-            {
-                BillPayID = b.BillPayID,
-                AccountNumber = b.AccountNumber,
-                PayeeID = b.PayeeID,
-                Amount = b.Amount,
-                ScheduledTimeLocal = b.ScheduledTimeUtc.ToLocalTime(),
-                Period = b.Period,
-                BillPayStatus = b.BillPayStatus
-            });
-            if (b.BillPayStatus == BillPayStatus.Failed)
-                ViewBag.DisplayFailed = true;
-            else if (b.BillPayStatus == BillPayStatus.Blocked)
-                ViewBag.DisplayFailed = true;
-        }
-        return View(viewModels);
+        ViewBag.DisplayBlocked = displayBlocked;
+        ViewBag.DisplayFailed = displayFailed;
+        ViewBag.DisplaySuccess = false;
+        ViewBag.DisplayCancelled = false;
+
+        return View(billPayVM);
     }
 
-    public BillPayScheduleViewModel BillPayScheduleViewModel()
-    {
-        List<AccountViewModel> viewModels = new();
-        foreach (Account a in _bankService.GetAccounts(CustomerID))
-        {
-            viewModels.Add(new AccountViewModel
-            {
-                AccountNumber = a.AccountNumber,
-                AccountType = a.AccountType,
-                Balance = a.Balance(),
-                AvailableBalance = a.AvailableBalance()
-            });
-        }
-        BillPayScheduleViewModel viewModel = new()
-        {
-            AccountViewModels = viewModels
-        };
-        return viewModel;
-    }
-
-    public IActionResult Schedule()
-    {
-        return View(BillPayScheduleViewModel());
-    }
+    public IActionResult Schedule() => View(BillPayScheduleVM());
 
     [HttpPost]
-    public IActionResult Confirm(BillPayScheduleViewModel viewModel)
+    public IActionResult ConfirmSchedule(BillPayScheduleViewModel billPayScheduleVM)
     {
-        List<ValidationResult> errors = _bankService.ConfirmBillPay(
-            viewModel.AccountNumber.GetValueOrDefault(), viewModel.PayeeID.GetValueOrDefault(),
-            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeLocal.GetValueOrDefault(), viewModel.Period);
+        List<ValidationResult> errors = _bankService.ConfirmBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
+            billPayScheduleVM.PayeeID.GetValueOrDefault(), billPayScheduleVM.Amount.GetValueOrDefault(),
+            billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(), billPayScheduleVM.Period.GetValueOrDefault());
 
         if (errors is not null)
             foreach (ValidationResult e in errors)
                 ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
 
         if (!ModelState.IsValid)
-            return View(nameof(Schedule), BillPayScheduleViewModel());
+            return View(nameof(Schedule), BillPayScheduleVM(billPayScheduleVM));
 
-        Account account = _bankService.GetAccount(viewModel.AccountNumber.GetValueOrDefault());
-        viewModel.AccountType = account.AccountType;
-
-        return View(viewModel);
+        return View(billPayScheduleVM);
     }
 
     [HttpPost]
-    public IActionResult Submit(BillPayScheduleViewModel viewModel)
+    public IActionResult SubmitSchedule(BillPayScheduleViewModel billPayScheduleVM)
     {
-        List<ValidationResult> errors = _bankService.SubmitBillPay(
-            viewModel.AccountNumber.GetValueOrDefault(), viewModel.PayeeID.GetValueOrDefault(),
-            viewModel.Amount.GetValueOrDefault(), viewModel.ScheduledTimeLocal.GetValueOrDefault(), viewModel.Period);
+        List<ValidationResult> errors = _bankService.SubmitBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
+            billPayScheduleVM.PayeeID.GetValueOrDefault(), billPayScheduleVM.Amount.GetValueOrDefault(),
+            billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(), billPayScheduleVM.Period.GetValueOrDefault());
 
-        if (errors is null)
-            return View("Success", viewModel);
+        if (errors is not null)
+            foreach (ValidationResult e in errors)
+                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
 
-        foreach (ValidationResult e in errors)
-            ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
+        if (!ModelState.IsValid)
+            return View(nameof(Schedule), BillPayScheduleVM(billPayScheduleVM));
 
-        return View(nameof(Schedule), BillPayScheduleViewModel());
+        return RedirectToAction(nameof(SuccessfullyScheduled));
     }
 
-    public IActionResult Cancel(int id)
+    public IActionResult SuccessfullyScheduled()
+    {
+        List<BillPayViewModel> billPayVM = BillPaysVM();
+
+        (bool displayBlocked, bool displayFailed) = CheckBlockedAndFailed(billPayVM);
+
+        ViewBag.DisplayBlocked = displayBlocked;
+        ViewBag.DisplayFailed = displayFailed;
+        ViewBag.DisplaySuccess = true;
+        ViewBag.DisplayCancelled = false;
+
+        return View("Index", billPayVM);
+    }
+
+    public IActionResult ConfirmCancel(int id)
     {
         BillPay billPay = _bankService.GetBillPay(id);
 
-        return View(new BillPayViewModel()
+        if (billPay is null ||
+            _bankService.GetAccounts(CustomerID).FindIndex(x => x.AccountNumber == billPay.AccountNumber) < 0)
+            return RedirectToAction(nameof(Index));
+
+        return View(BillPayVM(billPay));
+    }
+
+    [HttpPost]
+    public IActionResult SubmitCancel(BillPayViewModel billPayVM)
+    {
+        ValidationResult error = _bankService.CancelBillPay(billPayVM.BillPayID);
+
+        if (error is not null)
+        {
+            ModelState.AddModelError(error.MemberNames.First(), error.ErrorMessage);
+            return View(nameof(ConfirmCancel), billPayVM);
+        }
+        return RedirectToAction(nameof(SuccessfullyCancelled));
+    }
+
+    public IActionResult SuccessfullyCancelled()
+    {
+        List<BillPayViewModel> billPayVM = BillPaysVM();
+
+        (bool displayBlocked, bool displayFailed) = CheckBlockedAndFailed(billPayVM);
+
+        ViewBag.DisplayBlocked = displayBlocked;
+        ViewBag.DisplayFailed = displayFailed;
+        ViewBag.DisplaySuccess = false;
+        ViewBag.DisplayCancelled = true;
+
+        return View("Index", billPayVM);
+    }
+
+    private static BillPayViewModel BillPayVM(BillPay billPay)
+    {
+        return new BillPayViewModel()
         {
             BillPayID = billPay.BillPayID,
             AccountNumber = billPay.AccountNumber,
@@ -116,20 +129,54 @@ public class BillPayController : Controller
             ScheduledTimeLocal = billPay.ScheduledTimeUtc.ToLocalTime(),
             Period = billPay.Period,
             BillPayStatus = billPay.BillPayStatus
-        });
+        };
     }
 
-    [HttpPost]
-    public IActionResult Cancel(BillPayViewModel viewModel)
+    private List<BillPayViewModel> BillPaysVM()
     {
+        List<BillPayViewModel> billPayVM = new();
+        foreach (BillPay b in _bankService.GetBillPays(CustomerID))
+            billPayVM.Add(BillPayVM(b));
+        return billPayVM;
+    }
 
-        ValidationResult error = _bankService.CancelBillPay(viewModel.BillPayID);
-        if (error is not null)
+    private BillPayScheduleViewModel BillPayScheduleVM(BillPayScheduleViewModel billPayScheduleVM = null)
+    {
+        List<AccountViewModel> accountVM = new();
+        foreach (Account a in _bankService.GetAccounts(CustomerID))
         {
-            Console.WriteLine("BILL PAY ID " + viewModel.BillPayID);
-            Console.WriteLine("ERROR");
+            accountVM.Add(new AccountViewModel
+            {
+                AccountNumber = a.AccountNumber,
+                AccountType = a.AccountType,
+                Balance = a.Balance(),
+                AvailableBalance = a.AvailableBalance()
+            });
         }
+        if (billPayScheduleVM is null)
+            return new BillPayScheduleViewModel()
+            {
+                AccountViewModels = accountVM
+            };
+        else
+        {
+            billPayScheduleVM.AccountViewModels = accountVM;
+            return billPayScheduleVM;
+        }
+    }
 
-        return RedirectToAction(nameof(Index));
+    private static (bool, bool) CheckBlockedAndFailed(List<BillPayViewModel> billPayVM)
+    {
+        bool displayBlocked = false;
+        bool displayFailed = false;
+
+        foreach (BillPayViewModel b in billPayVM)
+        {
+            if (b.BillPayStatus == BillPayStatus.Failed)
+                displayFailed = true;
+            else if (b.BillPayStatus == BillPayStatus.Blocked)
+                displayBlocked = true;
+        }
+        return (displayBlocked, displayFailed);
     }
 }
