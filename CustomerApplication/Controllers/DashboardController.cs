@@ -10,11 +10,17 @@ namespace CustomerApplication.Controllers;
 [AuthorizeCustomer]
 public class DashboardController : Controller
 {
-    private readonly BankService _bankService;
+    private readonly TransactionService _transactionService;
+
+    private readonly AccountService _accountService;
 
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
-    public DashboardController(BankService bankService) => _bankService = bankService;
+    public DashboardController(TransactionService transactionService, AccountService accountService)
+    {
+        _accountService = accountService;
+        _transactionService = transactionService;
+    }
 
     public IActionResult Index() => View(AccountsViewModel());
 
@@ -33,7 +39,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult SubmitWithdraw(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.ConfirmWithdraw(
+        List<ValidationResult> errors = _transactionService.ConfirmWithdraw(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
   
         if (errors is not null)
@@ -49,7 +55,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult SubmitDeposit(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.ConfirmDeposit(
+        List<ValidationResult> errors = _transactionService.ConfirmDeposit(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
         if (errors is not null)
@@ -65,7 +71,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult SubmitTransfer(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.ConfirmTransfer(
+        List<ValidationResult> errors = _transactionService.ConfirmTransfer(
             viewModel.AccountNumber, viewModel.DestinationNumber, viewModel.Amount, viewModel.Comment);
 
         if (errors is not null)
@@ -82,7 +88,7 @@ public class DashboardController : Controller
 
     public IActionResult Confirm(TransactionViewModel viewModel)
     {
-        Account account = _bankService.GetAccount(viewModel.AccountNumber);
+        Account account = _accountService.GetAccount(viewModel.AccountNumber);
         viewModel.AccountType = account.AccountType;
         return View(viewModel);
     }
@@ -94,7 +100,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult ConfirmDeposit(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.SubmitDeposit(
+        List<ValidationResult> errors = _transactionService.SubmitDeposit(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
         if (errors is null)
@@ -109,7 +115,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult ConfirmWithdraw(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.SubmitWithdraw(
+        List<ValidationResult> errors = _transactionService.SubmitWithdraw(
             viewModel.AccountNumber, viewModel.Amount, viewModel.Comment);
 
         if (errors is null)
@@ -124,7 +130,7 @@ public class DashboardController : Controller
     [HttpPost]
     public IActionResult ConfirmTransfer(TransactionViewModel viewModel)
     {
-        List<ValidationResult> errors = _bankService.SubmitTransfer(
+        List<ValidationResult> errors = _transactionService.SubmitTransfer(
                 viewModel.AccountNumber, viewModel.DestinationNumber, viewModel.Amount, viewModel.Comment);
 
         if (errors is null)
@@ -151,7 +157,7 @@ public class DashboardController : Controller
 
     public List<AccountViewModel> AccountsViewModel()
     {
-        List<Account> accounts = _bankService.GetAccounts(CustomerID);
+        List<Account> accounts = _accountService.GetAccounts(CustomerID);
         List<AccountViewModel> viewModel = new();
         foreach (Account account in accounts)
         {

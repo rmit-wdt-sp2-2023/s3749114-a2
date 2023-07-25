@@ -19,7 +19,7 @@ public class AccountViewModel
     public decimal Balance { get; init; }
 
     [Required]
-    [Display(Name = "Available balance")]
+    [Display(Name = "Available")]
     [DataType(DataType.Currency)]
     public decimal AvailableBalance { get; init; }
 }

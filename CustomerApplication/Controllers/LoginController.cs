@@ -7,9 +7,9 @@ namespace CustomerApplication.Controllers;
 
 public class LoginController : Controller
 {
-    private readonly BankService _bankService;
+    private readonly LoginService _loginService;
 
-    public LoginController(BankService bankService) => _bankService = bankService;
+    public LoginController(LoginService loginService) => _loginService = loginService;
 
     public IActionResult Login() => View(new LoginViewModel());
 
@@ -19,7 +19,7 @@ public class LoginController : Controller
         if (!ModelState.IsValid)
             return View(nameof(Login), viewModel);
 
-        Login login = _bankService.Login(viewModel.LoginID, viewModel.Password);
+        Login login = _loginService.Login(viewModel.LoginID, viewModel.Password);
 
         if (login is null)
         {
@@ -30,9 +30,8 @@ public class LoginController : Controller
         HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
 
         if (login.Customer.ProfilePicture is not null)
-        {
             HttpContext.Session.SetString(nameof(Customer.ProfilePicture), login.Customer.ProfilePicture);
-        }
+
         return RedirectToAction("Index", "Dashboard");
     }
 

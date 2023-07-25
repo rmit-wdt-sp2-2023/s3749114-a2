@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Castle.Core.Resource;
 using CustomerApplication.Filters;
 using CustomerApplication.Models;
 using CustomerApplication.Services;
@@ -11,11 +10,17 @@ namespace CustomerApplication.Controllers;
 [AuthorizeCustomer]
 public class ProfileController : Controller
 {
-    private readonly BankService _bankService;
+    private readonly CustomerService _customerService;
+
+    private readonly LoginService _loginService;
 
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
-    public ProfileController(BankService bankService) => _bankService = bankService;
+    public ProfileController(CustomerService customerService, LoginService loginService)
+    {
+        _customerService = customerService;
+        _loginService = loginService;
+    }
 
     public IActionResult Index()
     {
@@ -32,7 +37,7 @@ public class ProfileController : Controller
     [HttpPost]
     public IActionResult SubmitEditDetails(ProfileViewModel profileVM)
     {
-        List<ValidationResult> errors = _bankService.UpdateCustomer(
+        List<ValidationResult> errors = _customerService.UpdateCustomer(
             CustomerID, profileVM.Name, profileVM.TFN, profileVM.Address,
             profileVM.City, profileVM.State, profileVM.PostCode, profileVM.Mobile);
 
@@ -56,7 +61,7 @@ public class ProfileController : Controller
     [HttpPost]
     public IActionResult SubmitChangePassword(ChangePasswordViewModel changePassVM)
     {
-        List<ValidationResult> errors = _bankService.ChangePassword(
+        List<ValidationResult> errors = _loginService.ChangePassword(
             CustomerID, changePassVM.OldPassword, changePassVM.NewPassword, changePassVM.ConfirmPassword);
 
         if (errors is not null)
@@ -79,8 +84,7 @@ public class ProfileController : Controller
     [HttpPost]
     public IActionResult SubmitUploadProfilePicture(UploadProfilePictureViewModel uploadProfilePictureVM)
     {
-
-        (ValidationResult error, string fileName) = _bankService.UploadProfilePicture(
+        (ValidationResult error, string fileName) = _customerService.UploadProfilePicture(
             CustomerID, uploadProfilePictureVM.ProfileImage);
 
         if (error is not null)
@@ -101,7 +105,7 @@ public class ProfileController : Controller
 
     public IActionResult RemoveProfilePicture()
     {
-        List<ValidationResult> errors = _bankService.RemoveProfilePicture(CustomerID);
+        List<ValidationResult> errors = _customerService.RemoveProfilePicture(CustomerID);
 
         if (errors is not null)
         {
@@ -126,7 +130,8 @@ public class ProfileController : Controller
 
     private ProfileViewModel MakeProfileVM()
     {
-        Customer customer = _bankService.GetCustomer(CustomerID);
+        Customer customer = _customerService.GetCustomer(CustomerID);
+
         return new ProfileViewModel
         {
             Name = customer.Name,

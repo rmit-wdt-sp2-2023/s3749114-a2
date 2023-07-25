@@ -10,11 +10,17 @@ namespace CustomerApplication.Controllers;
 [AuthorizeCustomer]
 public class BillPayController : Controller
 {
-    private readonly BankService _bankService;
+    private readonly BillPayService _billPayService;
+
+    private readonly AccountService _accountService;
 
     private int CustomerID => HttpContext.Session.GetInt32(nameof(Customer.CustomerID)).Value;
 
-    public BillPayController(BankService bankService) => _bankService = bankService;
+    public BillPayController(BillPayService billPayService, AccountService accountService)
+    {
+        _accountService = accountService;
+        _billPayService = billPayService;
+    }
 
     public IActionResult Index()
     {
@@ -35,7 +41,7 @@ public class BillPayController : Controller
     [HttpPost]
     public IActionResult ConfirmSchedule(BillPayScheduleViewModel billPayScheduleVM)
     {
-        List<ValidationResult> errors = _bankService.ConfirmBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
+        List<ValidationResult> errors = _billPayService.ConfirmBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
             billPayScheduleVM.PayeeID.GetValueOrDefault(), billPayScheduleVM.Amount.GetValueOrDefault(),
             billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(), billPayScheduleVM.Period.GetValueOrDefault());
 
@@ -52,7 +58,7 @@ public class BillPayController : Controller
     [HttpPost]
     public IActionResult SubmitSchedule(BillPayScheduleViewModel billPayScheduleVM)
     {
-        List<ValidationResult> errors = _bankService.SubmitBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
+        List<ValidationResult> errors = _billPayService.SubmitBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
             billPayScheduleVM.PayeeID.GetValueOrDefault(), billPayScheduleVM.Amount.GetValueOrDefault(),
             billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(), billPayScheduleVM.Period.GetValueOrDefault());
 
@@ -82,10 +88,10 @@ public class BillPayController : Controller
 
     public IActionResult ConfirmCancel(int id)
     {
-        BillPay billPay = _bankService.GetBillPay(id);
+        BillPay billPay = _billPayService.GetBillPay(id);
 
         if (billPay is null ||
-            _bankService.GetAccounts(CustomerID).FindIndex(x => x.AccountNumber == billPay.AccountNumber) < 0)
+            _accountService.GetAccounts(CustomerID).FindIndex(x => x.AccountNumber == billPay.AccountNumber) < 0)
             return RedirectToAction(nameof(Index));
 
         return View(BillPayVM(billPay));
@@ -94,7 +100,7 @@ public class BillPayController : Controller
     [HttpPost]
     public IActionResult SubmitCancel(BillPayViewModel billPayVM)
     {
-        ValidationResult error = _bankService.CancelBillPay(billPayVM.BillPayID);
+        ValidationResult error = _billPayService.CancelBillPay(billPayVM.BillPayID);
 
         if (error is not null)
         {
@@ -135,15 +141,18 @@ public class BillPayController : Controller
     private List<BillPayViewModel> BillPaysVM()
     {
         List<BillPayViewModel> billPayVM = new();
-        foreach (BillPay b in _bankService.GetBillPays(CustomerID))
+
+        foreach (BillPay b in _billPayService.GetBillPays(CustomerID))
             billPayVM.Add(BillPayVM(b));
+
         return billPayVM;
     }
 
     private BillPayScheduleViewModel BillPayScheduleVM(BillPayScheduleViewModel billPayScheduleVM = null)
     {
         List<AccountViewModel> accountVM = new();
-        foreach (Account a in _bankService.GetAccounts(CustomerID))
+
+        foreach (Account a in _accountService.GetAccounts(CustomerID))
         {
             accountVM.Add(new AccountViewModel
             {

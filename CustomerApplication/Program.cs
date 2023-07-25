@@ -29,7 +29,11 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-builder.Services.AddScoped<BankService>();
+builder.Services.AddScoped<TransactionService>();
+builder.Services.AddScoped<BillPayService>();
+builder.Services.AddScoped<AccountService>();
+builder.Services.AddScoped<CustomerService>();
+builder.Services.AddScoped<LoginService>();
 
 builder.Services.AddControllersWithViews();
 

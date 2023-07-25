@@ -35,7 +35,6 @@ public class BillPayBackgroundService : BackgroundService
                     (List<ValidationResult> errors, Transaction transaction) = account.BillPay(b.Amount);
                     if (errors is null)
                     {
-                        Console.WriteLine("ERRORS IS NULL");
                         context.Transactions.Add(transaction);
                         if (b.Period == Period.Monthly)
                         {
