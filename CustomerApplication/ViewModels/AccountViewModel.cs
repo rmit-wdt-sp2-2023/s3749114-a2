@@ -8,18 +8,18 @@ public class AccountViewModel
     [Required]
     [Range(1000, 9999)]
     [Display(Name = "Account number")]
-    public int AccountNumber { get; set; }
+    public required int AccountNumber { get; init; }
 
     [Required]
     [Display(Name = "Account type")]
-    public AccountType AccountType { get; set; }
+    public required AccountType AccountType { get; init; }
 
     [Required]
     [DataType(DataType.Currency)]
-    public decimal Balance { get; init; }
+    public required decimal Balance { get; init; }
 
     [Required]
     [Display(Name = "Available")]
     [DataType(DataType.Currency)]
-    public decimal AvailableBalance { get; init; }
+    public required decimal AvailableBalance { get; init; }
 }

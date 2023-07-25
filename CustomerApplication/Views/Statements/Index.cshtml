@@ -44,7 +44,7 @@
     }
     @if (Model.AccountNumber is not null)
     {
-        <h4 class="mt-5">Transaction history</h4>
+        <h4 class="mt-5">Transaction history (@Model.AccountNumber)</h4>
         @if (Model.Transactions.Count <= 0)
         {
             <div class="alert alert-primary mb-5" role="alert">There are no transactions for this account.</div>

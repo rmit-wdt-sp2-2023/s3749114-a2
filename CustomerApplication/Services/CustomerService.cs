@@ -24,7 +24,6 @@ public class CustomerService
         string address, string city, string state, string postCode, string mobile)
     {
         Customer customer = GetCustomer(customerID);
-
         List<ValidationResult> errors = new();
 
         if (customer is null)
@@ -67,7 +66,7 @@ public class CustomerService
         if (string.IsNullOrEmpty(ext) || !permittedExtensions.Contains(ext))
             return (new ValidationResult("Invalid file type.", new List<string>() { "ProfileImage" }), null);
 
-        string tempFilePath = Path.Combine(_directory, $"{customerID}-temp-{ext}");
+        string tempFilePath = Path.Combine(_directory, $"{customerID}-temp{ext}");
         string newFileName = $"{customerID}.jpg";
         string newFilePath = Path.Combine(_directory, newFileName);
 
@@ -105,6 +104,11 @@ public class CustomerService
         {
             return (new ValidationResult("Upload failed. Try again or choose a different image.",
                 new List<string>() { "ProfileImage" }), null);
+        }
+        finally
+        {
+            if (File.Exists(tempFilePath))
+                File.Delete(tempFilePath);
         }
         customer.ProfilePicture = newFileName;
 
