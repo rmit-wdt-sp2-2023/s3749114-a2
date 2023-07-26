@@ -67,7 +67,7 @@ public class CustomerService
             return (new ValidationResult("Invalid file type.", new List<string>() { "ProfileImage" }), null);
 
         string tempFilePath = Path.Combine(_directory, $"{customerID}-temp{ext}");
-        string newFileName = $"{customerID}.jpg";
+        string newFileName = $"{Guid.NewGuid()}-{customerID}.jpg";
         string newFilePath = Path.Combine(_directory, newFileName);
 
         try

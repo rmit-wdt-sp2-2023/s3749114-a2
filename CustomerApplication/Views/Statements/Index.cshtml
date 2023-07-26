@@ -6,13 +6,13 @@
 
 <div class="border rounded p-5">
     <h1 class="mb-5">View statements</h1>
-    @if (Model.AccountsViewModel.Count > 0)
+    @if (Model.AccountViewModels is not null && Model.AccountViewModels.Count > 0)
     {
         <form asp-action="Statements">
             <fieldset>
                 <legend class="h4">Select account</legend>
                 <div class="btn-group-vertical w-100 mt-1" role="group">
-                    @foreach (AccountViewModel a in Model.AccountsViewModel)
+                    @foreach (AccountViewModel a in Model.AccountViewModels)
                     {
                         <input type="radio" class="btn-check" autocomplete="off" onchange="this.form.submit()"
                                asp-for="AccountNumber" value="@a.AccountNumber" id="@a.AccountNumber">
@@ -45,7 +45,7 @@
     @if (Model.AccountNumber is not null)
     {
         <h4 class="mt-5">Transaction history (@Model.AccountNumber)</h4>
-        @if (Model.Transactions.Count <= 0)
+        @if (Model.Transactions is null || Model.Transactions.Count <= 0)
         {
             <div class="alert alert-primary mb-5" role="alert">There are no transactions for this account.</div>
         }
@@ -72,13 +72,17 @@
                             <td>@t.AccountNumber</td>
                             <td>@t.DestinationNumber</td>
                             <td>@Html.DisplayFor(x => t.Amount)</td>
-                            <td>@t.LocalTimeString()</td>
+                            <td>
+                                @{ DateTime localTime = t.TransactionTimeUtc.ToLocalTime(); }
+                                @localTime.ToString("dd/MM/yyyy hh:mm tt")
+                            </td>
                             <td>@t.Comment</td>
                         </tr>
                     }
                 </tbody>
             </table>
-            @Html.PagedListPager(Model.Transactions, page => Url.Action("Statements", new { Model.AccountNumber, page }),
+            @Html.PagedListPager(Model.Transactions, page =>
+                Url.Action("Statements", new { Model.AccountNumber, page }),
             new PagedListRenderOptions
             {
                 LiElementClasses = new[] { "page-item" },

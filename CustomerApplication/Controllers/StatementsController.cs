@@ -2,6 +2,7 @@
 using CustomerApplication.Models;
 using CustomerApplication.Services;
 using CustomerApplication.ViewModels;
+using CustomerApplication.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using X.PagedList;
 
@@ -21,52 +22,35 @@ public class StatementsController : Controller
         _transactionService = transactionService;
     }
 
-    public IActionResult Index() => View(StatementsVM());
+    public IActionResult Index() => View(ViewModelMapper.Statements(_accountService.GetAccounts(CustomerID)));
 
     [HttpPost]
     public IActionResult Statements(StatementsViewModel statementsVM)
     {
         if (!ModelState.IsValid)
             return View(nameof(Index), statementsVM);
+
         return RedirectToAction(nameof(Statements), new { statementsVM.AccountNumber });
     }
 
     public IActionResult Statements(int accountNumber, int page = 1)
     {
-        StatementsViewModel statementsVM = StatementsVM();
-        if (statementsVM.AccountsViewModel.FindIndex(x => x.AccountNumber == accountNumber) < 0)
+        StatementsViewModel statementsVM = ViewModelMapper.Statements(_accountService.GetAccounts(CustomerID));
+
+        // Account number and page passes through URL, so check 
+        // that account selected is from the given options. 
+
+        if (statementsVM.AccountViewModels.FindIndex(x => x.AccountNumber == accountNumber) < 0)
         {
             ModelState.AddModelError("AccountNumber", "You must select a valid account.");
             return View(nameof(Index), statementsVM);
         }                  
         const int pageSize = 4;
         IPagedList<Transaction> pagedList = _transactionService.GetPagedTransactions(accountNumber, page, pageSize);
+
         statementsVM.AccountNumber = accountNumber;
         statementsVM.Transactions = pagedList;
+
         return View(nameof(Index), statementsVM);
-    }
-
-    private StatementsViewModel StatementsVM()
-    {
-        return new StatementsViewModel
-        {
-            AccountsViewModel = AccountsVM()
-        };
-    }
-
-    private List<AccountViewModel> AccountsVM()
-    {
-        List<AccountViewModel> accountsVM = new();
-        foreach (Account account in _accountService.GetAccounts(CustomerID))
-        {
-            accountsVM.Add(new AccountViewModel
-            {
-                AccountNumber = account.AccountNumber,
-                AccountType = account.AccountType,
-                Balance = account.Balance(),
-                AvailableBalance = account.AvailableBalance()
-            });
-        }
-        return accountsVM;
     }
 }

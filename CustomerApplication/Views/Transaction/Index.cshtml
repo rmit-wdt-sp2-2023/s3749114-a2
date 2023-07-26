@@ -1,0 +1,74 @@
+﻿@model CreateTransactionViewModel
+@{ ViewData["Title"] = Model.TransactionType; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">@Model.TransactionType</h1>
+    <form asp-action="Confirm">
+        <fieldset class="mb-4">
+            <legend class="h4">From</legend>
+            <div class="btn-group-vertical w-100 mt-1" role="group">
+                @foreach (AccountViewModel a in Model.AccountViewModels)
+                {
+                    <input type="radio" class="btn-check" autocomplete="off"
+                           asp-for="AccountNumber" value="@a.AccountNumber" id="@a.AccountNumber">
+                    <label class="btn btn-outline-primary text-start" for="@a.AccountNumber">
+                        <span class="row p-1">
+                            <span class="col">
+                                @a.AccountType<br>
+                                @a.AccountNumber<br>
+                            </span>
+                            <span class="col">
+                                @Html.DisplayNameFor(x => a.Balance)<br>
+                                @Html.DisplayFor(x => a.Balance)
+                            </span>
+                            <span class="col">
+                                @Html.DisplayNameFor(x => a.AvailableBalance)<br>
+                                @Html.DisplayFor(x => a.AvailableBalance)
+                            </span>
+                        </span>
+                    </label>
+                }
+            </div>
+            <span asp-validation-for="AccountNumber" class="text-danger mt-2 d-block"></span>
+        </fieldset>
+        @if (Model.TransactionType == TransactionType.Transfer)
+        {
+            <fieldset class="mb-4">
+                <legend class="h4">To</legend>
+                <label asp-for="DestinationNumber" class="control-label mb-2"></label>
+                <input asp-for="DestinationNumber" class="form-control">
+                <span asp-validation-for="DestinationNumber" class="text-danger mt-2 d-block"></span>
+            </fieldset>
+        }
+        <fieldset>
+            <legend class="h4">Details</legend>
+            <div class="mb-3">
+                <label asp-for="Amount" class="control-label mb-2"></label>
+                <div class="input-group">
+                    <div class="input-group-text">$</div>
+                    <input asp-for="Amount" class="form-control">
+                </div>
+                <span asp-validation-for="Amount" class="text-danger mt-2 d-block"></span>
+            </div>
+            <div class="mb-4">
+                <label asp-for="Comment" class="control-label mb-2"></label><span> (optional)</span>
+                <input asp-for="Comment" class="form-control">
+                <span asp-validation-for="Comment" class="text-danger mt-2 d-block"></span>
+            </div>
+        </fieldset>
+        @if (Model.TransactionType == TransactionType.Withdraw || Model.TransactionType == TransactionType.Transfer)
+        {
+            <small class="d-block mt-2">
+                Each account qualifies for two free withdraw or transfer transactions.<br>
+                @Model.TransactionType transactions incur a
+                $@Model.TransactionType.ServiceCharge() service charge thereafter.<br>
+                By continuing, you agree to this service charge.
+            </small>
+        }
+        <div class="d-grid gap-2 d-md-flex mt-5">
+            <button type="submit" class="btn btn-primary">Continue</button>
+            <a class="btn btn-outline-primary" asp-controller="Accounts" asp-action="Index">Cancel</a>
+        </div>
+        <input asp-for="TransactionType" hidden>
+    </form>
+</div>

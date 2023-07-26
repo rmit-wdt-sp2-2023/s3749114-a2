@@ -1,0 +1,36 @@
+﻿@model List<AccountViewModel>
+@{ ViewData["Title"] = "Accounts"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">Accounts</h1>
+
+    @if (Model.Any())
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountNumber)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].AccountType)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].Balance)</th>
+                    <th scope="col">@Html.DisplayNameFor(x => Model[0].AvailableBalance)</th>
+                    <th scope="col"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var account in Model)
+                {
+                    <tr>
+                        <td>@account.AccountNumber</td>
+                        <td>@account.AccountType</td>
+                        <td>@Html.DisplayFor(x => account.Balance)</td>
+                        <td>@Html.DisplayFor(x => account.AvailableBalance)</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-primary mb-5" role="alert">You have no accounts to display.</div>
+    }
+</div>

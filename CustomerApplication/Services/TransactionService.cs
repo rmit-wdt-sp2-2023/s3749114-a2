@@ -17,31 +17,7 @@ public class TransactionService
         _context = context;
     }
 
-    public List<Transaction> GetTransactions(int accountNum)
-    {
-        Account account = _accountService.GetAccount(accountNum);
-
-        if (account is not null)
-        {
-            List<Transaction> transactions = account.Transactions.OrderByDescending(x => x.TransactionTimeUtc).ToList();
-
-            if (transactions.Count > 0)
-                return transactions;
-        }
-        return null;
-    }
-
-    public IPagedList<Transaction> GetPagedTransactions(int accountNum, int page, int pageSize)
-    {
-        IPagedList<Transaction> pagedList = _context.Transactions.Where(x => x.AccountNumber == accountNum)
-            .OrderByDescending(x => x.TransactionTimeUtc).ToPagedList(page, pageSize);
-        return pagedList.Count > 0 ? pagedList : null;
-    }
-
-
-
-
-    // Methods validate transactions but don't update database.
+    // Methods that validate transactions but NOT update database.
 
     public List<ValidationResult> ConfirmDeposit(int accountNum, decimal amount, string comment)
     {
@@ -61,36 +37,35 @@ public class TransactionService
         return errors;
     }
 
+    // Methods that validate transactions AND update database.
 
-
-    // Methods validate transactions and update the database if valid.
-
-
-
-    public List<ValidationResult> SubmitDeposit(int accountNum, decimal amount, string comment)
+    public (List<ValidationResult>, Transaction) SubmitDeposit(int accountNum, decimal amount, string comment)
     {
         (List<ValidationResult> errors, Transaction transaction) = Deposit(accountNum, amount, comment);
+
         if (errors is null)
         {
             _context.Transactions.Add(transaction);
             _context.SaveChanges();
         }
-        return errors;
+        return (errors, transaction);
     }
 
-    public List<ValidationResult> SubmitWithdraw(int accountNum, decimal amount, string comment)
+    public (List<ValidationResult>, List<Transaction>) SubmitWithdraw(int accountNum, decimal amount, string comment)
     {
         (List<ValidationResult> errors, List<Transaction> transactions) = Withdraw(accountNum, amount, comment);
+
         if (errors is null)
         {
             foreach (Transaction t in transactions)
                 _context.Transactions.Add(t);
             _context.SaveChanges();
         }
-        return errors;
+        return (errors, transactions);
     }
 
-    public List<ValidationResult> SubmitTransfer(int accountNum, int? destinationNum, decimal amount, string comment)
+    public (List<ValidationResult>, List<Transaction>) SubmitTransfer(
+        int accountNum, int? destinationNum, decimal amount, string comment)
     {
         (List<ValidationResult> errors, List<Transaction> transactions) =
             Transfer(accountNum, destinationNum, amount, comment);
@@ -101,11 +76,10 @@ public class TransactionService
                 _context.Transactions.Add(t);
             _context.SaveChanges();
         }
-        return errors;
+        return (errors, transactions);
     }
 
-    // Methods to help validate transactions but don't update the database.
-    // Returns all associated transaction if valid or errors if invalid.
+    // Helper methods that validate transactions but NOT update database.
 
     private (List<ValidationResult>, Transaction) Deposit(int accountNum, decimal amount, string comment)
     {
@@ -131,10 +105,8 @@ public class TransactionService
         return errors.Count > 0 ? (errors, null) : (null, transactions);
     }
 
-    // Methods to help validate transfer transactions but don't update the database.
-
     private void TransferTo(int? destinationNum, decimal amount, string comment,
-        ref List<ValidationResult> errors, ref List<Transaction> transactions)
+     ref List<ValidationResult> errors, ref List<Transaction> transactions)
     {
         if (destinationNum is null)
             errors.Add(new ValidationResult("Enter an account number.", new List<string>() { "DestinationNumber" }));
@@ -170,5 +142,13 @@ public class TransactionService
             else
                 transactions.AddRange(transactionsFrom);
         }
+    }
+
+    public IPagedList<Transaction> GetPagedTransactions(int accountNum, int page, int pageSize)
+    {
+        IPagedList<Transaction> pagedList = _context.Transactions.Where(x => x.AccountNumber == accountNum)
+            .OrderByDescending(x => x.TransactionTimeUtc).ToPagedList(page, pageSize);
+
+        return pagedList.Count > 0 ? pagedList : null;
     }
 }

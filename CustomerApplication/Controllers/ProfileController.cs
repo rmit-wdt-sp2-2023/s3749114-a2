@@ -4,6 +4,7 @@ using CustomerApplication.Models;
 using CustomerApplication.Services;
 using CustomerApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using CustomerApplication.Mappers;
 
 namespace CustomerApplication.Controllers;
 
@@ -29,10 +30,10 @@ public class ProfileController : Controller
         ViewBag.DisplayUploadProfilePictureSuccess = false;
         ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
-        return View(MakeProfileVM());
+        return View(ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
 
-    public IActionResult EditDetails() => View(MakeProfileVM());
+    public IActionResult EditDetails() => View(ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
 
     [HttpPost]
     public IActionResult SubmitEditDetails(ProfileViewModel profileVM)
@@ -53,7 +54,7 @@ public class ProfileController : Controller
         ViewBag.DisplayUploadProfilePictureSuccess = false;
         ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
-        return View(nameof(Index), MakeProfileVM());
+        return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
 
     public IActionResult ChangePassword() => View(new ChangePasswordViewModel());
@@ -76,7 +77,7 @@ public class ProfileController : Controller
         ViewBag.DisplayUploadProfilePictureSuccess = false;
         ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
-        return View(nameof(Index), MakeProfileVM());
+        return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
 
     public IActionResult UploadProfilePicture() => View();
@@ -100,7 +101,7 @@ public class ProfileController : Controller
         ViewBag.DisplayUploadProfilePictureSuccess = true;
         ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
-        return View(nameof(Index), MakeProfileVM());
+        return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
 
     public IActionResult RemoveProfilePicture()
@@ -114,7 +115,7 @@ public class ProfileController : Controller
             ViewBag.DisplayUploadProfilePictureSuccess = false;
             ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
-            return View(nameof(Index), MakeProfileVM());
+            return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
 
         }
 
@@ -125,23 +126,6 @@ public class ProfileController : Controller
         ViewBag.DisplayUploadProfilePictureSuccess = false;
         ViewBag.DisplayRemoveProfilePictureSuccess = true;
 
-        return View(nameof(Index), MakeProfileVM());
-    }
-
-    private ProfileViewModel MakeProfileVM()
-    {
-        Customer customer = _customerService.GetCustomer(CustomerID);
-
-        return new ProfileViewModel
-        {
-            Name = customer.Name,
-            TFN = customer.TFN,
-            Address = customer.Address,
-            City = customer.City,
-            State = customer.State,
-            PostCode = customer.PostCode,
-            Mobile = customer.Mobile,
-            ProfilePicture = customer.ProfilePicture
-        };
+        return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
 }
