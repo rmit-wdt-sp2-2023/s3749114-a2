@@ -63,12 +63,26 @@ public class BillPayController : Controller
             billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(), billPayScheduleVM.Period.GetValueOrDefault());
 
         if (errors is not null)
+        {
             foreach (ValidationResult e in errors)
+            {
+                Console.WriteLine("ERROR " + e.ErrorMessage);
                 ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
 
+            }
+                
+
+        }
+            
+
         if (!ModelState.IsValid)
+        {
+            Console.WriteLine("ITS NIT VALID");
             return View(nameof(Schedule), BillPayScheduleVM(billPayScheduleVM));
 
+        }
+
+        Console.WriteLine("ITS VALID");
         return RedirectToAction(nameof(SuccessfullyScheduled));
     }
 
