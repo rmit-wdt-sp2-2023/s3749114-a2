@@ -38,8 +38,6 @@ public class Transaction
 
     [Required]
     [Display(Name = "Time")]
+    [DisplayFormat(DataFormatString = "{0:dd/MM/yyyy hh:mm tt}", ApplyFormatInEditMode = true)]
     public DateTime TransactionTimeUtc { get; init; } = DateTime.UtcNow;
-
-    public string LocalTimeString() =>
-        TimeZoneInfo.ConvertTimeFromUtc(TransactionTimeUtc, TimeZoneInfo.Local).ToString("dd/MM/yyyy hh:mm tt").ToUpper();
 }

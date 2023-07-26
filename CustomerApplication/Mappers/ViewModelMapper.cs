@@ -1,8 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Castle.Core.Resource;
-using CustomerApplication.Models;
-using CustomerApplication.Validation;
+﻿using CustomerApplication.Models;
 using CustomerApplication.ViewModels;
+using X.PagedList;
 
 namespace CustomerApplication.Mappers;
 
@@ -10,11 +8,11 @@ public static class ViewModelMapper
 {
     public static List<AccountViewModel> Accounts(List<Account> accounts)
     {
-        List<AccountViewModel> accountsMV = new();
+        List<AccountViewModel> accountsVM = new();
 
         foreach (Account a in accounts)
         {
-            accountsMV.Add(new AccountViewModel
+            accountsVM.Add(new AccountViewModel
             {
                 AccountNumber = a.AccountNumber,
                 AccountType = a.AccountType,
@@ -22,7 +20,7 @@ public static class ViewModelMapper
                 AvailableBalance = a.AvailableBalance()
             });
         }
-        return accountsMV;
+        return accountsVM;
     }
 
     public static BillPayViewModel BillPay(BillPay billPay)
@@ -104,7 +102,7 @@ public static class ViewModelMapper
     {
         return new StatementsViewModel
         {
-            AccountsViewModel = Accounts(accounts)
+            AccountViewModels = Accounts(accounts)
         };
     }
 

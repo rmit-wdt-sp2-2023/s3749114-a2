@@ -29,21 +29,28 @@ public class StatementsController : Controller
     {
         if (!ModelState.IsValid)
             return View(nameof(Index), statementsVM);
+
         return RedirectToAction(nameof(Statements), new { statementsVM.AccountNumber });
     }
 
     public IActionResult Statements(int accountNumber, int page = 1)
     {
         StatementsViewModel statementsVM = ViewModelMapper.Statements(_accountService.GetAccounts(CustomerID));
-        if (statementsVM.AccountsViewModel.FindIndex(x => x.AccountNumber == accountNumber) < 0)
+
+        // Account number and page passes through URL, so check 
+        // that account selected is from the given options. 
+
+        if (statementsVM.AccountViewModels.FindIndex(x => x.AccountNumber == accountNumber) < 0)
         {
             ModelState.AddModelError("AccountNumber", "You must select a valid account.");
             return View(nameof(Index), statementsVM);
         }                  
         const int pageSize = 4;
         IPagedList<Transaction> pagedList = _transactionService.GetPagedTransactions(accountNumber, page, pageSize);
+
         statementsVM.AccountNumber = accountNumber;
         statementsVM.Transactions = pagedList;
+
         return View(nameof(Index), statementsVM);
     }
 }
