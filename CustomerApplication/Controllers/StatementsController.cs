@@ -2,6 +2,7 @@
 using CustomerApplication.Models;
 using CustomerApplication.Services;
 using CustomerApplication.ViewModels;
+using CustomerApplication.Mappers;
 using Microsoft.AspNetCore.Mvc;
 using X.PagedList;
 
@@ -21,7 +22,7 @@ public class StatementsController : Controller
         _transactionService = transactionService;
     }
 
-    public IActionResult Index() => View(StatementsVM());
+    public IActionResult Index() => View(ViewModelMapper.Statements(_accountService.GetAccounts(CustomerID)));
 
     [HttpPost]
     public IActionResult Statements(StatementsViewModel statementsVM)
@@ -33,7 +34,7 @@ public class StatementsController : Controller
 
     public IActionResult Statements(int accountNumber, int page = 1)
     {
-        StatementsViewModel statementsVM = StatementsVM();
+        StatementsViewModel statementsVM = ViewModelMapper.Statements(_accountService.GetAccounts(CustomerID));
         if (statementsVM.AccountsViewModel.FindIndex(x => x.AccountNumber == accountNumber) < 0)
         {
             ModelState.AddModelError("AccountNumber", "You must select a valid account.");
@@ -44,29 +45,5 @@ public class StatementsController : Controller
         statementsVM.AccountNumber = accountNumber;
         statementsVM.Transactions = pagedList;
         return View(nameof(Index), statementsVM);
-    }
-
-    private StatementsViewModel StatementsVM()
-    {
-        return new StatementsViewModel
-        {
-            AccountsViewModel = AccountsVM()
-        };
-    }
-
-    private List<AccountViewModel> AccountsVM()
-    {
-        List<AccountViewModel> accountsVM = new();
-        foreach (Account account in _accountService.GetAccounts(CustomerID))
-        {
-            accountsVM.Add(new AccountViewModel
-            {
-                AccountNumber = account.AccountNumber,
-                AccountType = account.AccountType,
-                Balance = account.Balance(),
-                AvailableBalance = account.AvailableBalance()
-            });
-        }
-        return accountsVM;
     }
 }

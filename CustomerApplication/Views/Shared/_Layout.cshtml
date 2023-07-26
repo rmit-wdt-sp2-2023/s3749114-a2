@@ -10,7 +10,6 @@
     <link rel="stylesheet" href="~/css/site.css">
 </head>
 <body>
-    <!-- Navigation -->
     <header>
         <nav class="navbar navbar-expand-lg bg-body-tertiary">
             <div class="container">
@@ -24,16 +23,16 @@
                         @if (isLoggedIn)
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Dashboard" asp-action="Index">Accounts</a>
+                                <a class="nav-link" asp-controller="Accounts" asp-action="Index">Accounts</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Dashboard" asp-action="Deposit">Deposit</a>
+                                <a class="nav-link" asp-controller="Transaction" asp-action="Deposit">Deposit</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Dashboard" asp-action="Withdraw">Withdraw</a>
+                                <a class="nav-link" asp-controller="Transaction" asp-action="Withdraw">Withdraw</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Dashboard" asp-action="Transfer">Transfer</a>
+                                <a class="nav-link" asp-controller="Transaction" asp-action="Transfer">Transfer</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Statements" asp-action="Index">Statements</a>
@@ -47,15 +46,16 @@
                     {
                         @if (@Context.Session.GetString(nameof(Customer.ProfilePicture)) is not null)
                         {
-                            <img style="width: 55px; height: 55px; object-fit: contain; background-color: #d9e9ff" alt="Profile picture"
+                            <img style="width: 55px; height: 55px; object-fit: cover;" alt="Profile picture" class="rounded"
                                  src="@Url.Content($"~/ProfilePictures/{Context.Session.GetString(nameof(Customer.ProfilePicture))}")">
                         }
                         else
                         {
-                            <img style="width: 55px; height: 55px; object-fit: contain; background-color: #d9e9ff"
+                            <img style="width: 55px; height: 55px; object-fit: cover;" class="rounded"
                                  src="@Url.Content("~/ProfilePictures/default.png")" alt="Profile picture">
                         }
-                        <a class="navbar-text" asp-controller="Profile" asp-action="Index">@Context.Session.GetString(nameof(Customer.Name))</a>
+                        <a class="navbar-text" asp-controller="Profile"
+                           asp-action="Index">@Context.Session.GetString(nameof(Customer.Name))</a>
                         <a class="btn btn-primary" asp-controller="Login" asp-action="Logout">Logout</a>
                     }
                     else

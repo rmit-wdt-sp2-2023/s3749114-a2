@@ -52,14 +52,11 @@ public class BillPayService
         (List<ValidationResult> errors, BillPay billPay) =
             BillPay(accountNum, payeeID, amount, ScheduledTimeLocal, period);
 
-        Console.WriteLine("submit being called");
-
         if (errors is null)
         {
             billPay.ScheduledTimeUtc = billPay.ScheduledTimeUtc;
             _context.BillPays.Add(billPay);
             _context.SaveChanges();
-            Console.WriteLine("BILL PAY SAVED");
         }
         return errors;
     }

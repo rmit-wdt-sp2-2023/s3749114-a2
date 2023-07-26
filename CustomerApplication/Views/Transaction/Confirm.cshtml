@@ -1,0 +1,52 @@
+﻿@model CreateTransactionViewModel
+@{
+    ViewData["Title"] = "Confirm";
+    string formAction = $"Submit{Model.TransactionType}";
+}
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">Confirm @Model.TransactionType</h1>
+        <h4>From</h4>
+        <dl class="row mb-4">
+            <dt class="col-4">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+            <dd class="col-8">@Model.AccountNumber</dd>
+        </dl>
+        @if (Model.TransactionType == TransactionType.Transfer)
+        {
+            <h4>To</h4>
+            <dl class="row mb-4">
+                <dt class="col-4">@Html.DisplayNameFor(x => Model.DestinationNumber)</dt>
+                <dd class="col-8">@Model.DestinationNumber</dd>
+            </dl>
+        }
+        <h4>Details</h4>
+        <dl class="row mb-4">
+            <dt class="col-4">@Html.DisplayNameFor(x => Model.Amount)</dt>
+            <dd class="col-8">@Html.DisplayFor(x => Model.Amount)</dd>
+            @if (Model.Comment is not null)
+            {
+                <dt class="col-4">@Html.DisplayNameFor(x => Model.Comment)</dt>
+                <dd class="col-8">@Model.Comment</dd>
+            }
+        </dl>
+        @if (Model.TransactionType == TransactionType.Withdraw || Model.TransactionType == TransactionType.Transfer)
+        {
+            <small>
+                Each account qualifies for two free withdraw or transfer transactions.<br>
+                @Model.TransactionType transactions incur a
+                $@Model.TransactionType.ServiceCharge() service charge thereafter.<br>
+                By continuing, you agree to this service charge.
+            </small>
+        }
+        <form asp-action=@formAction>
+            <input asp-for="AccountNumber" hidden>
+            <input asp-for="DestinationNumber" hidden>
+            <input asp-for="Amount" hidden>
+            <input asp-for="Comment" hidden>
+            <input asp-for="TransactionType" hidden>
+        <div class=" d-grid gap-2 d-md-flex mt-5">
+            <button type="submit" class="btn btn-primary">Confirm</button>
+            <a class="btn btn-outline-primary" asp-controller="Accounts" asp-action="Index">Cancel</a>
+        </div>
+    </form>
+</div>

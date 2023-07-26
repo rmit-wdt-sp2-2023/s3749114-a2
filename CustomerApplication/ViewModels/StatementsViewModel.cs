@@ -11,7 +11,7 @@ public class StatementsViewModel
     [Range(1000, 9999, ErrorMessage = "Invalid account number.")]
     public int? AccountNumber { get; set; }
 
-    public List<AccountViewModel> AccountsViewModel { get; set; }
+    public List<AccountViewModel> AccountsViewModel { get; set; } = new();
 
     public IPagedList<Transaction> Transactions { get; set; }
 }

@@ -6,7 +6,7 @@
 
 <div class="border rounded p-5">
     <h1 class="mb-5">View statements</h1>
-    @if (Model.AccountsViewModel.Count > 0)
+    @if (Model.AccountsViewModel is not null && Model.AccountsViewModel.Count > 0)
     {
         <form asp-action="Statements">
             <fieldset>
@@ -45,7 +45,7 @@
     @if (Model.AccountNumber is not null)
     {
         <h4 class="mt-5">Transaction history (@Model.AccountNumber)</h4>
-        @if (Model.Transactions.Count <= 0)
+        @if (Model.Transactions is null || Model.Transactions.Count <= 0)
         {
             <div class="alert alert-primary mb-5" role="alert">There are no transactions for this account.</div>
         }

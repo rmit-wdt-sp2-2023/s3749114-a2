@@ -4,6 +4,7 @@ using CustomerApplication.Models;
 using CustomerApplication.Services;
 using CustomerApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
+using CustomerApplication.Mappers;
 
 namespace CustomerApplication.Controllers;
 
@@ -24,7 +25,7 @@ public class BillPayController : Controller
 
     public IActionResult Index()
     {
-        List<BillPayViewModel> billPayVM = BillPaysVM();
+        List<BillPayViewModel> billPayVM = ViewModelMapper.BillPays(_billPayService.GetBillPays(CustomerID));
 
         (bool displayBlocked, bool displayFailed) = CheckBlockedAndFailed(billPayVM);
 
@@ -36,21 +37,23 @@ public class BillPayController : Controller
         return View(billPayVM);
     }
 
-    public IActionResult Schedule() => View(BillPayScheduleVM());
+    public IActionResult Schedule() => View(ViewModelMapper.BillPaySchedule(_accountService.GetAccounts(CustomerID)));
 
     [HttpPost]
     public IActionResult ConfirmSchedule(BillPayScheduleViewModel billPayScheduleVM)
     {
-        List<ValidationResult> errors = _billPayService.ConfirmBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
-            billPayScheduleVM.PayeeID.GetValueOrDefault(), billPayScheduleVM.Amount.GetValueOrDefault(),
-            billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(), billPayScheduleVM.Period.GetValueOrDefault());
+        List<ValidationResult> errors = _billPayService.ConfirmBillPay(
+            billPayScheduleVM.AccountNumber.GetValueOrDefault(), billPayScheduleVM.PayeeID.GetValueOrDefault(),
+            billPayScheduleVM.Amount.GetValueOrDefault(), billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(),
+            billPayScheduleVM.Period.GetValueOrDefault());
 
         if (errors is not null)
             foreach (ValidationResult e in errors)
                 ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
 
         if (!ModelState.IsValid)
-            return View(nameof(Schedule), BillPayScheduleVM(billPayScheduleVM));
+            return View(nameof(Schedule), ViewModelMapper.BillPaySchedule(
+                _accountService.GetAccounts(CustomerID), billPayScheduleVM));
 
         return View(billPayScheduleVM);
     }
@@ -58,37 +61,25 @@ public class BillPayController : Controller
     [HttpPost]
     public IActionResult SubmitSchedule(BillPayScheduleViewModel billPayScheduleVM)
     {
-        List<ValidationResult> errors = _billPayService.SubmitBillPay(billPayScheduleVM.AccountNumber.GetValueOrDefault(),
-            billPayScheduleVM.PayeeID.GetValueOrDefault(), billPayScheduleVM.Amount.GetValueOrDefault(),
-            billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(), billPayScheduleVM.Period.GetValueOrDefault());
+        List<ValidationResult> errors = _billPayService.SubmitBillPay(
+            billPayScheduleVM.AccountNumber.GetValueOrDefault(), billPayScheduleVM.PayeeID.GetValueOrDefault(),
+            billPayScheduleVM.Amount.GetValueOrDefault(), billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(),
+            billPayScheduleVM.Period.GetValueOrDefault());
 
         if (errors is not null)
-        {
             foreach (ValidationResult e in errors)
-            {
-                Console.WriteLine("ERROR " + e.ErrorMessage);
                 ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
-
-            }
-                
-
-        }
-            
-
+                           
         if (!ModelState.IsValid)
-        {
-            Console.WriteLine("ITS NIT VALID");
-            return View(nameof(Schedule), BillPayScheduleVM(billPayScheduleVM));
+            return View(nameof(Schedule), ViewModelMapper.BillPaySchedule(
+                _accountService.GetAccounts(CustomerID), billPayScheduleVM));
 
-        }
-
-        Console.WriteLine("ITS VALID");
         return RedirectToAction(nameof(SuccessfullyScheduled));
     }
 
     public IActionResult SuccessfullyScheduled()
     {
-        List<BillPayViewModel> billPayVM = BillPaysVM();
+        List<BillPayViewModel> billPayVM = ViewModelMapper.BillPays(_billPayService.GetBillPays(CustomerID));
 
         (bool displayBlocked, bool displayFailed) = CheckBlockedAndFailed(billPayVM);
 
@@ -104,11 +95,14 @@ public class BillPayController : Controller
     {
         BillPay billPay = _billPayService.GetBillPay(id);
 
+        // ID passes through URL, so check that BillPay exists
+        // and confirm if it belongs to logged in customer.
+
         if (billPay is null ||
             _accountService.GetAccounts(CustomerID).FindIndex(x => x.AccountNumber == billPay.AccountNumber) < 0)
             return RedirectToAction(nameof(Index));
 
-        return View(BillPayVM(billPay));
+        return View(ViewModelMapper.BillPay(billPay));
     }
 
     [HttpPost]
@@ -126,7 +120,7 @@ public class BillPayController : Controller
 
     public IActionResult SuccessfullyCancelled()
     {
-        List<BillPayViewModel> billPayVM = BillPaysVM();
+        List<BillPayViewModel> billPayVM = ViewModelMapper.BillPays(_billPayService.GetBillPays(CustomerID));
 
         (bool displayBlocked, bool displayFailed) = CheckBlockedAndFailed(billPayVM);
 
@@ -136,56 +130,6 @@ public class BillPayController : Controller
         ViewBag.DisplayCancelled = true;
 
         return View("Index", billPayVM);
-    }
-
-    private static BillPayViewModel BillPayVM(BillPay billPay)
-    {
-        return new BillPayViewModel()
-        {
-            BillPayID = billPay.BillPayID,
-            AccountNumber = billPay.AccountNumber,
-            PayeeID = billPay.PayeeID,
-            Amount = billPay.Amount,
-            ScheduledTimeLocal = billPay.ScheduledTimeUtc.ToLocalTime(),
-            Period = billPay.Period,
-            BillPayStatus = billPay.BillPayStatus
-        };
-    }
-
-    private List<BillPayViewModel> BillPaysVM()
-    {
-        List<BillPayViewModel> billPayVM = new();
-
-        foreach (BillPay b in _billPayService.GetBillPays(CustomerID))
-            billPayVM.Add(BillPayVM(b));
-
-        return billPayVM;
-    }
-
-    private BillPayScheduleViewModel BillPayScheduleVM(BillPayScheduleViewModel billPayScheduleVM = null)
-    {
-        List<AccountViewModel> accountVM = new();
-
-        foreach (Account a in _accountService.GetAccounts(CustomerID))
-        {
-            accountVM.Add(new AccountViewModel
-            {
-                AccountNumber = a.AccountNumber,
-                AccountType = a.AccountType,
-                Balance = a.Balance(),
-                AvailableBalance = a.AvailableBalance()
-            });
-        }
-        if (billPayScheduleVM is null)
-            return new BillPayScheduleViewModel()
-            {
-                AccountViewModels = accountVM
-            };
-        else
-        {
-            billPayScheduleVM.AccountViewModels = accountVM;
-            return billPayScheduleVM;
-        }
     }
 
     private static (bool, bool) CheckBlockedAndFailed(List<BillPayViewModel> billPayVM)

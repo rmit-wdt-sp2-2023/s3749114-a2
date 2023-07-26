@@ -27,6 +27,8 @@
     <None Remove="BackgroundServices\" />
     <None Remove="Views\Profile\" />
     <None Remove="Views\Statements\" />
+    <None Remove="Views\Accounts\" />
+    <None Remove="Views\Transaction\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -39,6 +41,8 @@
     <Folder Include="BackgroundServices\" />
     <Folder Include="Views\Profile\" />
     <Folder Include="Views\Statements\" />
+    <Folder Include="Views\Accounts\" />
+    <Folder Include="Views\Transaction\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\Dashboard\BillyPay.cshtml" />

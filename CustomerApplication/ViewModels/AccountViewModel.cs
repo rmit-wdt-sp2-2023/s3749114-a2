@@ -7,7 +7,7 @@ public class AccountViewModel
 {
     [Required]
     [Range(1000, 9999)]
-    [Display(Name = "Account number")]
+    [Display(Name = "Account no.")]
     public required int AccountNumber { get; init; }
 
     [Required]

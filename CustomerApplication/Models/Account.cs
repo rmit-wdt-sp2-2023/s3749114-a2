@@ -133,18 +133,14 @@ public class Account
                 DestinationNumber = destinationNum
             }
         };
-
         ValidationMethods.Validate(transactions.First(), out List<ValidationResult> errors);
 
         if (!MeetsMinBalance(amount, transactionType))
         {
             errors.Add(new ValidationResult(
-                $"Invalid amount. Your account must have a min balance of {AccountType.MinBalance():C}.",
+                $"Invalid amount. {AccountType} accounts must have a min balance of {AccountType.MinBalance():C}.",
                 new List<string>() { "Amount" }));
-            Console.WriteLine("DOESN'T MEET MIN BALANCE");
-
         }
-
         if (transactionType == TransactionType.Transfer && destinationNum is null)
             errors.Add(new ValidationResult("Enter an account number.",
                 new List<string>() { "DestinationNumber" }));
@@ -165,7 +161,6 @@ public class Account
                 Amount = transactionType.ServiceCharge()
             });
         }
-
         foreach (Transaction t in transactions)
             Transactions.Add(t);
 

@@ -15,7 +15,7 @@ public class TransactionViewModel
     [Display(Name = "Account type")]
     public AccountType AccountType { get; set; }
 
-    public List<AccountViewModel> AccountsViewModel { get; set; }
+    public List<AccountViewModel> AccountViewModels { get; set; }
 
     [Display(Name = "Account number")]
     //[Range(1000, 9999, ErrorMessage = "You must enter a valid 4 digit account number.")]

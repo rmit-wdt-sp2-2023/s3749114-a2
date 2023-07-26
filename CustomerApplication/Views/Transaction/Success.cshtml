@@ -1,0 +1,40 @@
+﻿@model ReceiptViewModel
+@{ ViewData["Title"] = $"{Model.TransactionType} successful"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">@Model.TransactionType successful</h1>
+
+    <h4 class="mb-5">Your receipt</h4>
+
+    <h4>From</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+        <dd class="col-8">@Model.AccountNumber</dd>
+    </dl>
+    @if (Model.TransactionType == TransactionType.Transfer)
+    {
+        <h4>To</h4>
+        <dl class="row mb-4">
+            <dt class="col-4">@Html.DisplayNameFor(x => Model.DestinationNumber)</dt>
+            <dd class="col-8">@Model.DestinationNumber</dd>
+        </dl>
+    }
+    <h4>Details</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Amount)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.Amount)</dd>
+        @if (Model.ServiceCharge is not null && Model.ServiceCharge > 0)
+        {
+            <dt class="col-4">@Html.DisplayNameFor(x => Model.ServiceCharge)</dt>
+            <dd class="col-8">@Html.DisplayFor(x => Model.ServiceCharge)</dd>
+        }
+        @if (Model.Comment is not null)
+        {
+            <dt class="col-4">@Html.DisplayNameFor(x => Model.Comment)</dt>
+            <dd class="col-8">@Model.Comment</dd>
+        }
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.TransactionTimeLocal)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.TransactionTimeLocal)</dd>
+    </dl>
+    <a asp-controller="Accounts" asp-action="Index">Go back to accounts</a>
+</div>
