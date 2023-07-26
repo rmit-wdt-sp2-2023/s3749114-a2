@@ -144,27 +144,11 @@ public class TransactionService
         }
     }
 
-
-    // ------
-
-    public List<Transaction> GetTransactions(int accountNum)
-    {
-        Account account = _accountService.GetAccount(accountNum);
-
-        if (account is not null)
-        {
-            List<Transaction> transactions = account.Transactions.OrderByDescending(x => x.TransactionTimeUtc).ToList();
-
-            if (transactions.Count > 0)
-                return transactions;
-        }
-        return null;
-    }
-
     public IPagedList<Transaction> GetPagedTransactions(int accountNum, int page, int pageSize)
     {
         IPagedList<Transaction> pagedList = _context.Transactions.Where(x => x.AccountNumber == accountNum)
             .OrderByDescending(x => x.TransactionTimeUtc).ToPagedList(page, pageSize);
+
         return pagedList.Count > 0 ? pagedList : null;
     }
 }

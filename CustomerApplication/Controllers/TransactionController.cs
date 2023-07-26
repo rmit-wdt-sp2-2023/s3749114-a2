@@ -34,32 +34,24 @@ public class TransactionController : Controller
     public IActionResult Transfer() => View(nameof(Index),
         ViewModelMapper.CreateTransaction(TransactionType.Transfer, _accountService.GetAccounts(CustomerID)));
 
-    // Confirming transactions 
+    // Confirming transactions
 
     [HttpPost]
-    public IActionResult ConfirmDeposit(CreateTransactionViewModel createTransactionVM)
+    public IActionResult Confirm(CreateTransactionViewModel transVM)
     {
-        List<ValidationResult> errors = _transactionService.ConfirmDeposit(
-            createTransactionVM.AccountNumber.GetValueOrDefault(),
-            createTransactionVM.Amount.GetValueOrDefault(), createTransactionVM.Comment);
+        List<ValidationResult> errors = null;
 
-        if (errors is not null)
-            foreach (ValidationResult e in errors)
-                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
-            
-        if (!ModelState.IsValid)
-            return View(nameof(Index), ViewModelMapper.CreateTransaction(
-                    TransactionType.Deposit, _accountService.GetAccounts(CustomerID), createTransactionVM));
+        if (transVM.TransactionType == TransactionType.Deposit)
+            errors = _transactionService.ConfirmDeposit(transVM.AccountNumber.GetValueOrDefault(),
+                transVM.Amount.GetValueOrDefault(), transVM.Comment);
 
-        return View("Confirm", createTransactionVM);
-    }
+        else if (transVM.TransactionType == TransactionType.Withdraw)
+            errors = _transactionService.ConfirmWithdraw(transVM.AccountNumber.GetValueOrDefault(),
+                transVM.Amount.GetValueOrDefault(), transVM.Comment);
 
-    [HttpPost]
-    public IActionResult ConfirmWithdraw(CreateTransactionViewModel createTransactionVM)
-    {
-        List<ValidationResult> errors = _transactionService.ConfirmWithdraw(
-            createTransactionVM.AccountNumber.GetValueOrDefault(),
-            createTransactionVM.Amount.GetValueOrDefault(), createTransactionVM.Comment);
+        else if(transVM.TransactionType == TransactionType.Transfer)
+            errors = _transactionService.ConfirmTransfer(transVM.AccountNumber.GetValueOrDefault(),
+                transVM.DestinationNumber, transVM.Amount.GetValueOrDefault(), transVM.Comment);
 
         if (errors is not null)
             foreach (ValidationResult e in errors)
@@ -67,37 +59,34 @@ public class TransactionController : Controller
 
         if (!ModelState.IsValid)
             return View(nameof(Index), ViewModelMapper.CreateTransaction(
-                TransactionType.Withdraw, _accountService.GetAccounts(CustomerID), createTransactionVM));
+                transVM.TransactionType, _accountService.GetAccounts(CustomerID), transVM));
 
-        return View("Confirm", createTransactionVM);
-    }
-
-    [HttpPost]
-    public IActionResult ConfirmTransfer(CreateTransactionViewModel createTransactionVM)
-    {
-        List<ValidationResult> errors = _transactionService.ConfirmTransfer(
-            createTransactionVM.AccountNumber.GetValueOrDefault(), createTransactionVM.DestinationNumber,
-            createTransactionVM.Amount.GetValueOrDefault(), createTransactionVM.Comment);
-
-        if (errors is not null)
-            foreach (ValidationResult e in errors)
-                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
-
-        if (!ModelState.IsValid)
-            return View(nameof(Index), ViewModelMapper.CreateTransaction(
-                TransactionType.Transfer, _accountService.GetAccounts(CustomerID), createTransactionVM));
-
-        return View("Confirm", createTransactionVM);
+        return View("Confirm", transVM);
     }
 
     // Submitting transactions
 
     [HttpPost]
-    public IActionResult SubmitDeposit(CreateTransactionViewModel createTransactionVM)
+    public IActionResult Submit(CreateTransactionViewModel transVM)
     {
-        (List<ValidationResult> errors, Transaction transaction) = _transactionService.SubmitDeposit(
-            createTransactionVM.AccountNumber.GetValueOrDefault(),
-            createTransactionVM.Amount.GetValueOrDefault(), createTransactionVM.Comment);
+        List<ValidationResult> errors = null;
+        List<Transaction> transactions = null;
+
+        if (transVM.TransactionType == TransactionType.Deposit)
+        {
+            (errors, Transaction transaction) = _transactionService.SubmitDeposit(
+                transVM.AccountNumber.GetValueOrDefault(), transVM.Amount.GetValueOrDefault(), transVM.Comment);
+
+            if (transaction is not null)
+                transactions = new() { transaction };
+        }
+        else if (transVM.TransactionType == TransactionType.Withdraw)
+            (errors, transactions) = _transactionService.SubmitWithdraw(
+                transVM.AccountNumber.GetValueOrDefault(), transVM.Amount.GetValueOrDefault(), transVM.Comment);
+            
+        else if (transVM.TransactionType == TransactionType.Transfer)
+            (errors, transactions) = _transactionService.SubmitTransfer(transVM.AccountNumber.GetValueOrDefault(),
+                transVM.DestinationNumber, transVM.Amount.GetValueOrDefault(), transVM.Comment);
 
         if (errors is not null)
             foreach (ValidationResult e in errors)
@@ -105,43 +94,7 @@ public class TransactionController : Controller
 
         if (!ModelState.IsValid)
             return View(nameof(Index), ViewModelMapper.CreateTransaction(
-                TransactionType.Deposit, _accountService.GetAccounts(CustomerID), createTransactionVM));
-
-        return View("Success", ViewModelMapper.Receipt(new List<Transaction>() { transaction }));
-    }
-
-    [HttpPost]
-    public IActionResult SubmitWithdraw(CreateTransactionViewModel createTransactionVM)
-    {
-        (List<ValidationResult> errors, List <Transaction> transactions) =
-            _transactionService.SubmitWithdraw(createTransactionVM.AccountNumber.GetValueOrDefault(),
-            createTransactionVM.Amount.GetValueOrDefault(), createTransactionVM.Comment);
-
-        if (errors is not null)
-            foreach (ValidationResult e in errors)
-                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
-
-        if (!ModelState.IsValid)
-            return View(nameof(Index), ViewModelMapper.CreateTransaction(
-                TransactionType.Withdraw, _accountService.GetAccounts(CustomerID), createTransactionVM));
-
-        return View("Success", ViewModelMapper.Receipt(transactions));
-    }
-
-    [HttpPost]
-    public IActionResult SubmitTransfer(CreateTransactionViewModel createTransactionVM)
-    {
-        (List<ValidationResult> errors, List<Transaction> transactions) = _transactionService.SubmitTransfer(
-            createTransactionVM.AccountNumber.GetValueOrDefault(), createTransactionVM.DestinationNumber,
-            createTransactionVM.Amount.GetValueOrDefault(), createTransactionVM.Comment);
-
-        if (errors is not null)
-            foreach (ValidationResult e in errors)
-                ModelState.AddModelError(e.MemberNames.First(), e.ErrorMessage);
-
-        if (!ModelState.IsValid)
-            return View(nameof(Index), ViewModelMapper.CreateTransaction(
-                TransactionType.Transfer, _accountService.GetAccounts(CustomerID), createTransactionVM));
+                transVM.TransactionType, _accountService.GetAccounts(CustomerID), transVM));
 
         return View("Success", ViewModelMapper.Receipt(transactions));
     }

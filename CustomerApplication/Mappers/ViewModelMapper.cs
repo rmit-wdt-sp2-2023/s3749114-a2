@@ -48,11 +48,11 @@ public static class ViewModelMapper
     }
 
     public static CreateTransactionViewModel CreateTransaction(TransactionType transactionType,
-        List<Account> accounts, CreateTransactionViewModel createTransactionVM = null)
+        List<Account> accounts, CreateTransactionViewModel transVM = null)
     {
         List<AccountViewModel> accountVM = Accounts(accounts);
 
-        if (createTransactionVM is null)
+        if (transVM is null)
             return new CreateTransactionViewModel
             {
                 TransactionType = transactionType,
@@ -60,9 +60,9 @@ public static class ViewModelMapper
             };
         else
         {
-            Console.WriteLine("createTransactionVM not null");
-            createTransactionVM.AccountViewModels = accountVM;
-            return createTransactionVM;
+            Console.WriteLine("transVM not null");
+            transVM.AccountViewModels = accountVM;
+            return transVM;
         }
     }
 
