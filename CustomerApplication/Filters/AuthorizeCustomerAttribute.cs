@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 
 namespace CustomerApplication.Filters;
 

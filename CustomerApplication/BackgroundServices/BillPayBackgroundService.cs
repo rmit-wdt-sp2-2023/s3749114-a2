@@ -1,26 +1,41 @@
-﻿using CustomerApplication.Data;
+﻿using BankLibrary.Models;
 using Microsoft.EntityFrameworkCore;
-using CustomerApplication.Models;
 using System.ComponentModel.DataAnnotations;
+using BankLibrary.Data;
 
 namespace CustomerApplication.BackgroundServices;
 
 public class BillPayBackgroundService : BackgroundService
 {
     private readonly IServiceProvider _services;
+    private readonly ILogger<BillPayBackgroundService> _logger;
 
-    public BillPayBackgroundService(IServiceProvider services) => _services = services;
+    public BillPayBackgroundService(IServiceProvider services, ILogger<BillPayBackgroundService> logger)
+    {
+        _services = services;
+        _logger = logger;
+    }
 
     protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while (!cancellationToken.IsCancellationRequested)
         {
-            await PayBills(cancellationToken);
-            await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+            try
+            {
+                await PayBillsAsync(cancellationToken);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, "Unhandled exception when processing PayBillsAsync");
+            }
+            finally
+            {
+                await Task.Delay(TimeSpan.FromMinutes(1), cancellationToken);
+            }
         }
     }
 
-    private async Task PayBills(CancellationToken cancellationToken)
+    private async Task PayBillsAsync(CancellationToken cancellationToken)
     {
         using IServiceScope scope = _services.CreateScope();
         BankContext context = scope.ServiceProvider.GetRequiredService<BankContext>();

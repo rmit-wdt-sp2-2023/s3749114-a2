@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CustomerApplication.Data;
-using CustomerApplication.Models;
+using BankLibrary.Models;
+using BankLibrary.Data;
 
 namespace CustomerApplication.Services;
 
@@ -47,10 +47,9 @@ public class BillPayService
     }
 
     public List<ValidationResult> SubmitBillPay(
-        int accountNum, int payeeID, decimal amount, DateTime ScheduledTimeLocal, Period period)
+        int accountNum, int payeeID, decimal amount, DateTime timeLocal, Period period)
     {
-        (List<ValidationResult> errors, BillPay billPay) =
-            BillPay(accountNum, payeeID, amount, ScheduledTimeLocal, period);
+        (List<ValidationResult> errors, BillPay billPay) = BillPay(accountNum, payeeID, amount, timeLocal, period);
 
         if (errors is null)
         {
@@ -62,14 +61,14 @@ public class BillPayService
     }
 
     public List<ValidationResult> ConfirmBillPay(
-        int accountNum, int payeeID, decimal amount, DateTime scheduledTimeLocal, Period period)
+        int accountNum, int payeeID, decimal amount, DateTime timeLocal, Period period)
     {
-        (List<ValidationResult> errors, _) = BillPay(accountNum, payeeID, amount, scheduledTimeLocal, period);
+        (List<ValidationResult> errors, _) = BillPay(accountNum, payeeID, amount, timeLocal, period);
         return errors;
     }
 
     private (List<ValidationResult>, BillPay) BillPay(
-        int accountNum, int payeeID, decimal amount, DateTime scheduledTimeLocal, Period period)
+        int accountNum, int payeeID, decimal amount, DateTime timeLocal, Period period)
     {
         List<ValidationResult> errors = new();
 
@@ -83,9 +82,7 @@ public class BillPayService
         if (payeeError is not null)
             errors.Add(payeeError);
 
-        return errors.Count > 0
-            ? (errors, null)
-            : account.BillPaySchedule(payeeID, amount, scheduledTimeLocal, period);
+        return errors.Count > 0 ? (errors, null) : account.BillPaySchedule(payeeID, amount, timeLocal, period);
     }
 
     private (ValidationResult, Payee) GetPayee(int payeeId, string propertyName)

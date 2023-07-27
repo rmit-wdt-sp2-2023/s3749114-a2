@@ -1,4 +1,4 @@
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using CustomerApplication.Dtos;
 
 namespace CustomerApplication.Mappers;

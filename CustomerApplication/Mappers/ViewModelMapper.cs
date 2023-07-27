@@ -1,6 +1,5 @@
-﻿using CustomerApplication.Models;
+﻿using BankLibrary.Models;
 using CustomerApplication.ViewModels;
-using X.PagedList;
 
 namespace CustomerApplication.Mappers;
 
@@ -67,19 +66,19 @@ public static class ViewModelMapper
     }
 
     public static BillPayScheduleViewModel BillPaySchedule(
-        List<Account> accounts, BillPayScheduleViewModel billPayScheduleVM = null)
+        List<Account> accounts, BillPayScheduleViewModel scheduleVM = null)
     {
         List<AccountViewModel> accountVM = Accounts(accounts);
 
-        if (billPayScheduleVM is null)
+        if (scheduleVM is null)
             return new BillPayScheduleViewModel()
             {
                 AccountViewModels = accountVM
             };
         else
         {
-            billPayScheduleVM.AccountViewModels = accountVM;
-            return billPayScheduleVM;
+            scheduleVM.AccountViewModels = accountVM;
+            return scheduleVM;
         }
     }
 

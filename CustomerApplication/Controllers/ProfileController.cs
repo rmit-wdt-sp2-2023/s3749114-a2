@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CustomerApplication.Filters;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using CustomerApplication.Services;
 using CustomerApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -83,16 +83,16 @@ public class ProfileController : Controller
     public IActionResult UploadProfilePicture() => View();
 
     [HttpPost]
-    public IActionResult SubmitUploadProfilePicture(UploadProfilePictureViewModel uploadProfilePictureVM)
+    public IActionResult SubmitUploadProfilePicture(UploadProfilePictureViewModel uploadPictureVM)
     {
         (ValidationResult error, string fileName) = _customerService.UploadProfilePicture(
-            CustomerID, uploadProfilePictureVM.ProfileImage);
+            CustomerID, uploadPictureVM.ProfileImage);
 
         if (error is not null)
             ModelState.AddModelError(error.MemberNames.First(), error.ErrorMessage);
 
         if (!ModelState.IsValid)
-            return View(nameof(UploadProfilePicture), uploadProfilePictureVM);
+            return View(nameof(UploadProfilePicture), uploadPictureVM);
 
         HttpContext.Session.SetString(nameof(Customer.ProfilePicture), fileName);
 

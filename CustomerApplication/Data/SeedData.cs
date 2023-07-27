@@ -1,9 +1,9 @@
 ﻿using Newtonsoft.Json;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using CustomerApplication.Dtos;
 using CustomerApplication.Mappers;
-using System.ComponentModel.DataAnnotations;
-using Castle.Core.Resource;
+using CustomerApplication.Data;
+using BankLibrary.Data;
 
 namespace CustomerApplication.Data;
 
@@ -11,7 +11,7 @@ public static class SeedData
 {
     public static void Initialise(IServiceProvider serviceProvider)
     {
-        var context = serviceProvider.GetRequiredService<BankContext>();
+        BankContext context = serviceProvider.GetRequiredService<BankContext>();
 
         // Check if any customers already exist and if they do stop.
 
@@ -34,16 +34,16 @@ public static class SeedData
         // Convert DTO into business objects and insert into database.
 
         List<Customer> customers = DtoMapper.ConvertCustomersFromDto(customersDto);
-        List<Login> logins = DtoMapper.ConvertLoginsFromDto(customersDto);
-
-        // Insert customers and logins into database.
-
+        
         foreach (Customer customer in customers)
             context.Customers.Add(customer);
+
+        List<Login> logins = DtoMapper.ConvertLoginsFromDto(customersDto);
+
         foreach (Login login in logins)
             context.Logins.Add(login);
 
-        // Creates and insert payees into database.
+        // Create and insert payees into database.
 
         context.Payees.Add(new Payee()
         {
@@ -54,7 +54,6 @@ public static class SeedData
             PostCode = "3000",
             Phone = "(03) 7022 8530"
         });
-
         context.Payees.Add(new Payee()
         {
             Name = "Telstra",
@@ -64,7 +63,6 @@ public static class SeedData
             PostCode = "3000",
             Phone = "(03) 8647 4954"
         });
-
         context.SaveChanges();
     }
 }

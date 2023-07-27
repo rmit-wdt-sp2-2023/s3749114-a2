@@ -20,6 +20,10 @@
     <PackageReference Include="Magick.NET.Core" Version="13.1.3" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.1.3" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Login\" />
@@ -29,7 +33,6 @@
     <None Remove="Views\Statements\" />
     <None Remove="Views\Accounts\" />
     <None Remove="Views\Transaction\" />
-    <None Remove="Utilities\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -44,7 +47,6 @@
     <Folder Include="Views\Statements\" />
     <Folder Include="Views\Accounts\" />
     <Folder Include="Views\Transaction\" />
-    <Folder Include="Utilities\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\Dashboard\BillyPay.cshtml" />
@@ -56,4 +58,9 @@
     <MagickCopyNativeLinuxMusl>true</MagickCopyNativeLinuxMusl>
     <MagickCopyNativeMacOS>true</MagickCopyNativeMacOS>
   </PropertyGroup> -->
+  <ItemGroup>
+    <ProjectReference Include="..\BankLibrary\BankLibrary.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

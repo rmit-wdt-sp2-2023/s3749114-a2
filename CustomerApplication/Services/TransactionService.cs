@@ -1,9 +1,12 @@
-using CustomerApplication.Data;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using System.ComponentModel.DataAnnotations;
 using X.PagedList;
+using BankLibrary.Data;
 
 namespace CustomerApplication.Services;
+
+// Service class for deposit, withdraw and transfer transactions.
+// Transactions relating to BillPay are located in the BillPayBackgroundService class. 
 
 public class TransactionService
 {
@@ -15,6 +18,16 @@ public class TransactionService
     {
         _accountService = accountService;
         _context = context;
+    }
+
+    // Takes a page number and page size and returns the transactions on that page.
+
+    public IPagedList<Transaction> GetPagedTransactions(int accountNum, int page, int pageSize)
+    {
+        IPagedList<Transaction> pagedList = _context.Transactions.Where(x => x.AccountNumber == accountNum)
+            .OrderByDescending(x => x.TransactionTimeUtc).ToPagedList(page, pageSize);
+
+        return pagedList.Count > 0 ? pagedList : null;
     }
 
     // Methods that validate transactions but NOT update database.
@@ -79,7 +92,7 @@ public class TransactionService
         return (errors, transactions);
     }
 
-    // Helper methods that validate transactions but NOT update database.
+    // Private helper methods that validate transactions but NOT update database.
 
     private (List<ValidationResult>, Transaction) Deposit(int accountNum, decimal amount, string comment)
     {
@@ -142,13 +155,5 @@ public class TransactionService
             else
                 transactions.AddRange(transactionsFrom);
         }
-    }
-
-    public IPagedList<Transaction> GetPagedTransactions(int accountNum, int page, int pageSize)
-    {
-        IPagedList<Transaction> pagedList = _context.Transactions.Where(x => x.AccountNumber == accountNum)
-            .OrderByDescending(x => x.TransactionTimeUtc).ToPagedList(page, pageSize);
-
-        return pagedList.Count > 0 ? pagedList : null;
     }
 }

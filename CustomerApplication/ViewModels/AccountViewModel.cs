@@ -1,4 +1,4 @@
-﻿using CustomerApplication.Models;
+﻿using BankLibrary.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace CustomerApplication.ViewModels;

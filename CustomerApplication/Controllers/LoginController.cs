@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using CustomerApplication.ViewModels;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using CustomerApplication.Services;
 
 namespace CustomerApplication.Controllers;

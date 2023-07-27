@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CustomerApplication.Data;
-using CustomerApplication.Models;
-using CustomerApplication.Validation;
+using BankLibrary.Models;
+using BankLibrary.Validation;
 using ImageMagick;
+using BankLibrary.Data;
 
 namespace CustomerApplication.Services;
 

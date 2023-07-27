@@ -1,6 +1,6 @@
-﻿using CustomerApplication.Models;
+﻿using BankLibrary.Models;
 using System.ComponentModel.DataAnnotations;
-using CustomerApplication.Validation;
+using BankLibrary.Validation;
 
 namespace CustomerApplication.ViewModels;
 

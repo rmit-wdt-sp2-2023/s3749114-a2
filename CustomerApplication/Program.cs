@@ -3,6 +3,9 @@ using CustomerApplication.Data;
 using CustomerApplication.Services;
 using CustomerApplication.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
+using BankLibrary.Data;
+
+// Set culture info to ensure appropriate money symbol.
 
 CultureInfo cultureInfo = new("en-AU");
 cultureInfo.NumberFormat.CurrencySymbol = "$";
@@ -11,13 +14,21 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to container.
+// Add database.
+
+// Note that migrations are in the BankLibrary.
+// Too add or update this, go to the CustomerApplication directory and then use the following commands. 
+// dotnet ef migrations add Initial --project ../BankLibrary/BankLibrary.csproj --startup-project CustomerApplication.csproj   
+// dotnet ef database update                                          
 
 builder.Services.AddDbContext<BankContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BankContext"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BankContext"), assembly =>
+        assembly.MigrationsAssembly(typeof(BankContext).Assembly.FullName));
     options.UseLazyLoadingProxies();
 });
+
+// Add BillPay background service.
 
 builder.Services.AddHostedService<BillPayBackgroundService>();
 
@@ -28,6 +39,8 @@ builder.Services.AddSession(options =>
 {
     options.Cookie.IsEssential = true;
 });
+
+// Add other banking services. 
 
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<BillPayService>();

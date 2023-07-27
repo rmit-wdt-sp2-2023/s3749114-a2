@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using X.PagedList;
 
 namespace CustomerApplication.ViewModels;
