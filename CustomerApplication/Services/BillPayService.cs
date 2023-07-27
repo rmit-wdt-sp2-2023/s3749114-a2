@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using BankLibrary.Data;
 using BankLibrary.Models;
+using BankLibrary.Data;
 
 namespace CustomerApplication.Services;
 

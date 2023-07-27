@@ -20,6 +20,10 @@
     <PackageReference Include="Magick.NET.Core" Version="13.1.3" />
     <PackageReference Include="Magick.NET-Q16-AnyCPU" Version="13.1.3" />
     <PackageReference Include="X.PagedList.Mvc.Core" Version="8.4.7" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <None Remove="Views\Login\" />

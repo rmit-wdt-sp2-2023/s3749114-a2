@@ -1,9 +1,9 @@
 using System.Globalization;
-using BankLibrary.Data;
 using CustomerApplication.Data;
 using CustomerApplication.Services;
 using CustomerApplication.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
+using BankLibrary.Data;
 
 // Set culture info to ensure appropriate money symbol.
 
@@ -16,9 +16,15 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add database.
 
+// Note that migrations are in the BankLibrary.
+// Too add or update this, go to the CustomerApplication directory and then use the following commands. 
+// dotnet ef migrations add Initial --project ../BankLibrary/BankLibrary.csproj --startup-project CustomerApplication.csproj   
+// dotnet ef database update                                          
+
 builder.Services.AddDbContext<BankContext>(options =>
 {
-    options.UseSqlServer(builder.Configuration.GetConnectionString("BankContext"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("BankContext"), assembly =>
+        assembly.MigrationsAssembly(typeof(BankContext).Assembly.FullName));
     options.UseLazyLoadingProxies();
 });
 

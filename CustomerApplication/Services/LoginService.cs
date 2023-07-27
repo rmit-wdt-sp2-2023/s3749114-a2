@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using BankLibrary.Data;
 using BankLibrary.Models;
 using SimpleHashing.Net;
+using BankLibrary.Data;
 
 namespace CustomerApplication.Services;
 

@@ -1,7 +1,7 @@
-using BankLibrary.Data;
 using BankLibrary.Models;
 using System.ComponentModel.DataAnnotations;
 using X.PagedList;
+using BankLibrary.Data;
 
 namespace CustomerApplication.Services;
 

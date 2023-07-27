@@ -4,16 +4,19 @@ using BankLibrary.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace CustomerApplication.Migrations
+namespace BankLibrary.Migrations
 {
     [DbContext(typeof(BankContext))]
-    partial class BankContextModelSnapshot : ModelSnapshot
+    [Migration("20230727025337_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +28,7 @@ namespace CustomerApplication.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("CustomerApplication.Models.Account", b =>
+            modelBuilder.Entity("BankLibrary.Models.Account", b =>
                 {
                     b.Property<int>("AccountNumber")
                         .HasColumnType("int");
@@ -43,7 +46,7 @@ namespace CustomerApplication.Migrations
                     b.ToTable("Accounts");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.BillPay", b =>
+            modelBuilder.Entity("BankLibrary.Models.BillPay", b =>
                 {
                     b.Property<int>("BillPayID")
                         .ValueGeneratedOnAdd()
@@ -81,7 +84,7 @@ namespace CustomerApplication.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Customer", b =>
+            modelBuilder.Entity("BankLibrary.Models.Customer", b =>
                 {
                     b.Property<int>("CustomerID")
                         .HasColumnType("int");
@@ -123,7 +126,7 @@ namespace CustomerApplication.Migrations
                     b.ToTable("Customers");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Login", b =>
+            modelBuilder.Entity("BankLibrary.Models.Login", b =>
                 {
                     b.Property<string>("LoginID")
                         .HasMaxLength(8)
@@ -144,7 +147,7 @@ namespace CustomerApplication.Migrations
                     b.ToTable("Logins");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Payee", b =>
+            modelBuilder.Entity("BankLibrary.Models.Payee", b =>
                 {
                     b.Property<int>("PayeeID")
                         .ValueGeneratedOnAdd()
@@ -187,7 +190,7 @@ namespace CustomerApplication.Migrations
                     b.ToTable("Payees");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Transaction", b =>
+            modelBuilder.Entity("BankLibrary.Models.Transaction", b =>
                 {
                     b.Property<int>("TransactionID")
                         .ValueGeneratedOnAdd()
@@ -226,9 +229,9 @@ namespace CustomerApplication.Migrations
                         });
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Account", b =>
+            modelBuilder.Entity("BankLibrary.Models.Account", b =>
                 {
-                    b.HasOne("CustomerApplication.Models.Customer", "Customer")
+                    b.HasOne("BankLibrary.Models.Customer", "Customer")
                         .WithMany("Accounts")
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -237,15 +240,15 @@ namespace CustomerApplication.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.BillPay", b =>
+            modelBuilder.Entity("BankLibrary.Models.BillPay", b =>
                 {
-                    b.HasOne("CustomerApplication.Models.Account", "Account")
+                    b.HasOne("BankLibrary.Models.Account", "Account")
                         .WithMany("BillPays")
                         .HasForeignKey("AccountNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CustomerApplication.Models.Payee", "Payee")
+                    b.HasOne("BankLibrary.Models.Payee", "Payee")
                         .WithMany()
                         .HasForeignKey("PayeeID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -256,9 +259,9 @@ namespace CustomerApplication.Migrations
                     b.Navigation("Payee");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Login", b =>
+            modelBuilder.Entity("BankLibrary.Models.Login", b =>
                 {
-                    b.HasOne("CustomerApplication.Models.Customer", "Customer")
+                    b.HasOne("BankLibrary.Models.Customer", "Customer")
                         .WithMany()
                         .HasForeignKey("CustomerID")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -267,15 +270,15 @@ namespace CustomerApplication.Migrations
                     b.Navigation("Customer");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Transaction", b =>
+            modelBuilder.Entity("BankLibrary.Models.Transaction", b =>
                 {
-                    b.HasOne("CustomerApplication.Models.Account", "Account")
+                    b.HasOne("BankLibrary.Models.Account", "Account")
                         .WithMany("Transactions")
                         .HasForeignKey("AccountNumber")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("CustomerApplication.Models.Account", "DestinationAccount")
+                    b.HasOne("BankLibrary.Models.Account", "DestinationAccount")
                         .WithMany()
                         .HasForeignKey("DestinationNumber");
 
@@ -284,14 +287,14 @@ namespace CustomerApplication.Migrations
                     b.Navigation("DestinationAccount");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Account", b =>
+            modelBuilder.Entity("BankLibrary.Models.Account", b =>
                 {
                     b.Navigation("BillPays");
 
                     b.Navigation("Transactions");
                 });
 
-            modelBuilder.Entity("CustomerApplication.Models.Customer", b =>
+            modelBuilder.Entity("BankLibrary.Models.Customer", b =>
                 {
                     b.Navigation("Accounts");
                 });
