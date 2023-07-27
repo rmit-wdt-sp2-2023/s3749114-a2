@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using AdminPortal.ViewModels;
-using AdminPortal.Filters;
 
 namespace AdminPortal.Controllers;
 
@@ -29,6 +28,4 @@ public class HomeController : Controller
         HttpContext.Session.Clear();
         return RedirectToAction(nameof(Index));
     }
-
 }
-
