@@ -1,9 +1,9 @@
-﻿using CustomerApplication.Validation;
+﻿using BankLibrary.Validation;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace CustomerApplication.Models;
+namespace BankLibrary.Models;
 
 public class BillPay
 {

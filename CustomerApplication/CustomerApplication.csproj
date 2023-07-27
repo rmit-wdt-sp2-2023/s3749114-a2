@@ -29,7 +29,6 @@
     <None Remove="Views\Statements\" />
     <None Remove="Views\Accounts\" />
     <None Remove="Views\Transaction\" />
-    <None Remove="Utilities\" />
   </ItemGroup>
   <ItemGroup>
    <None Update="appsettings.json">
@@ -44,7 +43,6 @@
     <Folder Include="Views\Statements\" />
     <Folder Include="Views\Accounts\" />
     <Folder Include="Views\Transaction\" />
-    <Folder Include="Utilities\" />
   </ItemGroup>
   <ItemGroup>
     <Content Remove="Views\Dashboard\BillyPay.cshtml" />
@@ -56,4 +54,9 @@
     <MagickCopyNativeLinuxMusl>true</MagickCopyNativeLinuxMusl>
     <MagickCopyNativeMacOS>true</MagickCopyNativeMacOS>
   </PropertyGroup> -->
+  <ItemGroup>
+    <ProjectReference Include="..\BankLibrary\BankLibrary.csproj">
+      <GlobalPropertiesToRemove></GlobalPropertiesToRemove>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

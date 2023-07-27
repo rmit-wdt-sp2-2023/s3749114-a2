@@ -1,10 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using Castle.Core.Resource;
-using System.Net;
-using System.Reflection;
 
-namespace CustomerApplication.Models;
+namespace BankLibrary.Models;
 
 public class Customer
 {

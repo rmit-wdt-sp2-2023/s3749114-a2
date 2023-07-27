@@ -1,6 +1,6 @@
-﻿using CustomerApplication.Data;
+﻿using BankLibrary.Data;
+using BankLibrary.Models;
 using Microsoft.EntityFrameworkCore;
-using CustomerApplication.Models;
 using System.ComponentModel.DataAnnotations;
 
 namespace CustomerApplication.BackgroundServices;

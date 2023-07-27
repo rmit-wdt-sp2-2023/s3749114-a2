@@ -1,7 +1,6 @@
 ﻿using CustomerApplication.Filters;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using CustomerApplication.Services;
-using CustomerApplication.ViewModels;
 using CustomerApplication.Mappers;
 using Microsoft.AspNetCore.Mvc;
 

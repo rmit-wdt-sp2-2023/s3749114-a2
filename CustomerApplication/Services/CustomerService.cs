@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CustomerApplication.Data;
-using CustomerApplication.Models;
-using CustomerApplication.Validation;
+using BankLibrary.Data;
+using BankLibrary.Models;
+using BankLibrary.Validation;
 using ImageMagick;
 
 namespace CustomerApplication.Services;

@@ -1,4 +1,4 @@
-﻿namespace CustomerApplication.Models;
+﻿namespace BankLibrary.Models;
 
 public enum BillPayStatus
 {

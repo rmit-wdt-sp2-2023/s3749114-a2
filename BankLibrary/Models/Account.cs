@@ -1,8 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using CustomerApplication.Validation;
+using BankLibrary.Validation;
 
-namespace CustomerApplication.Models;
+namespace BankLibrary.Models;
 
 public class Account
 {

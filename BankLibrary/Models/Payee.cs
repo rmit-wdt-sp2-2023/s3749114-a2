@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CustomerApplication.Models;
+namespace BankLibrary.Models;
 
 public class Payee
 {

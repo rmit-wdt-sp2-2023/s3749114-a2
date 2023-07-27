@@ -1,8 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CustomerApplication.Models;
-using CustomerApplication.ViewModels;
 
-namespace CustomerApplication.Validation;
+namespace BankLibrary.Validation;
 
 public static class ValidationMethods
 {

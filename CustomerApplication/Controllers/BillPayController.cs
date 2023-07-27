@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using CustomerApplication.Filters;
-using CustomerApplication.Models;
+using BankLibrary.Models;
 using CustomerApplication.Services;
 using CustomerApplication.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -40,12 +40,11 @@ public class BillPayController : Controller
     public IActionResult Schedule() => View(ViewModelMapper.BillPaySchedule(_accountService.GetAccounts(CustomerID)));
 
     [HttpPost]
-    public IActionResult ConfirmSchedule(BillPayScheduleViewModel billPayScheduleVM)
+    public IActionResult ConfirmSchedule(BillPayScheduleViewModel scheduleVM)
     {
-        List<ValidationResult> errors = _billPayService.ConfirmBillPay(
-            billPayScheduleVM.AccountNumber.GetValueOrDefault(), billPayScheduleVM.PayeeID.GetValueOrDefault(),
-            billPayScheduleVM.Amount.GetValueOrDefault(), billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(),
-            billPayScheduleVM.Period.GetValueOrDefault());
+        List<ValidationResult> errors = _billPayService.ConfirmBillPay(scheduleVM.AccountNumber.GetValueOrDefault(),
+            scheduleVM.PayeeID.GetValueOrDefault(), scheduleVM.Amount.GetValueOrDefault(),
+            scheduleVM.ScheduledTimeLocal.GetValueOrDefault(), scheduleVM.Period.GetValueOrDefault());
 
         if (errors is not null)
             foreach (ValidationResult e in errors)
@@ -53,18 +52,17 @@ public class BillPayController : Controller
 
         if (!ModelState.IsValid)
             return View(nameof(Schedule), ViewModelMapper.BillPaySchedule(
-                _accountService.GetAccounts(CustomerID), billPayScheduleVM));
+                _accountService.GetAccounts(CustomerID), scheduleVM));
 
-        return View(billPayScheduleVM);
+        return View(scheduleVM);
     }
 
     [HttpPost]
-    public IActionResult SubmitSchedule(BillPayScheduleViewModel billPayScheduleVM)
+    public IActionResult SubmitSchedule(BillPayScheduleViewModel scheduleVM)
     {
-        List<ValidationResult> errors = _billPayService.SubmitBillPay(
-            billPayScheduleVM.AccountNumber.GetValueOrDefault(), billPayScheduleVM.PayeeID.GetValueOrDefault(),
-            billPayScheduleVM.Amount.GetValueOrDefault(), billPayScheduleVM.ScheduledTimeLocal.GetValueOrDefault(),
-            billPayScheduleVM.Period.GetValueOrDefault());
+        List<ValidationResult> errors = _billPayService.SubmitBillPay(scheduleVM.AccountNumber.GetValueOrDefault(),
+            scheduleVM.PayeeID.GetValueOrDefault(), scheduleVM.Amount.GetValueOrDefault(),
+            scheduleVM.ScheduledTimeLocal.GetValueOrDefault(), scheduleVM.Period.GetValueOrDefault());
 
         if (errors is not null)
             foreach (ValidationResult e in errors)
@@ -72,7 +70,7 @@ public class BillPayController : Controller
                            
         if (!ModelState.IsValid)
             return View(nameof(Schedule), ViewModelMapper.BillPaySchedule(
-                _accountService.GetAccounts(CustomerID), billPayScheduleVM));
+                _accountService.GetAccounts(CustomerID), scheduleVM));
 
         return RedirectToAction(nameof(SuccessfullyScheduled));
     }

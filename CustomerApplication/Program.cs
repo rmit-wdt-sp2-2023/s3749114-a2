@@ -1,8 +1,11 @@
 using System.Globalization;
+using BankLibrary.Data;
 using CustomerApplication.Data;
 using CustomerApplication.Services;
 using CustomerApplication.BackgroundServices;
 using Microsoft.EntityFrameworkCore;
+
+// Set culture info to ensure appropriate money symbol.
 
 CultureInfo cultureInfo = new("en-AU");
 cultureInfo.NumberFormat.CurrencySymbol = "$";
@@ -11,13 +14,15 @@ CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-// Add services to container.
+// Add database.
 
 builder.Services.AddDbContext<BankContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("BankContext"));
     options.UseLazyLoadingProxies();
 });
+
+// Add BillPay background service.
 
 builder.Services.AddHostedService<BillPayBackgroundService>();
 
@@ -28,6 +33,8 @@ builder.Services.AddSession(options =>
 {
     options.Cookie.IsEssential = true;
 });
+
+// Add other banking services. 
 
 builder.Services.AddScoped<TransactionService>();
 builder.Services.AddScoped<BillPayService>();
