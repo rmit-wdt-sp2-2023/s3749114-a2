@@ -79,7 +79,7 @@ public static class DtoMapper
         { 
             LoginID = loginDto.LoginID,
             CustomerID = customerID,
-            PasswordHash = loginDto.PasswordHash                                        
+            PasswordHash = loginDto.PasswordHash,
         };
     }
 }

@@ -1,7 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using BankLibrary.Data;
 using WebApi.Models.DataManager;
-using Newtonsoft.Json;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -12,6 +11,8 @@ builder.Services.AddDbContext<BankContext>(options =>
 });
 
 builder.Services.AddScoped<CustomerManager>();
+builder.Services.AddScoped<LoginManager>();
+builder.Services.AddScoped<BillPayManager>();
 
 builder.Services.AddControllers();
 

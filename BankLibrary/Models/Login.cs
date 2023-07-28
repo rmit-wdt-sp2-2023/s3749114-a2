@@ -20,4 +20,8 @@ public class Login
     [StringLength(94)]
     [Column(TypeName = "char")]
     public required string PasswordHash { get; set; }
+
+    [Required]
+    [Display(Name = "Login status")]
+    public LoginStatus LoginStatus { get; set; } = LoginStatus.Unblocked;
 }

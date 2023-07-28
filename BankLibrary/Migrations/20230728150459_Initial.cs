@@ -73,7 +73,8 @@ namespace BankLibrary.Migrations
                 {
                     LoginID = table.Column<string>(type: "char(8)", maxLength: 8, nullable: false),
                     CustomerID = table.Column<int>(type: "int", nullable: false),
-                    PasswordHash = table.Column<string>(type: "char(94)", maxLength: 94, nullable: false)
+                    PasswordHash = table.Column<string>(type: "char(94)", maxLength: 94, nullable: false),
+                    LoginStatus = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

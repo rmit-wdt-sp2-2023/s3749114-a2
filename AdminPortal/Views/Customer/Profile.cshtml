@@ -1,0 +1,69 @@
+﻿@model Customer
+@{ ViewData["Title"] = $"Customer {Model.CustomerID}"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">Customer @Model.CustomerID</h1>
+    @if (ViewBag.DisplaySuccess != null && ViewBag.DisplaySuccess)
+    {
+        <div class="alert alert-success mb-4" role="alert">Profile updated successfully.</div>
+    }
+    <dl class="row mb-2">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Name)</dt>
+        <dd class="col-8">@Model.Name</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.TFN)</dt>
+        @if (Model.TFN is null)
+        {
+            <dd class="col-8">-</dd>
+        }
+        else
+        {
+            <dd class="col-8">@Model.TFN</dd>
+        }
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Address)</dt>
+        @if (Model.Address is null)
+        {
+            <dd class="col-8">-</dd>
+        }
+        else
+        {
+            <dd class="col-8">@Model.Address</dd>
+        }
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.City)</dt>
+        @if (Model.City is null)
+        {
+            <dd class="col-8">-</dd>
+        }
+        else
+        {
+            <dd class="col-8">@Model.City</dd>
+        }
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.State)</dt>
+        @if (Model.State is null)
+        {
+            <dd class="col-8">-</dd>
+        }
+        else
+        {
+            <dd class="col-8">@Model.State</dd>
+        }
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.PostCode)</dt>
+        @if (Model.PostCode is null)
+        {
+            <dd class="col-8">-</dd>
+        }
+        else
+        {
+            <dd class="col-8">@Model.PostCode</dd>
+        }
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Mobile)</dt>
+        @if (Model.Mobile is null)
+        {
+            <dd class="col-8">-</dd>
+        }
+        else
+        {
+            <dd class="col-8">@Model.Mobile</dd>
+        }
+    </dl>
+    <a asp-action="Edit" asp-route-id="@Model.CustomerID">Edit details</a>
+</div>

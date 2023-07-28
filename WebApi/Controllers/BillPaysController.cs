@@ -24,22 +24,10 @@ public class BillPaysController : ControllerBase
         return _repo.Get(id);
     }
 
-    [HttpPost]
-    public void Post([FromBody] BillPay billPay)
-    {
-        _repo.Add(billPay);
-    }
-
     [HttpPut]
     public void Put([FromBody] BillPay billPay)
     {
         _repo.Update(billPay.BillPayID, billPay);
-    }
-
-    [HttpDelete("{id}")]
-    public long Delete(int id)
-    {
-        return _repo.Delete(id);
     }
 }
 

@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BankLibrary.Migrations
 {
     [DbContext(typeof(BankContext))]
-    [Migration("20230727025337_Initial")]
+    [Migration("20230728150459_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -133,6 +133,9 @@ namespace BankLibrary.Migrations
                         .HasColumnType("char");
 
                     b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("LoginStatus")
                         .HasColumnType("int");
 
                     b.Property<string>("PasswordHash")

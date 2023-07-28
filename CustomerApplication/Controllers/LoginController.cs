@@ -2,6 +2,7 @@
 using CustomerApplication.ViewModels;
 using BankLibrary.Models;
 using CustomerApplication.Services;
+using System.ComponentModel.DataAnnotations;
 
 namespace CustomerApplication.Controllers;
 
@@ -19,11 +20,11 @@ public class LoginController : Controller
         if (!ModelState.IsValid)
             return View(nameof(Login), loginVM);
 
-        Login login = _loginService.Login(loginVM.LoginID, loginVM.Password);
+        (ValidationResult error, Login login) = _loginService.Login(loginVM.LoginID, loginVM.Password);
 
-        if (login is null)
+        if (error is not null)
         {
-            ModelState.AddModelError("LoginFailed", "Login failed, please try again.");
+            ModelState.AddModelError(error.MemberNames.First(), error.ErrorMessage);
             return View(nameof(Login), loginVM);
         }
         HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);

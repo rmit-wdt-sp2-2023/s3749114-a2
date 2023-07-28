@@ -19,7 +19,6 @@ public class HomeController : Controller
             return View(nameof(Index), loginVM);
         }
         HttpContext.Session.SetString("Username", loginVM.Username);
-
         return RedirectToAction(nameof(Index), "Dashboard");
     }
 

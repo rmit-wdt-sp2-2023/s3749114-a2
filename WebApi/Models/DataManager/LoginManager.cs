@@ -4,7 +4,7 @@ using WebApi.Models.Repository;
 
 namespace WebApi.Models.DataManager;
 
-public class LoginManager : IDataRepository<Login, int>
+public class LoginManager : IDataRepository<Login, string>
 {
     private readonly BankContext _context;
 
@@ -13,7 +13,7 @@ public class LoginManager : IDataRepository<Login, int>
         _context = context;
     }
 
-    public Login Get(int id)
+    public Login Get(string id)
     {
         return _context.Logins.Find(id);
     }
@@ -23,23 +23,7 @@ public class LoginManager : IDataRepository<Login, int>
         return _context.Logins.ToList();
     }
 
-    public int Add(Login login)
-    {
-        _context.Logins.Add(login);
-        _context.SaveChanges();
-
-        return login.CustomerID;
-    }
-
-    public int Delete(int id)
-    {
-        _context.Logins.Remove(_context.Logins.Find(id));
-        _context.SaveChanges();
-
-        return id;
-    }
-
-    public int Update(int id, Login login)
+    public string Update(string id, Login login)
     {
         _context.Update(login);
         _context.SaveChanges();

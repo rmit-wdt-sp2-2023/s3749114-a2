@@ -6,11 +6,11 @@ namespace WebApi.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class LoginsController : ControllerBase
+public class LoginController : ControllerBase
 {
     private readonly LoginManager _repo;
 
-    public LoginsController(LoginManager repo) => _repo = repo;
+    public LoginController(LoginManager repo) => _repo = repo;
 
     [HttpGet]
     public IEnumerable<Login> Get()
@@ -19,26 +19,14 @@ public class LoginsController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    public Login Get(int id)
+    public Login Get(string id)
     {
         return _repo.Get(id);
-    }
-
-    [HttpPost]
-    public void Post([FromBody] Login login)
-    {
-        _repo.Add(login);
     }
 
     [HttpPut]
     public void Put([FromBody] Login login)
     {
-        _repo.Update(login.CustomerID, login);
-    }
-
-    [HttpDelete("{id}")]
-    public long Delete(int id)
-    {
-        return _repo.Delete(id);
+        _repo.Update(login.LoginID, login);
     }
 }

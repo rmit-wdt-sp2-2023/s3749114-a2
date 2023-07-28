@@ -1,4 +1,6 @@
 ﻿using System.Globalization;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 
 // Set culture info to ensure appropriate money symbol.
 
@@ -8,6 +10,13 @@ CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
 CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient("api", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5200");
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+});
 
 builder.Services.AddControllersWithViews();
 
