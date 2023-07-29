@@ -1,6 +1,6 @@
 # RMIT - WDT - SP2 - A2
-Name: Carelle Mulawa-Richards
-Student ID: s3749114
+Name: Carelle Mulawa-Richards<br>
+Student ID: s3749114<br>
 Repository: https://github.com/rmit-wdt-sp2-2023/s3749114-a2
 
 ## Usage notes
