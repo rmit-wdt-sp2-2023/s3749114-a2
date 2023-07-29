@@ -23,5 +23,5 @@ public class Login
 
     [Required]
     [Display(Name = "Login status")]
-    public LoginStatus LoginStatus { get; set; } = LoginStatus.Unblocked;
+    public LoginStatus LoginStatus { get; set; } = LoginStatus.Unlocked;
 }

@@ -1,9 +1,9 @@
 ﻿@model LoginViewModel
 @{ ViewData["Title"] = "Login"; }
 
-<div class="border rounded p-5">
-    <h1 class="mb-5">Login</h1>
-    <form asp-action="SubmitLogin">
+<div class="border rounded p-5 row gx-5">
+    <form class="col-6 my-auto" asp-action="SubmitLogin">
+        <h1 class="mb-5">Login to MCBA<br>Customer App</h1>
         <div class="mb-3">
             <label asp-for="LoginID" class="control-label mb-2"></label>
             <input asp-for="LoginID" class="form-control">
@@ -15,6 +15,11 @@
             <span asp-validation-for="Password" class="text-danger mt-2 d-block"></span>
             @Html.ValidationMessage("LoginFailed", new { @class = "text-danger mt-2 d-block" })
         </div>
-        <button type="submit" class="btn btn-primary mt-5">Login</button>
+        <button type="submit" class="btn btn-primary mt-3">Login</button>
     </form>
+    <div class="col-6">
+        <img style="height: 500px; width: 100%; object-fit: cover;" class="rounded my-auto"
+             src="@Url.Content("~/Content/Images/Banking.jpg")" alt="Banking image">
+        <!-- DragonImages (2021) -->
+    </div>
 </div>

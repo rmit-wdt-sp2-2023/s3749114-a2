@@ -16,25 +16,33 @@
     </dl>
     <div class="d-grid gap-2 d-md-flex mt-5">
         <form asp-action="UpdateStatus">
-            @if (LoginStatus.Blocked == Model.LoginStatus)
+            @if (LoginStatus.Locked == Model.LoginStatus)
             {
                 <input class="btn-check" type="radio" asp-for="LoginStatus" onchange="this.form.submit()"
-                       value="@LoginStatus.Blocked" id="@LoginStatus.Blocked" disabled>
-                <label class="btn btn-primary" for="@LoginStatus.Blocked">Block</label>
+                       value="@LoginStatus.Locked" id="@LoginStatus.Locked" disabled>
+                <label class="btn btn-danger" for="@LoginStatus.Locked">
+                    <i class="bi bi-lock"></i>&#160;&#160;Lock&#160;
+                </label>
 
                 <input type="radio" class="btn-check" asp-for="LoginStatus"
-                       value="@LoginStatus.Unblocked" id="@LoginStatus.Unblocked" onchange="this.form.submit()">
-                <label class="btn btn-primary" for="@LoginStatus.Unblocked">Unblock</label>
+                       value="@LoginStatus.Unlocked" id="@LoginStatus.Unlocked" onchange="this.form.submit()">
+                <label class="btn btn-success" for="@LoginStatus.Unlocked">
+                    <i class="bi bi-unlock"></i>&#160;&#160;Unlock&#160;
+                </label>
             }
             else
             {
                 <input class="btn-check" type="radio" asp-for="LoginStatus"
-                       value="@LoginStatus.Blocked" id="@LoginStatus.Blocked" onchange="this.form.submit()">
-                <label class="btn btn-primary" for="@LoginStatus.Blocked">Block</label>
+                       value="@LoginStatus.Locked" id="@LoginStatus.Locked" onchange="this.form.submit()">
+                <label class="btn btn-danger" for="@LoginStatus.Locked">
+                    <i class="bi bi-lock"></i>&#160;&#160;Lock&#160;
+                </label>
 
                 <input type="radio" class="btn-check" asp-for="LoginStatus" onchange="this.form.submit()"
-                       value="@LoginStatus.Unblocked" id="@LoginStatus.Unblocked" disabled>
-                <label class="btn btn-primary" for="@LoginStatus.Unblocked">Unblock</label>
+                       value="@LoginStatus.Unlocked" id="@LoginStatus.Unlocked" disabled>
+                <label class="btn btn-success" for="@LoginStatus.Unlocked">
+                    <i class="bi bi-unlock"></i>&#160;&#160;Unlock&#160;
+                </label>
             }
             <span asp-validation-for="LoginStatus" class="text-danger mt-2 d-block"></span>
             <input asp-for="LoginID" hidden>
@@ -42,3 +50,7 @@
         </form>
     </div>
 </div>
+
+
+
+

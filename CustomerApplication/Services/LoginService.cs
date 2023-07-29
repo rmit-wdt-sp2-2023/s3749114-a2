@@ -16,7 +16,7 @@ public class LoginService
     public bool IsLoginBlocked(int customerID)
     {
         Login login = _context.Logins.FirstOrDefault(c => c.CustomerID == customerID);
-        return login.LoginStatus == LoginStatus.Blocked;
+        return login.LoginStatus == LoginStatus.Locked;
     }
 
     public (ValidationResult, Login) Login(string loginID, string password)
@@ -25,7 +25,7 @@ public class LoginService
 
         if (login is not null)
             if (SimpleHash.Verify(password, login.PasswordHash))
-                if (login.LoginStatus == LoginStatus.Blocked)
+                if (login.LoginStatus == LoginStatus.Locked)
                     return (new ValidationResult("Login is locked. Wait until it is unlocked or contact an admin.",
                         new List<string>() { "LoginFailed" }), null);
                 else

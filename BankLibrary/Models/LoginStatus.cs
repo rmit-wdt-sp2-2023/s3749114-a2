@@ -4,10 +4,10 @@ namespace BankLibrary.Models;
 
 public enum LoginStatus
 {
-    [Display(Name = "Blocked")]
-    Blocked = 1,
+    [Display(Name = "Locked")]
+    Locked = 1,
 
-    [Display(Name = "Unblocked")]
-    Unblocked = 2
+    [Display(Name = "Unlocked")]
+    Unlocked = 2
 }
 

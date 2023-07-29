@@ -75,7 +75,4 @@ public class LoginController : Controller
 
         return View("Profile", ViewModelMapper.LoginProfile(login));
     }
-
-
 }
-
