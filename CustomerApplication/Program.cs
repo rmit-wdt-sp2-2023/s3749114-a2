@@ -18,7 +18,7 @@ WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Note that migrations are in the BankLibrary.
 // Too add or update this, go to the CustomerApplication directory and then use the following commands. 
-// dotnet ef migrations add Initial --project ../BankLibrary/BankLibrary.csproj --startup-project CustomerApplication.csproj   
+// dotnet ef migrations add MigrationName --project ../BankLibrary/BankLibrary.csproj --startup-project CustomerApplication.csproj   
 // dotnet ef database update                                          
 
 builder.Services.AddDbContext<BankContext>(options =>

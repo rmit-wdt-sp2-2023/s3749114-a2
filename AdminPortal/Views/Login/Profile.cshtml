@@ -1,0 +1,56 @@
+﻿@model LoginProfileViewModel
+@{ ViewData["Title"] = $"Login {Model.LoginID}"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">Login @Model.LoginID</h1>
+
+    @if (ViewBag.DisplaySuccess != null && ViewBag.DisplaySuccess)
+    {
+        <div class="alert alert-success mb-4" role="alert">Login staus updated successfully.</div>
+    }
+    <dl class="row mb-2">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.CustomerID)</dt>
+        <dd class="col-8">@Model.CustomerID</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.LoginStatus)</dt>
+        <dd class="col-8">@Model.LoginStatus</dd>
+    </dl>
+    <div class="d-grid gap-2 d-md-flex mt-5">
+        <form asp-action="UpdateStatus">
+            @if (LoginStatus.Locked == Model.LoginStatus)
+            {
+                <input class="btn-check" type="radio" asp-for="LoginStatus" onchange="this.form.submit()"
+                       value="@LoginStatus.Locked" id="@LoginStatus.Locked" disabled>
+                <label class="btn btn-danger" for="@LoginStatus.Locked">
+                    <i class="bi bi-lock"></i>&#160;&#160;Lock&#160;
+                </label>
+
+                <input type="radio" class="btn-check" asp-for="LoginStatus"
+                       value="@LoginStatus.Unlocked" id="@LoginStatus.Unlocked" onchange="this.form.submit()">
+                <label class="btn btn-success" for="@LoginStatus.Unlocked">
+                    <i class="bi bi-unlock"></i>&#160;&#160;Unlock&#160;
+                </label>
+            }
+            else
+            {
+                <input class="btn-check" type="radio" asp-for="LoginStatus"
+                       value="@LoginStatus.Locked" id="@LoginStatus.Locked" onchange="this.form.submit()">
+                <label class="btn btn-danger" for="@LoginStatus.Locked">
+                    <i class="bi bi-lock"></i>&#160;&#160;Lock&#160;
+                </label>
+
+                <input type="radio" class="btn-check" asp-for="LoginStatus" onchange="this.form.submit()"
+                       value="@LoginStatus.Unlocked" id="@LoginStatus.Unlocked" disabled>
+                <label class="btn btn-success" for="@LoginStatus.Unlocked">
+                    <i class="bi bi-unlock"></i>&#160;&#160;Unlock&#160;
+                </label>
+            }
+            <span asp-validation-for="LoginStatus" class="text-danger mt-2 d-block"></span>
+            <input asp-for="LoginID" hidden>
+            <input asp-for="CustomerID" hidden>
+        </form>
+    </div>
+</div>
+
+
+
+

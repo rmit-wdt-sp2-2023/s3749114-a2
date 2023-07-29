@@ -1,0 +1,16 @@
+﻿@model CustomerSearchViewModel
+@{ ViewData["Title"] = "Customers"; }
+
+<div class="border rounded p-5 row text-center">
+    <div class="col-md-9 mx-auto">
+        <h1 class="mb-5">Customers</h1>
+        <p class="mb-4 h4">Modify a customer’s name, TFN, address, city, state, postcode and mobile.</p>
+        <form asp-action="Search">
+            <div class="d-flex">
+                <input asp-for="CustomerID" class="form-control me-2" type="search" placeholder="Enter customer ID">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+            <span asp-validation-for="CustomerID" class="text-danger mt-2 d-block"></span>
+        </form>
+    </div>
+</div>

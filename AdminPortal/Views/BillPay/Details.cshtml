@@ -1,0 +1,82 @@
+﻿@model BillPay
+@{ ViewData["Title"] = $"BillPays {Model.BillPayID}"; }
+
+<div class="border rounded p-5">
+    <h1 class="mb-5">BillPay @Model.BillPayID</h1>
+    <h4>From</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.AccountNumber)</dt>
+        <dd class="col-8">@Model.AccountNumber</dd>
+    </dl>
+    <h4>To</h4>
+    <dl class="row mb-4">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.PayeeID)</dt>
+        <dd class="col-8">@Model.PayeeID</dd>
+    </dl>
+    <h4>Details</h4>
+    <dl class="row mb-3">
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Amount)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.Amount)</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.ScheduledTimeUtc)</dt>
+        <dd class="col-8">
+            @{ DateTime localTime = Model.ScheduledTimeUtc.ToLocalTime(); }
+            @localTime.ToString("dd/MM/yyyy hh:mm tt")
+        </dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.Period)</dt>
+        <dd class="col-8">@Html.DisplayFor(x => Model.Period)</dd>
+        <dt class="col-4">@Html.DisplayNameFor(x => Model.BillPayStatus)</dt>
+        <dd class="col-8">@Model.BillPayStatus</dd>
+    </dl>
+    <form asp-action="UpdateStatus">
+        @if (BillPayStatus.Scheduled == Model.BillPayStatus)
+        {
+            <input class="btn-check" type="radio" asp-for="BillPayStatus" onchange="this.form.submit()"
+                   value="@BillPayStatus.Blocked" id="@BillPayStatus.Blocked">
+            <label class="btn btn-danger" for="@BillPayStatus.Blocked">
+                <i class="bi bi-x-lg"></i>&#160;&#160;Block&#160;
+            </label>
+            <input type="radio" class="btn-check" asp-for="BillPayStatus" value="@BillPayStatus.Scheduled"
+                   id="@BillPayStatus.Scheduled" onchange="this.form.submit()" disabled>
+            <label class="btn btn-success" for="@BillPayStatus.Scheduled">
+                <i class="bi bi-check-lg"></i>&#160;&#160;Unblock&#160;
+            </label>
+        }
+        else if (BillPayStatus.Blocked == Model.BillPayStatus)
+        {
+            <input class="btn-check" type="radio" asp-for="BillPayStatus" onchange="this.form.submit()"
+                   value="@BillPayStatus.Blocked" id="@BillPayStatus.Blocked" disabled>
+            <label class="btn btn-danger" for="@BillPayStatus.Blocked">
+                <i class="bi bi-x-lg"></i>&#160;&#160;Block&#160;
+            </label>
+
+            <input type="radio" class="btn-check" asp-for="BillPayStatus" value="@BillPayStatus.Scheduled"
+                   id="@BillPayStatus.Scheduled" onchange="this.form.submit()">
+            <label class="btn btn-success" for="@BillPayStatus.Scheduled">
+                <i class="bi bi-check-lg"></i>&#160;&#160;Unblock&#160;
+            </label>
+        }
+        else if (BillPayStatus.Failed == Model.BillPayStatus)
+        {
+            <input class="btn-check" type="radio" asp-for="BillPayStatus" onchange="this.form.submit()"
+                   value="@BillPayStatus.Blocked" id="@BillPayStatus.Blocked" disabled>
+            <label class="btn btn-danger" for="@BillPayStatus.Blocked">
+                <i class="bi bi-x-lg"></i>&#160;&#160;Block&#160;
+            </label>
+
+            <input type="radio" class="btn-check" asp-for="BillPayStatus" value="@BillPayStatus.Scheduled"
+                   id="@BillPayStatus.Scheduled" onchange="this.form.submit()" disabled>
+            <label class="btn btn-success" for="@BillPayStatus.Scheduled">
+                <i class="bi bi-check-lg"></i>&#160;&#160;Unblock&#160;
+            </label>
+        }
+        <span asp-validation-for="BillPayStatus" class="text-danger mt-2 d-block"></span>
+        <input asp-for="BillPayID" hidden>
+        <input asp-for="AccountNumber" hidden>
+        <input asp-for="PayeeID" hidden>
+        <input asp-for="Amount" hidden>
+        <input asp-for="ScheduledTimeUtc" hidden>
+        <input asp-for="Period" hidden>
+    </form>
+</div>
+
+

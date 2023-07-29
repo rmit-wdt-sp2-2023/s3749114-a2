@@ -1,9 +1,25 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model LoginViewModel
+@{ ViewData["Title"] = "Home"; }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="border rounded p-5 row gx-5">
+    <form class="col-6 my-auto" asp-action="SubmitLogin">
+        <h1 class="mb-5">Login to<br>MCBA Admin Portal</h1>
+        <div class="mb-3">
+            <label asp-for="Username" class="control-label mb-2"></label>
+            <input asp-for="Username" class="form-control">
+            <span asp-validation-for="Username" class="text-danger mt-2 d-block"></span>
+        </div>
+        <div class="mb-4">
+            <label asp-for="Password" class="control-label mb-2"></label>
+            <input asp-for="Password" class="form-control">
+            <span asp-validation-for="Password" class="text-danger mt-2 d-block"></span>
+            @Html.ValidationMessage("LoginFailed", new { @class = "text-danger mt-2 d-block" })
+        </div>
+        <button type="submit" class="btn btn-primary mt-3">Login</button>
+    </form>
+    <div class="col-6">
+        <img style="height: 500px; width: 100%; object-fit: cover;" class="rounded my-auto"
+             src="@Url.Content("~/Content/Images/Banking.jpg")" alt="Banking image">
+        <!-- DragonImages (2021) -->
+    </div>
 </div>
-

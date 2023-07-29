@@ -1,0 +1,16 @@
+﻿@model BillPaySearchViewModel
+@{ ViewData["Title"] = "Manage BillPays"; }
+
+<div class="border rounded p-5 row text-center">
+    <div class="col-md-9 mx-auto">
+        <h1 class="mb-5">BillPays</h1>
+        <p class="mb-4 h4">Block and unblock scheduled payments.</p>
+        <form asp-action="Search">
+            <div class="d-flex">
+                <input asp-for="BillPayID" class="form-control me-2" type="search" placeholder="Enter BillPay ID">
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+            <span asp-validation-for="BillPayID" class="text-danger mt-2 d-block"></span>
+        </form>
+    </div>
+</div>

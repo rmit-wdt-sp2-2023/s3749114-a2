@@ -1,28 +1,37 @@
-﻿var builder = WebApplication.CreateBuilder(args);
+﻿using System.Globalization;
+using System.Net.Http.Headers;
+using System.Net.Mime;
 
-// Add services to the container.
+// Set culture info to ensure appropriate money symbol.
+
+CultureInfo cultureInfo = new("en-AU");
+cultureInfo.NumberFormat.CurrencySymbol = "$";
+CultureInfo.DefaultThreadCurrentCulture = cultureInfo;
+CultureInfo.DefaultThreadCurrentUICulture = cultureInfo;
+
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddHttpClient("api", client =>
+{
+    client.BaseAddress = new Uri("http://localhost:5200");
+    client.DefaultRequestHeaders.Accept.Add(
+        new MediaTypeWithQualityHeaderValue(MediaTypeNames.Application.Json));
+});
+
 builder.Services.AddControllersWithViews();
 
-var app = builder.Build();
-
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+builder.Services.AddDistributedMemoryCache();
+builder.Services.AddSession(options =>
 {
-    app.UseExceptionHandler("/Home/Error");
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
+    options.Cookie.IsEssential = true;
+});
+
+WebApplication app = builder.Build();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseAuthorization();
-
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}");
-
+app.UseSession();
+app.MapDefaultControllerRoute();
 app.Run();
-

@@ -13,15 +13,25 @@ public class LoginService
 
     public LoginService(BankContext context) => _context = context;
 
-    public Login Login(string loginID, string password)
+    public bool IsLoginBlocked(int customerID)
+    {
+        Login login = _context.Logins.FirstOrDefault(c => c.CustomerID == customerID);
+        return login.LoginStatus == LoginStatus.Locked;
+    }
+
+    public (ValidationResult, Login) Login(string loginID, string password)
     {
         Login login = _context.Logins.Find(loginID);
 
         if (login is not null)
             if (SimpleHash.Verify(password, login.PasswordHash))
-                return login;
+                if (login.LoginStatus == LoginStatus.Locked)
+                    return (new ValidationResult("Login is locked. Wait until it is unlocked or contact an admin.",
+                        new List<string>() { "LoginFailed" }), null);
+                else
+                    return (null, login);
 
-        return null;
+        return (new ValidationResult("Login failed, please try again.", new List<string>() { "LoginFailed" }), null); 
     }
 
     public List<ValidationResult> ChangePassword(int customerID, string oldPass, string newPass, string confirmPass)
