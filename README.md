@@ -88,4 +88,6 @@ Description: Update the details of the given BillPay.
 
 _Please note that no references were used for writing this document. This list is for citations made within my code._
 
+Bolger M (2023) ‘Class A Webinar / recording_6’ [Recorded webinar], RMIT University, Melbourne, accessed 29 July 2023. https://rmit.instructure.com/courses/112872/external_tools/546 (requires login)
+
 DragonImages (2021) Checking banking account, Envato Elements, accessed 29 July 2021. https://elements.envato.com/checking-banking-account-9SBNGLT
