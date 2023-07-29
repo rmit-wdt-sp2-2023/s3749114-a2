@@ -9,6 +9,8 @@ namespace CustomerApplication.Filters;
 
 public class AuthorizeCustomerAttribute : Attribute, IAuthorizationFilter
 {
+    // Adaped from Bolger M (2023).
+
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         int? customerID = context.HttpContext.Session.GetInt32(nameof(Customer.CustomerID));

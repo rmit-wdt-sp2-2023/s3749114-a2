@@ -5,6 +5,8 @@ namespace AdminPortal.Filters;
 
 public class AuthorizeAdminAttribute : Attribute, IAuthorizationFilter
 {
+    // Adaped from Bolger M (2023).
+
     public void OnAuthorization(AuthorizationFilterContext context)
     {
         string username = context.HttpContext.Session.GetString("Username");
