@@ -71,6 +71,8 @@ public class Account
         int? destinationNum, decimal amount, string comment) =>
             Debit(TransactionType.Transfer, amount, comment, destinationNum);
 
+    // Schedules a BillPay.
+
     public (List<ValidationResult>, BillPay) BillPaySchedule(
         int payeeID, decimal amount, DateTime scheduledTimeLocal, Period period)
     {
@@ -89,6 +91,8 @@ public class Account
         BillPays.Add(billPay);
         return (null, billPay);
     }
+
+    // Commits a BillPay transaction to the account. 
 
     public (List<ValidationResult>, Transaction) BillPay(decimal amount)
     {

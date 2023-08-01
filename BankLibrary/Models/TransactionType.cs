@@ -26,7 +26,7 @@ public static class TransactionTypeExtensions
     {
         if (transactionType == TransactionType.Withdraw)
             return 0.05M;
-        if (transactionType == TransactionType.Transfer)
+        else if (transactionType == TransactionType.Transfer)
             return 0.10M;
         else
             return 0M;
