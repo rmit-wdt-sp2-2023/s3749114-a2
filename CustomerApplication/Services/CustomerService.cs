@@ -12,10 +12,10 @@ public class CustomerService
 
     private readonly string _directory;
 
-    public CustomerService(BankContext context, IWebHostEnvironment webHostEnvironment)
-	{
+    public CustomerService(BankContext context)
+    {
         _context = context;
-        _directory = Path.Combine(webHostEnvironment.WebRootPath, "ProfilePictures");
+        _directory = Directory.GetCurrentDirectory() + "/wwwroot/ProfilePictures";
     }
 
     public Customer GetCustomer(int customerID) => _context.Customers.FirstOrDefault(c => c.CustomerID == customerID);
@@ -31,6 +31,22 @@ public class CustomerService
             errors.Add(new ValidationResult("Update failed. Can't find customer.", new List<string>() { "Other" }));
             return errors;
         }
+
+        Customer customerUpdates = new()
+        {
+            CustomerID = customerID,
+            Name = name,
+            TFN = TFN,
+            Address = address,
+            City = city,
+            State = state?.ToUpper(),
+            PostCode = postCode,
+            Mobile = mobile,
+        };
+
+        if (!ValidationMethods.Validate(customerUpdates, out errors))
+            return errors;
+
         customer.Name = name;
         customer.TFN = TFN;
         customer.Address = address;
@@ -38,9 +54,6 @@ public class CustomerService
         customer.State = state?.ToUpper();
         customer.PostCode = postCode;
         customer.Mobile = mobile;
-
-        if (!ValidationMethods.Validate(customer, out errors))
-            return errors;
 
         _context.Customers.Update(customer);
         _context.SaveChanges();
@@ -92,7 +105,7 @@ public class CustomerService
         }
         catch (IOException)
         {
-            return (new ValidationResult("Upload failed. Image does not exist.",
+            return (new ValidationResult("Upload failed. Directory does not exist.",
                 new List<string>() { "ProfileImage" }), null);
         }
         catch (MagickException)
@@ -128,11 +141,12 @@ public class CustomerService
             errors.Add(new ValidationResult("Could not update. Can't find customer.", new List<string>() { "Other" }));
             return errors;
         }
-        if (customer.ProfilePicture is null)
+        else if (customer.ProfilePicture is null)
         {
             errors.Add(new ValidationResult("No profile picture to remove.", new List<string>() { "ProfilePicture" }));
             return errors;
         }
+
         string filePath = Path.Combine(_directory, customer.ProfilePicture);
 
         try
@@ -142,7 +156,7 @@ public class CustomerService
         catch (IOException)
         {
             errors.Add(new ValidationResult(
-                "Could not find profile picture to delete.", new List<string>() { "ProfilePicture" }));
+                "Could not find directory or profile picture to delete.", new List<string>() { "ProfilePicture" }));
         }
         catch (Exception)
         {

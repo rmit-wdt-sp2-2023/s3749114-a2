@@ -14,13 +14,13 @@ public class BillPay
     [ForeignKey("Account")]
     [Display(Name = "Account no.")]
     [Range(1000, 9999)]
-    public int AccountNumber { get; set; }
+    public required int AccountNumber { get; set; }
     public virtual Account Account { get; set; }
 
     [ForeignKey("Payee")]
     [Required(ErrorMessage = "You must enter a payee ID.")]
     [Display(Name = "Payee ID")]
-    public int PayeeID { get; set; }
+    public required int PayeeID { get; set; }
     public virtual Payee Payee { get; set; }
 
     [Required(ErrorMessage = "You must enter an amount.")]
@@ -28,18 +28,18 @@ public class BillPay
     [DataType(DataType.Currency)]
     [CustomValidation(typeof(ValidationMethods), "MoreThanTwoDecimalPlaces")]
     [CustomValidation(typeof(ValidationMethods), "GreaterThanZero")]
-    public decimal Amount { get; set; }
+    public required decimal Amount { get; set; }
 
     [Required(ErrorMessage = "You must enter a time.")]
     [DataType(DataType.Date)]
     [Display(Name = "Scheduled time")]
     [CustomValidation(typeof(ValidationMethods), "IsTenMinsFromNowUtc")]
-    public DateTime ScheduledTimeUtc { get; set; }
+    public required DateTime ScheduledTimeUtc { get; set; }
 
     [Required]
-    public Period Period { get; set; }
+    public required Period Period { get; set; }
 
     [Required]
     [Display(Name = "Status")]
-    public BillPayStatus BillPayStatus { get; set; }
+    public required BillPayStatus BillPayStatus { get; set; }
 }

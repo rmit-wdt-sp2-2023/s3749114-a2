@@ -11,7 +11,7 @@ public class TransactionTypeTests
     [InlineData(TransactionType.BillPay)]
     [InlineData(TransactionType.ServiceCharge)]
     [InlineData(TransactionType.Deposit)]
-    public void ServiceCharge_ReturnsDecimal(TransactionType transactionType)
+    public void ServiceCharge_NoState_ReturnsDecimal(TransactionType transactionType)
     {
         if (transactionType == TransactionType.Withdraw)
             Assert.Equal(0.05M, transactionType.ServiceCharge());
