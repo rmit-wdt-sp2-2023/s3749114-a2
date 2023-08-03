@@ -17,7 +17,7 @@ public class CustomerServiceTests : IDisposable
     public CustomerServiceTests()
 	{
         _context = new BankContext(new DbContextOptionsBuilder<BankContext>()
-            .UseSqlite("Data Source=file::memory:?cache=shared").Options);
+            .UseSqlite($"Data Source=file:{Guid.NewGuid()}?mode=memory&cache=shared").Options);
 
         _context.Database.EnsureCreated();
 
@@ -102,5 +102,7 @@ public class CustomerServiceTests : IDisposable
         Assert.NotEqual(postCode, customer.PostCode);
         Assert.NotEqual(mobile, customer.Mobile);
     }
+
+    // TODO test photos - TBC storing image in database as link or binary
 }
 
