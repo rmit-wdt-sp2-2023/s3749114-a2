@@ -3,34 +3,32 @@
 
 <div class="border rounded p-5">
     <h1 class="mb-5">Profile</h1>
-    @if (@ViewBag.DisplayEditDetailsSuccess)
+    @if (ViewBag.DisplayEditDetailsSuccess != null)
     {
         <div class="alert alert-success mb-4" role="alert">Profile updated successfully.</div>
     }
-    @if (ViewBag.DisplayChangePasswordSuccess)
+    @if (ViewBag.DisplayChangePasswordSuccess != null)
     {
         <div class="alert alert-success mb-4" role="alert">Password updated successfully.</div>
     }
-    @if (ViewBag.DisplayUploadProfilePictureSuccess)
+    @if (ViewBag.DisplayUploadProfilePictureSuccess != null)
     {
         <div class="alert alert-success mb-4" role="alert">Profile picture updated successfully.</div>
     }
-    @if (ViewBag.DisplayRemoveProfilePictureSuccess)
+    @if (ViewBag.DisplayRemoveProfilePictureSuccess != null)
     {
         <div class="alert alert-success mb-4" role="alert">Profile picture removed successfully.</div>
     }
     <div class="row">
         <div class="col-md-6">
+            <img style="width: 300px; height: 300px; object-fit: cover;" class="rounded"
+                 alt="Profile picture" src="/Profile/ProfilePicture">
             @if (Model.ProfilePicture is null)
             {
-                <img style="width: 300px; height: 300px; object-fit: cover;" class="rounded"
-                     alt="Profile picture" src="@Url.Content("../ProfilePictures/default.png")">
                 <a asp-action="UploadProfilePicture" class="d-block mt-3 mb-5">Upload profile picture</a>
             }
             else
             {
-                <img style="width: 300px; height: 300px; object-fit: cover;" class="rounded"
-                     alt="Profile picture" src="@Url.Content($"../ProfilePictures/{Model.ProfilePicture}")">
                 <a asp-action="RemoveProfilePicture" class="d-block mt-3 mb-5">Remove profile picture</a>
             }
         </div>

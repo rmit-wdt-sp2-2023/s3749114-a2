@@ -44,16 +44,8 @@
                     </ul>
                     @if (isLoggedIn)
                     {
-                        @if (@Context.Session.GetString(nameof(Customer.ProfilePicture)) is not null)
-                        {
-                            <img style="width: 55px; height: 55px; object-fit: cover;" alt="Profile picture" class="rounded"
-                                 src="@Url.Content($"~/ProfilePictures/{Context.Session.GetString(nameof(Customer.ProfilePicture))}")">
-                        }
-                        else
-                        {
-                            <img style="width: 55px; height: 55px; object-fit: cover;" class="rounded"
-                                 src="@Url.Content("~/ProfilePictures/default.png")" alt="Profile picture">
-                        }
+                        <img style="width: 55px; height: 55px; object-fit: cover;" class="rounded"
+                            src="/Profile/ProfilePicture" alt="Profile picture">
                         <a class="navbar-text mx-3" asp-controller="Profile" asp-action="Index">
                             @Context.Session.GetString(nameof(Customer.Name))
                         </a>

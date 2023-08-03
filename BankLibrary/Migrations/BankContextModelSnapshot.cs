@@ -107,9 +107,6 @@ namespace BankLibrary.Migrations
                         .HasMaxLength(4)
                         .HasColumnType("nvarchar(4)");
 
-                    b.Property<string>("ProfilePicture")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("State")
                         .HasMaxLength(3)
                         .HasColumnType("nvarchar(3)");
@@ -188,6 +185,25 @@ namespace BankLibrary.Migrations
                     b.HasKey("PayeeID");
 
                     b.ToTable("Payees");
+                });
+
+            modelBuilder.Entity("BankLibrary.Models.ProfilePicture", b =>
+                {
+                    b.Property<int>("CustomerID")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ContentType")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("FileName")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<byte[]>("Image")
+                        .HasColumnType("varbinary(max)");
+
+                    b.HasKey("CustomerID");
+
+                    b.ToTable("ProfilePictures");
                 });
 
             modelBuilder.Entity("BankLibrary.Models.Transaction", b =>
@@ -270,6 +286,17 @@ namespace BankLibrary.Migrations
                     b.Navigation("Customer");
                 });
 
+            modelBuilder.Entity("BankLibrary.Models.ProfilePicture", b =>
+                {
+                    b.HasOne("BankLibrary.Models.Customer", "Customer")
+                        .WithOne("ProfilePicture")
+                        .HasForeignKey("BankLibrary.Models.ProfilePicture", "CustomerID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("BankLibrary.Models.Transaction", b =>
                 {
                     b.HasOne("BankLibrary.Models.Account", "Account")
@@ -297,6 +324,8 @@ namespace BankLibrary.Migrations
             modelBuilder.Entity("BankLibrary.Models.Customer", b =>
                 {
                     b.Navigation("Accounts");
+
+                    b.Navigation("ProfilePicture");
                 });
 #pragma warning restore 612, 618
         }

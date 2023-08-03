@@ -9,7 +9,7 @@ using Xunit;
 
 namespace CustomerApplication.Tests.Services;
 
-public class LoginServiceTests
+public class LoginServiceTests : IDisposable
 {
     private readonly BankContext _context;
 
@@ -25,6 +25,13 @@ public class LoginServiceTests
         SeedData.Initialise(_context);
 
         _loginService = new LoginService(_context);
+    }
+
+    public void Dispose()
+    {
+        _context.Database.EnsureDeleted();
+        _context.Dispose();
+        GC.SuppressFinalize(this);
     }
 
     [Fact]
@@ -97,4 +104,3 @@ public class LoginServiceTests
         Assert.NotNull(errors);
     }
 }
-

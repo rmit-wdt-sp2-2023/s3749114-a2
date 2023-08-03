@@ -10,9 +10,16 @@ namespace CustomerApplication.Services
 
         public AccountService(BankContext context) => _context = context;
 
-        public List<Account> GetAccounts(int customerID) =>
-            _context.Customers.Find(customerID).Accounts.OrderBy(x => x.AccountNumber).ToList();
+        public List<Account> GetAccounts(int customerID)
+        {
+            Customer customer = _context.Customers.Find(customerID);
 
+            if (customer is null)
+                return null;
+
+            return customer.Accounts.OrderBy(x => x.AccountNumber).ToList();
+        }
+            
         public Account GetAccount(int accountNum) => _context.Accounts.Find(accountNum);
 
         public (ValidationResult, Account) GetAccount(int accountNum, string propertyName)

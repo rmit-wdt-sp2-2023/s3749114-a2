@@ -1,8 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text;
 using BankLibrary.Data;
 using BankLibrary.Models;
 using CustomerApplication.Data;
 using CustomerApplication.Services;
+using ImageMagick;
+using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 using Xunit;
 
@@ -15,13 +18,31 @@ public class CustomerServiceTests : IDisposable
     private readonly CustomerService _customerService;
 
     public CustomerServiceTests()
-	{
+    {
         _context = new BankContext(new DbContextOptionsBuilder<BankContext>()
             .UseSqlite($"Data Source=file:{Guid.NewGuid()}?mode=memory&cache=shared").Options);
 
         _context.Database.EnsureCreated();
 
         SeedData.Initialise(_context);
+
+        _context.ProfilePictures.Add(new ProfilePicture()
+        {
+            CustomerID = 2100,
+            Image = Encoding.UTF8.GetBytes("dummy image"),
+            FileName = $"{2100}-profile-image",
+            ContentType = "image/jpg"
+        });
+
+        _context.ProfilePictures.Add(new ProfilePicture()
+        {
+            CustomerID = 2300,
+            Image = Encoding.UTF8.GetBytes("dummy image"),
+            FileName = $"{2300}-profile-image",
+            ContentType = "image/jpg"
+        });
+
+        _context.SaveChanges();
 
         _customerService = new CustomerService(_context);
     }
@@ -37,6 +58,7 @@ public class CustomerServiceTests : IDisposable
     public void GetCustomer_CustomerExists_ReturnsCustomer()
     {
         Customer customer = _customerService.GetCustomer(2100);
+
         Assert.NotNull(customer);
         Assert.Equal("Matthew Bolger", customer.Name);
         Assert.Null(customer.TFN);
@@ -45,7 +67,7 @@ public class CustomerServiceTests : IDisposable
         Assert.Null(customer.State);
         Assert.Equal("3000", customer.PostCode);
         Assert.Null(customer.Mobile);
-        Assert.Null(customer.ProfilePicture);
+        Assert.NotNull(customer.ProfilePicture);
     }
 
     [Fact]
@@ -103,6 +125,109 @@ public class CustomerServiceTests : IDisposable
         Assert.NotEqual(mobile, customer.Mobile);
     }
 
-    // TODO test photos - TBC storing image in database as link or binary
-}
+    [Fact]
+    public void GetProfilePicture_NoPicture_ReturnsDefaultPicture()
+    {
+        int customerID = 2200;
 
+        ProfilePicture profilePicture = _customerService.GetProfilePicture(customerID);
+
+        Assert.NotNull(profilePicture);
+        Assert.Equal("default.jpg", profilePicture.FileName);
+    }
+
+    [Fact]
+    public void GetProfilePicture_HasPicture_ReturnsPicture()
+    {
+        int customerID = 2100;
+        string fileName = $"{customerID}-profile-image";
+        byte[] imageData = Encoding.UTF8.GetBytes("dummy image");
+        string contentType = "image/jpg";
+
+        ProfilePicture profilePicture = _customerService.GetProfilePicture(customerID);
+
+        Assert.NotNull(profilePicture);
+        Assert.Equal(fileName, profilePicture.FileName);
+        Assert.Equal(customerID, profilePicture.CustomerID);
+        Assert.Equal(imageData, profilePicture.Image);
+        Assert.Equal(contentType, profilePicture.ContentType);
+    }
+
+    // Cannot mock heic files with Magick.
+    // Apparently Magick.NET only supports decoding of HEIC due to licensing issues.
+
+    [Theory]
+    [InlineData(2200, MagickFormat.Png, "png")]
+    [InlineData(2200, MagickFormat.Jpg, "jpg")]
+    [InlineData(2200, MagickFormat.Jpeg, "jpeg")]
+    public void UploadProfilePicture_ValidParameters_UpdatesDatabase(
+        int customerID, MagickFormat format, string extension)
+    {
+        IFormFile file = MockIFormFile(format, extension);
+
+        ValidationResult error = _customerService.UploadProfilePicture(customerID, file);
+
+        ProfilePicture profilePicture = _customerService.GetProfilePicture(customerID);
+
+        Assert.Null(error);
+        Assert.Equal($"2200-profile-picture.jpg", profilePicture.FileName);
+    }
+
+    [Theory]
+    [InlineData(2200, MagickFormat.Pdf, "pdf")]
+    [InlineData(2200, MagickFormat.Tif, "tif")]
+    [InlineData(2200, MagickFormat.Gif, "gif")]
+    [InlineData(500000, MagickFormat.Jpg, "jpg")]
+    public void UploadProfilePicture_InvalidParameters_ReturnsErrors(
+        int customerID, MagickFormat format, string extension)
+    {
+        IFormFile file = MockIFormFile(format, extension);
+
+        ValidationResult error = _customerService.UploadProfilePicture(customerID, file);
+
+        ProfilePicture profilePicture = _context.ProfilePictures.FirstOrDefault(x => x.CustomerID == customerID);
+
+        Assert.NotNull(error);
+        Assert.Null(profilePicture);
+    }
+
+    [Fact]
+    public void RemoveProfilePicture_HasPicture_UpdateDatabase()
+    {
+        int customerID = 2300;
+
+        List<ValidationResult> errors = _customerService.RemoveProfilePicture(customerID);
+
+        ProfilePicture profilePicture = _context.ProfilePictures.FirstOrDefault(x => x.CustomerID == customerID);
+
+        Assert.Null(errors);
+        Assert.Null(profilePicture);
+    }
+
+    [Theory]
+    [InlineData(2200)]
+    [InlineData(5000000)]
+    [InlineData(9000)]
+    public void RemoveProfilePicture_NoPictureOrInvalidCustomerID_ReturnErrors(int customerID)
+    {
+        List<ValidationResult> errors = _customerService.RemoveProfilePicture(customerID);
+
+        ProfilePicture profilePicture = _context.ProfilePictures.FirstOrDefault(x => x.CustomerID == customerID);
+
+        Assert.NotNull(errors);
+        Assert.Null(profilePicture);
+    }
+
+    private static IFormFile MockIFormFile(MagickFormat format, string extension)
+    {
+        using MagickImage mockImage = new("xc:purple", new MagickReadSettings()
+        {
+            Height = 600,
+            Width = 800,
+        });
+        mockImage.Format = format;
+        byte[] imageData = mockImage.ToByteArray();
+        IFormFile file = new FormFile(new MemoryStream(imageData), 0, imageData.Length, "Data", $"photo.{extension}");
+        return file;
+    }
+}
