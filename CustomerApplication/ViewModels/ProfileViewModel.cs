@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using BankLibrary.Models;
 
 namespace CustomerApplication.ViewModels;
 
@@ -32,5 +33,5 @@ public class ProfileViewModel
     [RegularExpression(@"^04\d{2} \d{3} \d{3}$", ErrorMessage = "Must contain digits in the specified format.")]
     public string Mobile { get; set; }
 
-    public string ProfilePicture { get; set; }
+    public ProfilePicture ProfilePicture { get; set; }
 }

@@ -13,6 +13,7 @@ public class BankContext : DbContext
     public DbSet<Login> Logins { get; set; }
     public DbSet<BillPay> BillPays { get; set; }
     public DbSet<Payee> Payees { get; set; }
+    public DbSet<ProfilePicture> ProfilePictures { get; set; }
 
     // Fluent-API.
 

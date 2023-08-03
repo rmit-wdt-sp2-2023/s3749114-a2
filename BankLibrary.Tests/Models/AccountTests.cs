@@ -6,25 +6,8 @@ namespace BankLibrary.Tests.Models;
 
 public class AccountTests
 {
-    [Theory]
-    [InlineData(4100, AccountType.Checking, 2100)]
-    [InlineData(4200, AccountType.Saving, 2200)]
-    public void AccountInitialiser_ValidProperties_Success(int accountNumber, AccountType accountType, int customerID)
-		{
-        Account account = new()
-        {
-            AccountNumber = accountNumber,
-            AccountType = accountType,
-            CustomerID = customerID
-        };
-        Assert.NotNull(account);
-        Assert.Equal(accountNumber, account.AccountNumber);
-        Assert.Equal(accountType, account.AccountType);
-        Assert.Equal(customerID, account.CustomerID);
-    }
-
     [Fact]
-    public void Balance_ValidTransactions_Success()
+    public void Balance_HasTransactions_ReturnsTotal()
     {
         Account account = new()
         {
@@ -75,62 +58,48 @@ public class AccountTests
         Assert.Equal(175.9M, account.Balance());
     }
 
-    [Theory]
-    [InlineData(AccountType.Saving, 200)]
-    [InlineData(AccountType.Checking, 500)]
-    public void AvailableBalance_AvailableBalance_MoreThanZero(AccountType accountType, decimal amount)
+    [Fact]
+    public void Balance_NoTransactions_ReturnsTotal()
     {
         Account account = new()
         {
             AccountNumber = 4100,
-            AccountType = accountType,
-            CustomerID = 2100,
-            Transactions = new()
-            {
-                new Transaction()
-                {
-                    TransactionType = TransactionType.Deposit,
-                    Amount = amount,
-                    AccountNumber = 4100
-                }
-            }
+            AccountType = AccountType.Saving,
+            CustomerID = 2100
         };
+        Assert.Equal(0M, account.Balance());
+    }
+
+    [Theory]
+    [InlineData(AccountType.Saving, 200)]
+    [InlineData(AccountType.Checking, 500)]
+    public void AvailableBalance_MoneyAvailable_ReturnsMoreThanZero(AccountType accountType, decimal amount)
+    {
+        Account account = CreateAccountAndDeposit(accountType, amount);
+
         Assert.Equal(200, account.AvailableBalance());
     }
 
     [Theory]
     [InlineData(AccountType.Saving, 0)]
     [InlineData(AccountType.Checking, 300)]
-    public void AvailableBalance_NoAvailableBalance_Zero(AccountType accountType, decimal amount)
+    public void AvailableBalance_MoneyNotAvailable_ReturnsZero(AccountType accountType, decimal amount)
     {
-        Account account = new()
-        {
-            AccountNumber = 4100,
-            AccountType = accountType,
-            CustomerID = 2100,
-            Transactions = new()
-            {
-                new Transaction()
-                {
-                    TransactionType = TransactionType.Deposit,
-                    Amount = amount,
-                    AccountNumber = 4100
-                }
-            }
-        };
+        Account account = CreateAccountAndDeposit(accountType, amount);
+
         Assert.Equal(0, account.AvailableBalance());
     }
 
     [Theory]
     [InlineData(10, null)]
     [InlineData(500, "Testing a deposit")]
-    public void Deposit_ValidParameters_Success(decimal amount, string comment)
+    public void Deposit_ValidParameters_ReturnsTransaction(decimal amount, string comment)
     {
         Account account = new()
         {
             AccountNumber = 4100,
             AccountType = AccountType.Saving,
-            CustomerID = 2100,
+            CustomerID = 2100
         };
 
         (List<ValidationResult> errors, Transaction transaction) = account.Deposit(amount, comment);
@@ -145,27 +114,22 @@ public class AccountTests
     [InlineData(-10, null)]
     [InlineData(10.5555, null)]
     [InlineData(5, "This is a test comment with more than 30 characters")]
-    public void Deposit_InvalidParameters_ErrorMessages(decimal amount, string comment)
+    public void Deposit_InvalidParameters_ReturnsErrors(decimal amount, string comment)
     {
-        Account account = new()
-        {
-            AccountNumber = 4100,
-            AccountType = AccountType.Saving,
-            CustomerID = 2100,
-        };
-    
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
+
         (List<ValidationResult> errors, Transaction transaction) = account.Deposit(amount, comment);
 
         Assert.Null(transaction);
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
     }
 
     [Theory]
     [InlineData(10, null)]
     [InlineData(10, "Testing a withdraw")]
-    public void Withdraw_ValidParameters_Success(decimal amount, string comment)
+    public void Withdraw_ValidParameters_ReturnsTransactions(decimal amount, string comment)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, List<Transaction> transactions) = account.Withdraw(amount, comment);
 
@@ -179,37 +143,36 @@ public class AccountTests
     [InlineData(-10, null)]
     [InlineData(600.77777, null)]
     [InlineData(10, "This is a test comment with more than 30 characters")]
-    public void Withdraw_InvalidParameters_ErrorMessages(decimal amount, string comment)
+    public void Withdraw_InvalidParameters_ReturnsErrors(decimal amount, string comment)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, List<Transaction> transactions) = account.Withdraw(amount, comment);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(transactions);
     }
 
     [Theory]
     [InlineData(401, null, AccountType.Saving)]
     [InlineData(101, null, AccountType.Checking)]
-    public void Withdraw_MoreThanMinAmount_ErrorMessages(
-        decimal amount, string comment, AccountType accountType)
+    public void Withdraw_MoreThanMinAmount_ReturnsErrors(decimal amount, string comment, AccountType accountType)
     {
-        Account account = CreateAccountFourHundredBalance(accountType);
+        Account account = CreateAccountAndDeposit(accountType, 400M);
 
         (List<ValidationResult> errors, List<Transaction> transactions) = account.Withdraw(amount, comment);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(transactions);
     }
 
     [Theory]
     [InlineData(2244, 10, null, 390)]
     [InlineData(4300, 50, "Sending a transfer", 350)]
-    public void TransferFrom_ValidParameters_Success(
+    public void TransferFrom_ValidParameters_ReturnsTranactions(
         int? destinationNum, decimal amount, string comment, decimal expectedBalance)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, List<Transaction> transactions) =
             account.TransferFrom(destinationNum, amount, comment);
@@ -226,38 +189,38 @@ public class AccountTests
     [InlineData(4300, 10.555, null)]
     [InlineData(1234567, 10, null)]
     [InlineData(4300, 10, "This is a test comment with more than 30 characters")]
-    public void TransferFrom_InvalidParameters_ErrorMessages(int? destinationNum, decimal amount, string comment)
+    public void TransferFrom_InvalidParameters_ReturnsErrors(int? destinationNum, decimal amount, string comment)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, List<Transaction> transactions) =
             account.TransferFrom(destinationNum, amount, comment);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(transactions);
     }
 
     [Theory]
     [InlineData(4000, 401, null, AccountType.Saving)]
     [InlineData(4000, 101, null, AccountType.Checking)]
-    public void TransferFrom_MoreThanMinAmount_ErrorMessages(
+    public void TransferFrom_MoreThanMinAmount_ReturnsErrors(
         int? destinationNum, decimal amount, string comment, AccountType accountType)
     {
-        Account account = CreateAccountFourHundredBalance(accountType);
+        Account account = CreateAccountAndDeposit(accountType, 400M);
 
         (List<ValidationResult> errors, List<Transaction> transactions) =
             account.TransferFrom(destinationNum, amount, comment);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(transactions);
     }
 
     [Theory]
     [InlineData(10, null, 410)]
     [InlineData(50, "Sending a transfer", 450)]
-    public void TransferTo_ValidParameters_Success(decimal amount, string comment, decimal expectedBalance)
+    public void TransferTo_ValidParameters_ReturnsTransaction(decimal amount, string comment, decimal expectedBalance)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, Transaction transaction) = account.TransferTo(amount, comment);
 
@@ -271,24 +234,23 @@ public class AccountTests
     [InlineData(-10, null)]
     [InlineData(10.5555, null)]
     [InlineData(10, "This is a test comment with more than 30 characters")]
-    public void TransferTo_InvalidParameters_ErrorMessages(decimal amount, string comment)
+    public void TransferTo_InvalidParameters_ReturnsErrors(decimal amount, string comment)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, Transaction transaction) = account.TransferTo(amount, comment);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(transaction);
     }
 
     [Theory]
     [InlineData(1, 10, Period.Monthly)]
     [InlineData(2, 550, Period.OneOff)]
-    public void BillPaySchedule_ValidParameters_Success(int payeeID, decimal amount, Period period)
+    public void BillPaySchedule_ValidParameters_ReturnsBillPay(int payeeID, decimal amount, Period period)
     {
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
         DateTime scheduledTimeLocal = DateTime.Now.AddMinutes(11);
-
-        Account account = CreateAccountFourHundredBalance();
 
         (List<ValidationResult> errors, BillPay billPay) =
             account.BillPaySchedule(payeeID, amount, scheduledTimeLocal, period);
@@ -301,39 +263,37 @@ public class AccountTests
     [Theory]
     [InlineData(1, -10, Period.Monthly)]
     [InlineData(2, 55.5555, Period.OneOff)]
-    public void BillPaySchedule_InvalidParameters_ErrorMessages(int payeeID, decimal amount, Period period)
+    public void BillPaySchedule_InvalidParameters_ReturnsErrors(int payeeID, decimal amount, Period period)
     {
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
         DateTime scheduledTimeLocal = DateTime.Now.AddMinutes(11);
-
-        Account account = CreateAccountFourHundredBalance();
 
         (List<ValidationResult> errors, BillPay billPay) =
             account.BillPaySchedule(payeeID, amount, scheduledTimeLocal, period);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(billPay);
     }
 
     [Fact]
-    public void BillPaySchedule_TimeLessThan10MinsInFuture_ErrorMessages()
+    public void BillPaySchedule_TimeLessThan10MinsInFuture_ReturnsErrors()
     {
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
         DateTime scheduledTimeLocal = DateTime.Now.AddMinutes(9);
-
-        Account account = CreateAccountFourHundredBalance();
 
         (List<ValidationResult> errors, BillPay billPay) =
             account.BillPaySchedule(1, 10, scheduledTimeLocal, Period.Monthly);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(billPay);
     }
 
     [Theory]
     [InlineData(10)]
     [InlineData(400)]
-    public void BillPay_ValidParameters_Success(decimal amount)
+    public void BillPay_ValidParameters_ReturnsTransaction(decimal amount)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, Transaction transaction) = account.BillPay(amount);
 
@@ -345,22 +305,22 @@ public class AccountTests
     [Theory]
     [InlineData(-10)]
     [InlineData(10.5555)]
-    public void BillPay_InvalidParameters_ErrorMessages(decimal amount)
+    public void BillPay_InvalidParameters_ReturnsErrors(decimal amount)
     {
-        Account account = CreateAccountFourHundredBalance();
+        Account account = CreateAccountAndDeposit(AccountType.Saving, 400M);
 
         (List<ValidationResult> errors, Transaction transaction) = account.BillPay(amount);
 
-        Assert.NotNull(errors);
+        Assert.True(errors.Count > 0);
         Assert.Null(transaction);
     }
 
     [Theory]
     [InlineData(401, AccountType.Saving)]
     [InlineData(101, AccountType.Checking)]
-    public void BillPay_MoreThanMinAmount_ErrorMessages(decimal amount, AccountType accountType)
+    public void BillPay_MoreThanMinAmount_ReturnsErrors(decimal amount, AccountType accountType)
     {
-        Account account = CreateAccountFourHundredBalance(accountType);
+        Account account = CreateAccountAndDeposit(accountType, 400M);
 
         (List<ValidationResult> errors, Transaction transaction) = account.BillPay(amount);
 
@@ -368,9 +328,9 @@ public class AccountTests
         Assert.Null(transaction);
     }
 
-    // Account creation helper
+    // Helper method to create account with a given amount
 
-    private static Account CreateAccountFourHundredBalance(AccountType accountType = AccountType.Saving)
+    private static Account CreateAccountAndDeposit(AccountType accountType, decimal amount)
     {
         Account account = new()
         {
@@ -378,7 +338,7 @@ public class AccountTests
             AccountType = accountType,
             CustomerID = 2100,
         };
-        account.Deposit(400, null);
+        account.Deposit(amount, null);
         return account;
     }
 }

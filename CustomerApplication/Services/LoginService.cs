@@ -13,12 +13,6 @@ public class LoginService
 
     public LoginService(BankContext context) => _context = context;
 
-    public bool IsLoginBlocked(int customerID)
-    {
-        Login login = _context.Logins.FirstOrDefault(c => c.CustomerID == customerID);
-        return login.LoginStatus == LoginStatus.Locked;
-    }
-
     public (ValidationResult, Login) Login(string loginID, string password)
     {
         Login login = _context.Logins.Find(loginID);
@@ -26,7 +20,7 @@ public class LoginService
         if (login is not null)
             if (SimpleHash.Verify(password, login.PasswordHash))
                 if (login.LoginStatus == LoginStatus.Locked)
-                    return (new ValidationResult("Login is locked. Wait until it is unlocked or contact an admin.",
+                    return (new ValidationResult("Login is locked. Wait until unlocked or contact an admin.",
                         new List<string>() { "LoginFailed" }), null);
                 else
                     return (null, login);
@@ -43,7 +37,8 @@ public class LoginService
             errors.Add(new ValidationResult("Enter old password.", new List<string>() { "OldPassword" }));
         else
             if (login is null)
-                errors.Add(new ValidationResult("Error, couldn't find customer.", new List<string>() { "PasswordFailed" }));
+                errors.Add(new ValidationResult(
+                    "Error, couldn't find customer.", new List<string>() { "PasswordFailed" }));
             else
                 if (!SimpleHash.Verify(oldPass, login.PasswordHash))
                 errors.Add(new ValidationResult("Incorrect password.", new List<string>() { "OldPassword" }));

@@ -13,6 +13,11 @@ public static class SeedData
     {
         BankContext context = serviceProvider.GetRequiredService<BankContext>();
 
+        Initialise(context);
+    }
+
+    public static void Initialise(BankContext context)
+    {
         // Check if any customers already exist and if they do stop.
 
         if (context.Customers.Any())
@@ -34,7 +39,7 @@ public static class SeedData
         // Convert DTO into business objects and insert into database.
 
         List<Customer> customers = DtoMapper.ConvertCustomersFromDto(customersDto);
-        
+
         foreach (Customer customer in customers)
             context.Customers.Add(customer);
 

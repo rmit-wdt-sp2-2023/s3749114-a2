@@ -23,15 +23,7 @@ public class ProfileController : Controller
         _loginService = loginService;
     }
 
-    public IActionResult Index()
-    {
-        ViewBag.DisplayEditDetailsSuccess = false;
-        ViewBag.DisplayChangePasswordSuccess = false;
-        ViewBag.DisplayUploadProfilePictureSuccess = false;
-        ViewBag.DisplayRemoveProfilePictureSuccess = false;
-
-        return View(ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
-    }
+    public IActionResult Index() => View(ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
 
     public IActionResult EditDetails() => View(ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
 
@@ -50,9 +42,6 @@ public class ProfileController : Controller
             return View(nameof(EditDetails), profileVM);
 
         ViewBag.DisplayEditDetailsSuccess = true;
-        ViewBag.DisplayChangePasswordSuccess = false;
-        ViewBag.DisplayUploadProfilePictureSuccess = false;
-        ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
         return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
@@ -72,10 +61,7 @@ public class ProfileController : Controller
         if (!ModelState.IsValid)
             return View(nameof(ChangePassword), changePassVM);
 
-        ViewBag.DisplayEditDetailsSuccess = false;
         ViewBag.DisplayChangePasswordSuccess = true;
-        ViewBag.DisplayUploadProfilePictureSuccess = false;
-        ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
         return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
@@ -85,7 +71,7 @@ public class ProfileController : Controller
     [HttpPost]
     public IActionResult SubmitUploadProfilePicture(UploadProfilePictureViewModel uploadPictureVM)
     {
-        (ValidationResult error, string fileName) = _customerService.UploadProfilePicture(
+        ValidationResult error = _customerService.UploadProfilePicture(
             CustomerID, uploadPictureVM.ProfileImage);
 
         if (error is not null)
@@ -94,12 +80,7 @@ public class ProfileController : Controller
         if (!ModelState.IsValid)
             return View(nameof(UploadProfilePicture), uploadPictureVM);
 
-        HttpContext.Session.SetString(nameof(Customer.ProfilePicture), fileName);
-
-        ViewBag.DisplayEditDetailsSuccess = false;
-        ViewBag.DisplayChangePasswordSuccess = false;
         ViewBag.DisplayUploadProfilePictureSuccess = true;
-        ViewBag.DisplayRemoveProfilePictureSuccess = false;
 
         return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
     }
@@ -109,23 +90,20 @@ public class ProfileController : Controller
         List<ValidationResult> errors = _customerService.RemoveProfilePicture(CustomerID);
 
         if (errors is not null)
-        {
-            ViewBag.DisplayEditDetailsSuccess = false;
-            ViewBag.DisplayChangePasswordSuccess = false;
-            ViewBag.DisplayUploadProfilePictureSuccess = false;
-            ViewBag.DisplayRemoveProfilePictureSuccess = false;
-
             return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
 
-        }
-
-        HttpContext.Session.Remove(nameof(Customer.ProfilePicture));
-
-        ViewBag.DisplayEditDetailsSuccess = false;
-        ViewBag.DisplayChangePasswordSuccess = false;
-        ViewBag.DisplayUploadProfilePictureSuccess = false;
         ViewBag.DisplayRemoveProfilePictureSuccess = true;
 
         return View(nameof(Index), ViewModelMapper.Profile(_customerService.GetCustomer(CustomerID)));
+    }
+
+    public ActionResult ProfilePicture()
+    {
+        ProfilePicture profilePicture = _customerService.GetProfilePicture(CustomerID);
+
+        return new FileContentResult(profilePicture.Image, profilePicture.ContentType)
+        {
+            FileDownloadName = profilePicture.FileName
+        };
     }
 }

@@ -30,9 +30,6 @@ public class LoginController : Controller
         HttpContext.Session.SetInt32(nameof(Customer.CustomerID), login.CustomerID);
         HttpContext.Session.SetString(nameof(Customer.Name), login.Customer.Name);
 
-        if (login.Customer.ProfilePicture is not null)
-            HttpContext.Session.SetString(nameof(Customer.ProfilePicture), login.Customer.ProfilePicture);
-
         return RedirectToAction("Index", "Accounts");
     }
 
