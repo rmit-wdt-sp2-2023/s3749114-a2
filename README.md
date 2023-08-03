@@ -3,11 +3,15 @@ Name: Carelle Mulawa-Richards<br>
 Student ID: s3749114<br>
 Repository: https://github.com/rmit-wdt-sp2-2023/s3749114-a2
 
-Description:
+Description: An ASP.NET Core MVC Website for internet banking with .NET 7.0 written in C# with an Azure Microsoft SQL Server database. Database access is implemented with EF Core as the ORM and no SQL statements are present.
 
 Assignment completion: I have attempted to complete all parts of the assignment except for unit testing. Some unit tests have been written but these do not cover the entire program. 
 
 ## Usage notes
+
+If you would like to open all my projects in Visual Studio, you can use the **BankApplication.sln**.
+
+The commands below assume the user is in the root directory, i.e., the **s3749114-a2** folder. These commands are for Terminal on Mac OS. You may need to adapt these for your OS.
 
 ### Customer application
 
@@ -27,6 +31,7 @@ dotnet ef migrations add MigrationName --project ../BankLibrary/BankLibrary.cspr
 
 dotnet ef database update   
 ```
+I have used service classes to handle logic relating to database and models. These are used by the controllers. You can find these services in the **Services** folder. The background service for BillPay is in the **BackgroundServices** folder.  
 
 ### Web API
 
@@ -48,6 +53,10 @@ dotnet run
 Once the application is running, open a web browser and go to: http://localhost:5016
 
 To log in, use: username = admin, password = admin
+
+### Bank library
+
+I have put my models and DBContext in the **BankLibrary** folder. This is so the customer and admin can use these. The **Validation** folder contains some of the validation methods for data annoations. 
 
 ## Unit tests
 
@@ -91,7 +100,6 @@ Description: Update the details of the given Customer.
 | State  | string | A 2 or 3 lettered Australian state |
 | PostCode  | string | Must be 4 digits |
 | Mobile  | string | Must be digits in the format of: 04XX XXX XXX |
-| ProfilePicture  | String | Picture file name |
 
 ### Login endpoints
 
