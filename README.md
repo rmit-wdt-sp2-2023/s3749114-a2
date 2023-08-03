@@ -3,7 +3,65 @@ Name: Carelle Mulawa-Richards<br>
 Student ID: s3749114<br>
 Repository: https://github.com/rmit-wdt-sp2-2023/s3749114-a2
 
+Description:
+
+Assignment completion: I have attempted to complete all parts of the assignment except for unit testing. Some unit tests have been written but these do not cover the entire program. 
+
 ## Usage notes
+
+### Customer application
+
+The customer website is located in the **CustomerApplication** folder. It is responsible for seeding data, so it should be run first. To run, you can use:
+```
+cd CustomerApplication
+
+dotnet run
+```
+Once the application is running, open a web browser and go to: http://localhost:5210
+
+Note that my migrations are in the **BankLibrary** folder. To add migrations and update the database, I used:
+```
+cd CustomerApplication
+
+dotnet ef migrations add MigrationName --project ../BankLibrary/BankLibrary.csproj --startup-project CustomerApplication.csproj   
+
+dotnet ef database update   
+```
+
+### Web API
+
+The adminwWeb API is located in the **WebApi** folder. This can be run using:
+```
+cd WebApi
+
+dotnet run
+```
+
+### Admin application
+
+The admin portal website is located in the **AdminPortal** folder. Note that the web API must be running before the admin application is run. To run the admin application, use:
+```
+cd AdminPortal
+
+dotnet run
+```
+Once the application is running, open a web browser and go to: http://localhost:5016
+
+To log in, use: username = admin, password = admin
+
+## Unit tests
+
+Tests are located in the **BankLibrary.Tests** and **CustomerApplication.Tests** folders. You can run these with: 
+```
+cd BankLibrary.Tests
+
+dotnet test
+```
+```
+cd CustomerApplication.Tests
+
+dotnet test
+```
 
 ## Web API documentation
 

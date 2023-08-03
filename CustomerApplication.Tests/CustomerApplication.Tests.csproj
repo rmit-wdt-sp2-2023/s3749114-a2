@@ -24,21 +24,9 @@
     <PackageReference Include="Moq" Version="4.18.4" />
   </ItemGroup>
   <ItemGroup>
-    <None Remove="Mappers\" />
     <None Remove="Services\" />
-    <None Remove="Base\" />
-    <None Remove="Modules\" />
-    <None Remove="Controllers\" />
-    <None Remove="wwwroot\" />
-    <None Remove="wwwroot\ProfilePictures\" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Mappers\" />
     <Folder Include="Services\" />
-    <Folder Include="Base\" />
-    <Folder Include="Modules\" />
-    <Folder Include="Controllers\" />
-    <Folder Include="wwwroot\" />
-    <Folder Include="wwwroot\ProfilePictures\" />
   </ItemGroup>
 </Project>

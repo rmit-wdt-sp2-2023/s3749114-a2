@@ -1,5 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
-using BankLibrary.Data;
+﻿using BankLibrary.Data;
 using BankLibrary.Models;
 using CustomerApplication.Data;
 using CustomerApplication.Services;

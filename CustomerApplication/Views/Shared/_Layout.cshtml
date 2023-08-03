@@ -44,11 +44,18 @@
                     </ul>
                     @if (isLoggedIn)
                     {
-                        <img style="width: 55px; height: 55px; object-fit: cover;" class="rounded"
-                            src="/Profile/ProfilePicture" alt="Profile picture">
-                        <a class="navbar-text mx-3" asp-controller="Profile" asp-action="Index">
-                            @Context.Session.GetString(nameof(Customer.Name))
-                        </a>
+                        <div class="d-flex flex-nowrap align-items-center">
+                            <img style="width: 55px; height: 55px; object-fit: cover;" class="rounded"
+                                    src="/Profile/ProfilePicture" alt="Profile picture">
+                            <div class="dropdown ms-2 me-4">
+                                <button class="btn btn-link dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @Context.Session.GetString(nameof(Customer.Name))
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" asp-controller="Profile" asp-action="Index">Edit profile</a></li>
+                                </ul>
+                            </div>
+                        </div>
                         <a class="btn btn-primary" asp-controller="Login" asp-action="Logout">Logout</a>
                     }
                     else
