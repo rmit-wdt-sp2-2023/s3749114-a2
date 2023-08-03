@@ -31,6 +31,8 @@ dotnet ef migrations add MigrationName --project ../BankLibrary/BankLibrary.cspr
 
 dotnet ef database update   
 ```
+Two Payees have been seeded to the database. You can use Payee ID "1" or "2" when scheduling a BillPay.
+
 I have used service classes to handle logic relating to database and models. These are used by the controllers. You can find these services in the **Services** folder. The background service for BillPay is in the **BackgroundServices** folder.  
 
 ### Web API
