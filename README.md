@@ -78,22 +78,16 @@ dotnet test
 
 ### Customer endpoints
 
-**GET** /customer
-
-Return value: List<Customer>
-
+**GET** /customer<br>
+Return value: List<Customer><br>
 Description: Retrieves all Customers.
 
-**GET** /customer{id}
-
-Return value: Customer
-
+**GET** /customer{id}<br>
+Return value: Customer<br>
 Description: Retrieves a Customer with the given CustomerID.
 
-**PUT** /customer{customer}
-
-Return value: None
-
+**PUT** /customer{customer}<br>
+Return value: None<br>
 Description: Update the details of the given Customer.
 
 **Customer**
@@ -111,22 +105,16 @@ Description: Update the details of the given Customer.
 
 ### Login endpoints
 
-**GET** /login
-
-Return value: List<Login>
-
+**GET** /login<br>
+Return value: List<Login><br>
 Description: Retrieves all Logins.
 
-**GET** /login/{id}
-
-Return value: Login
-
+**GET** /login/{id}<br>
+Return value: Login<br>
 Description: Retrieves a Logins with the given LoginID.
 
-**PUT** /login/{login}
-
-Return value: None
-
+**PUT** /login/{login}<br>
+Return value: None<br>
 Description: Update the details of the given Login.
 
 **Login**
@@ -140,22 +128,16 @@ Description: Update the details of the given Login.
 
 ### BillPay endpoints
 
-**GET** /billpay
-
-Return value: List<BillPay>
-
+**GET** /billpay<br>
+Return value: List<BillPay><br>
 Description: Retrieves all BillPays.
 
-**GET** /billpay/{id}
-
-Return value: BillPay
-
+**GET** /billpay/{id}<br>
+Return value: BillPay<br>
 Description: Retrieves a BillPay with the given BillPayID.
 
-**PUT** /billpay/{billPay}
-
-Return value: None
-
+**PUT** /billpay/{billPay}<br>
+Return value: None<br>
 Description: Update the details of the given BillPay.
 
 **BillPay**
