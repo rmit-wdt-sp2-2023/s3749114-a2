@@ -58,7 +58,7 @@ To log in, use: username = admin, password = admin
 
 ### Bank library
 
-I have put my models and DBContext in the **BankLibrary** folder. This is so the customer and admin can use these. The **Validation** folder contains some of the validation methods for data annoations. 
+I have put my models and DBContext in the **BankLibrary** folder. This is so the customer and admin applcation can use these. The **Validation** folder contains some of the validation methods for data annoations. 
 
 ### Unit tests
 
@@ -79,15 +79,21 @@ dotnet test
 ### Customer endpoints
 
 **GET** /customer
+
 Return value: List<Customer>
+
 Description: Retrieves all Customers.
 
 **GET** /customer{id}
+
 Return value: Customer
+
 Description: Retrieves a Customer with the given CustomerID.
 
 **PUT** /customer{customer}
+
 Return value: None
+
 Description: Update the details of the given Customer.
 
 **Customer**
@@ -106,15 +112,21 @@ Description: Update the details of the given Customer.
 ### Login endpoints
 
 **GET** /login
+
 Return value: List<Login>
+
 Description: Retrieves all Logins.
 
 **GET** /login/{id}
+
 Return value: Login
+
 Description: Retrieves a Logins with the given LoginID.
 
 **PUT** /login/{login}
+
 Return value: None
+
 Description: Update the details of the given Login.
 
 **Login**
@@ -129,15 +141,21 @@ Description: Update the details of the given Login.
 ### BillPay endpoints
 
 **GET** /billpay
+
 Return value: List<BillPay>
+
 Description: Retrieves all BillPays.
 
 **GET** /billpay/{id}
+
 Return value: BillPay
+
 Description: Retrieves a BillPay with the given BillPayID.
 
 **PUT** /billpay/{billPay}
+
 Return value: None
+
 Description: Update the details of the given BillPay.
 
 **BillPay**
